@@ -13,6 +13,10 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.error,
     required this.success,
     required this.warning,
+    required this.inputBackground,
+    required this.inputBorder,
+    required this.placeholderText,
+    required this.teal,
   });
 
   /// Surface 배경색
@@ -39,6 +43,18 @@ class AppColors extends ThemeExtension<AppColors> {
   /// 경고 상태 표시 색상
   final Color warning;
 
+  /// 입력 필드 배경색
+  final Color inputBackground;
+
+  /// 입력 필드 테두리 색상
+  final Color inputBorder;
+
+  /// 플레이스홀더 텍스트 색상
+  final Color placeholderText;
+
+  /// Teal 강조 색상 (GitHub 테마)
+  final Color teal;
+
   /// 밝은 테마용 기본 컬러 정의
   static const light = AppColors(
     surface: Color(0xFFF5F5F5),
@@ -49,6 +65,10 @@ class AppColors extends ThemeExtension<AppColors> {
     error: Color(0xFFB00020),
     success: Color(0xFF4CAF50),
     warning: Color(0xFFFFC107),
+    inputBackground: Color(0xFFFFFFFF),
+    inputBorder: Color(0xFFE0E0E0),
+    placeholderText: Color(0xFF9E9E9E),
+    teal: Color(0xFF14B8A6),
   );
 
   /// 다크 테마용 기본 컬러 정의
@@ -61,6 +81,10 @@ class AppColors extends ThemeExtension<AppColors> {
     error: Color(0xFFCF6679),
     success: Color(0xFF81C784),
     warning: Color(0xFFFFD54F),
+    inputBackground: Color(0xFF1E293B),
+    inputBorder: Color(0x1AFFFFFF),
+    placeholderText: Color(0xFF6B7280),
+    teal: Color(0xFF14B8A6),
   );
 
   @override
@@ -73,6 +97,10 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? error,
     Color? success,
     Color? warning,
+    Color? inputBackground,
+    Color? inputBorder,
+    Color? placeholderText,
+    Color? teal,
   }) => AppColors(
     surface: surface ?? this.surface,
     textPrimary: textPrimary ?? this.textPrimary,
@@ -82,6 +110,10 @@ class AppColors extends ThemeExtension<AppColors> {
     error: error ?? this.error,
     success: success ?? this.success,
     warning: warning ?? this.warning,
+    inputBackground: inputBackground ?? this.inputBackground,
+    inputBorder: inputBorder ?? this.inputBorder,
+    placeholderText: placeholderText ?? this.placeholderText,
+    teal: teal ?? this.teal,
   );
 
   @override
@@ -98,6 +130,10 @@ class AppColors extends ThemeExtension<AppColors> {
       error: Color.lerp(error, other.error, t)!,
       success: Color.lerp(success, other.success, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
+      inputBackground: Color.lerp(inputBackground, other.inputBackground, t)!,
+      inputBorder: Color.lerp(inputBorder, other.inputBorder, t)!,
+      placeholderText: Color.lerp(placeholderText, other.placeholderText, t)!,
+      teal: Color.lerp(teal, other.teal, t)!,
     );
   }
 }

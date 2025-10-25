@@ -79,3 +79,5 @@ GoogleService-Info.plist
 .claude/settings.local.json
 .mcp.json
 devtools_options.yaml
+
+.vscode/
