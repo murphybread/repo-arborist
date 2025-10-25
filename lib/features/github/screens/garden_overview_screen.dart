@@ -213,9 +213,9 @@ class _NaturalGardenLayout extends StatelessWidget {
         final width = constraints.maxWidth;
         final height = constraints.maxHeight;
 
-        // 고정 크기
-        const treeSize = 48.0;
-        const spacing = 48.0; // 52 → 48 (더 빽빽하게)
+        // 고정 크기 (더 크게)
+        const treeSize = 64.0; // 48 → 64
+        const spacing = 64.0; // 48 → 64
 
         // 그리드 계산
         final cols = (width / spacing).floor();
@@ -418,25 +418,29 @@ class _GardenTreeState extends State<_GardenTree>
         mainAxisSize: MainAxisSize.min,
         children: [
           // 나무 이미지 (글로우 효과 포함)
-          Container(
-            width: widget.size,
-            height: widget.size * 1.2,
-            decoration: glowIntensity > 0
-                ? BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: _getGlowColor(stage, isCactus)
-                            .withValues(alpha: glowIntensity * 0.6),
-                        blurRadius: 20 * glowIntensity,
-                        spreadRadius: 5 * glowIntensity,
-                      ),
-                    ],
-                  )
-                : null,
-            child: Opacity(
-              opacity: 0.3 + (activityTier.saturationMultiplier * 0.7),
-              child: SvgPicture.asset(
-                imagePath,
+          // 단계별 크기: 새싹 < 꽃 < 나무
+          Transform.scale(
+            scale: _getSizeMultiplier(stage),
+            child: Container(
+              width: widget.size,
+              height: widget.size * 1.2,
+              decoration: glowIntensity > 0
+                  ? BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: _getGlowColor(stage, isCactus)
+                              .withValues(alpha: glowIntensity * 0.6),
+                          blurRadius: 20 * glowIntensity,
+                          spreadRadius: 5 * glowIntensity,
+                        ),
+                      ],
+                    )
+                  : null,
+              child: Opacity(
+                opacity: 0.3 + (activityTier.saturationMultiplier * 0.7),
+                child: SvgPicture.asset(
+                  imagePath,
+                ),
               ),
             ),
           ),
@@ -501,6 +505,18 @@ class _GardenTreeState extends State<_GardenTree>
           'assets/images/trees/tree_red.svg',
         ];
         return treeVariants[variantIndex];
+    }
+  }
+
+  /// 단계별 크기 배율 가져오기
+  double _getSizeMultiplier(TreeStage stage) {
+    switch (stage) {
+      case TreeStage.sprout:
+        return 0.9; // 새싹: 기본보다 약간 작게
+      case TreeStage.bloom:
+        return 1; // 꽃: 기본 크기
+      case TreeStage.tree:
+        return 1.2; // 나무: 꽃보다 20% 크게
     }
   }
 

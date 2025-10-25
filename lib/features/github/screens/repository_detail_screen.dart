@@ -122,9 +122,9 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Center(
                   child: Transform.scale(
-                    scale: widget.repository.activityTier.scaleMultiplier,
+                    scale: widget.repository.activityTier.scaleMultiplier * _getSizeMultiplier(stage),
                     child: Container(
-                      height: 200,
+                      height: 240,
                       decoration: widget.repository.activityTier.glowIntensity > 0
                           ? BoxDecoration(
                               boxShadow: [
@@ -335,6 +335,18 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
         } else {
           return const Color(0xFFF43F5E); // Red
         }
+    }
+  }
+
+  /// 단계별 크기 배율 가져오기
+  double _getSizeMultiplier(TreeStage stage) {
+    switch (stage) {
+      case TreeStage.sprout:
+        return 0.9; // 새싹: 기본보다 약간 작게
+      case TreeStage.bloom:
+        return 1; // 꽃: 기본 크기
+      case TreeStage.tree:
+        return 1.2; // 나무: 꽃보다 20% 크게
     }
   }
 }

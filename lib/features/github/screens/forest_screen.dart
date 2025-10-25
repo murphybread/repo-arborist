@@ -357,11 +357,14 @@ class _RepositoryCard extends StatelessWidget {
                           ],
                         )
                       : null,
-                  child: Opacity(
-                    opacity: opacity,
-                    child: SvgPicture.asset(
-                      treeImagePath,
-                      fit: BoxFit.contain,
+                  child: Transform.scale(
+                    scale: _getSizeMultiplier(),
+                    child: Opacity(
+                      opacity: opacity,
+                      child: SvgPicture.asset(
+                        treeImagePath,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -608,6 +611,19 @@ class _RepositoryCard extends StatelessWidget {
         } else {
           return const Color(0xFFF43F5E); // Red
         }
+    }
+  }
+
+  /// 단계별 크기 배율 가져오기
+  double _getSizeMultiplier() {
+    final stage = repository.treeStage;
+    switch (stage) {
+      case TreeStage.sprout:
+        return 0.9; // 새싹: 기본보다 약간 작게
+      case TreeStage.bloom:
+        return 1; // 꽃: 기본 크기
+      case TreeStage.tree:
+        return 1.2; // 나무: 꽃보다 20% 크게
     }
   }
 
