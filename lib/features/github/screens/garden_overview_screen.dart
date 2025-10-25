@@ -10,7 +10,13 @@ import 'package:template/features/github/screens/forest_screen.dart';
 /// 정원 오버뷰 화면 - 모든 레포지토리를 자연스럽게 배치
 class GardenOverviewScreen extends ConsumerWidget {
   /// GardenOverviewScreen 생성자
-  const GardenOverviewScreen({super.key});
+  const GardenOverviewScreen({
+    required this.token,
+    super.key,
+  });
+
+  /// GitHub Personal Access Token
+  final String token;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +28,10 @@ class GardenOverviewScreen extends ConsumerWidget {
         final sortedRepos = List<RepositoryStatsModel>.from(repos)
           ..sort((a, b) => a.repository.createdAt.compareTo(b.repository.createdAt));
 
-        return _GardenView(repositories: sortedRepos);
+        return _GardenView(
+          repositories: sortedRepos,
+          token: token,
+        );
       },
       loading: () => const Scaffold(
         backgroundColor: Color(0xFFF8FAFC),
@@ -38,9 +47,13 @@ class GardenOverviewScreen extends ConsumerWidget {
 
 /// 정원 뷰 위젯
 class _GardenView extends StatelessWidget {
-  const _GardenView({required this.repositories});
+  const _GardenView({
+    required this.repositories,
+    required this.token,
+  });
 
   final List<RepositoryStatsModel> repositories;
+  final String token;
 
   @override
   Widget build(BuildContext context) {
@@ -116,9 +129,9 @@ class _GardenView extends StatelessWidget {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushReplacement(
+                      Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const ForestScreen(),
+                          builder: (context) => ForestScreen(token: token),
                         ),
                       );
                     },

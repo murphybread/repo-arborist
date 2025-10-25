@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:template/features/github/models/commit_model.dart';
 import 'package:template/features/github/models/github_repository_model.dart';
+import 'package:template/features/github/models/pull_request_model.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
 
 /// GitHub Repository API와 통신하는 Repository
@@ -174,5 +176,75 @@ class GitHubRepository {
     }).toList();
 
     return Future.wait(statsFutures);
+  }
+
+  /// Repository의 최근 커밋 가져오기
+  ///
+  /// [token] GitHub Personal Access Token
+  /// [owner] Repository 소유자
+  /// [repo] Repository 이름
+  /// [limit] 가져올 커밋 개수 (기본값: 3)
+  Future<List<CommitModel>> getRecentCommits({
+    required String token,
+    required String owner,
+    required String repo,
+    int limit = 3,
+  }) async {
+    final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=$limit');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      // 에러 발생 시 빈 리스트 반환
+      return [];
+    }
+
+    final data = jsonDecode(response.body) as List<dynamic>;
+    return data
+        .map((json) => CommitModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Repository의 최근 머지된 PR 가져오기
+  ///
+  /// [token] GitHub Personal Access Token
+  /// [owner] Repository 소유자
+  /// [repo] Repository 이름
+  /// [limit] 가져올 PR 개수 (기본값: 3)
+  Future<List<PullRequestModel>> getRecentMergedPRs({
+    required String token,
+    required String owner,
+    required String repo,
+    int limit = 3,
+  }) async {
+    final url = Uri.parse(
+      '$_baseUrl/repos/$owner/$repo/pulls?state=closed&sort=updated&direction=desc&per_page=$limit',
+    );
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      // 에러 발생 시 빈 리스트 반환
+      return [];
+    }
+
+    final data = jsonDecode(response.body) as List<dynamic>;
+    // merged_at이 null이 아닌 것만 필터링 (실제로 머지된 PR만)
+    return data
+        .map((json) => PullRequestModel.fromJson(json as Map<String, dynamic>))
+        .where((pr) => pr.mergedAt != null)
+        .toList();
   }
 }

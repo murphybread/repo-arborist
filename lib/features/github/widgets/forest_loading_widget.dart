@@ -134,7 +134,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
               if (mounted) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => const GardenOverviewScreen(),
+                    builder: (context) => GardenOverviewScreen(token: widget.token),
                   ),
                 );
               }

@@ -4,12 +4,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template/core/themes/app_colors.dart';
 import 'package:template/features/github/controllers/forest_controller.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
+import 'package:template/features/github/screens/garden_overview_screen.dart';
 import 'package:template/features/github/screens/repository_detail_screen.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerWidget {
   /// ForestScreen 생성자
-  const ForestScreen({super.key});
+  const ForestScreen({
+    this.token,
+    super.key,
+  });
+
+  /// GitHub Personal Access Token (optional)
+  final String? token;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -158,6 +165,50 @@ class ForestScreen extends ConsumerWidget {
                   ),
                 ),
                 const Spacer(),
+                // Go to Garden 버튼
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF14B8A6),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF14B8A6).withValues(alpha: 0.3),
+                          offset: const Offset(0, 2),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.grid_view_rounded,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Go to Garden',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -212,7 +263,10 @@ class ForestScreen extends ConsumerWidget {
                       ),
                     );
                   },
-                  child: _RepositoryCard(repository: repos[index]),
+                  child: _RepositoryCard(
+                    repository: repos[index],
+                    token: token!,
+                  ),
                 );
               },
             ),
@@ -225,9 +279,13 @@ class ForestScreen extends ConsumerWidget {
 
 /// Repository Card 위젯
 class _RepositoryCard extends StatelessWidget {
-  const _RepositoryCard({required this.repository});
+  const _RepositoryCard({
+    required this.repository,
+    required this.token,
+  });
 
   final RepositoryStatsModel repository;
+  final String token;
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +298,10 @@ class _RepositoryCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => RepositoryDetailScreen(repository: repository),
+            builder: (context) => RepositoryDetailScreen(
+              repository: repository,
+              token: token,
+            ),
           ),
         );
       },
