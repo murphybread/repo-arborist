@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template/core/themes/app_colors.dart';
 import 'package:template/features/github/controllers/forest_controller.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
+import 'package:template/features/github/screens/repository_detail_screen.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerWidget {
@@ -235,7 +236,15 @@ class _RepositoryCard extends StatelessWidget {
     final glowColor = _getGlowColor();
     final bgGradient = _getBackgroundGradient();
 
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => RepositoryDetailScreen(repository: repository),
+          ),
+        );
+      },
+      child: Container(
       decoration: BoxDecoration(
         gradient: bgGradient,
         borderRadius: BorderRadius.circular(12),
@@ -338,6 +347,7 @@ class _RepositoryCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -46,9 +46,11 @@ class GitHubRepository {
     required String owner,
     required String repo,
   }) async {
-    // GitHub API는 페이지네이션을 사용하므로, Link 헤더를 확인해야 합니다
-    // 간단하게 하기 위해 첫 페이지만 가져오고 contributor stats를 사용합니다
-    final url = Uri.parse('$_baseUrl/repos/$owner/$repo/stats/contributors');
+    // /commits API를 사용해서 커밋 수 가져오기
+    // per_page=1로 설정하고 Link 헤더에서 마지막 페이지 번호를 확인합니다
+    print('[GitHub API] Fetching commits for $owner/$repo');
+
+    final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=1');
     final response = await http.get(
       url,
       headers: {
@@ -58,23 +60,40 @@ class GitHubRepository {
       },
     );
 
-    if (response.statusCode == 202) {
-      // GitHub이 통계를 계산 중입니다. 잠시 후 다시 시도해야 합니다
-      // 여기서는 0을 반환합니다
+    if (response.statusCode == 409) {
+      // 빈 레포지토리
+      print('[GitHub API] Empty repository for $owner/$repo');
       return 0;
     }
 
     if (response.statusCode != 200) {
-      // 에러가 발생하면 0을 반환합니다 (빈 레포일 수 있음)
+      // 에러가 발생하면 0을 반환합니다
+      print('[GitHub API] Error ${response.statusCode} for $owner/$repo, returning 0');
       return 0;
     }
 
-    final data = jsonDecode(response.body) as List<dynamic>;
-    var totalCommits = 0;
-    for (final contributor in data) {
-      totalCommits += contributor['total'] as int;
+    // Link 헤더에서 마지막 페이지 번호를 추출합니다
+    final linkHeader = response.headers['link'];
+    if (linkHeader == null || !linkHeader.contains('rel="last"')) {
+      // Link 헤더가 없으면 커밋이 1개 이하
+      final data = jsonDecode(response.body) as List<dynamic>;
+      final count = data.isEmpty ? 0 : 1;
+      print('[GitHub API] $owner/$repo has $count commit(s) (no pagination)');
+      return count;
     }
-    return totalCommits;
+
+    // Link 헤더에서 마지막 페이지 번호 파싱
+    // 예: <https://api.github.com/repos/owner/repo/commits?per_page=1&page=3500>; rel="last"
+    final lastPageMatch = RegExp(r'page=(\d+)>; rel="last"').firstMatch(linkHeader);
+    if (lastPageMatch != null) {
+      final totalCommits = int.parse(lastPageMatch.group(1)!);
+      print('[GitHub API] $owner/$repo has $totalCommits total commits');
+      return totalCommits;
+    }
+
+    // 파싱 실패 시 1을 반환 (최소 1개는 있음)
+    print('[GitHub API] Failed to parse Link header for $owner/$repo, returning 1');
+    return 1;
   }
 
   /// Repository의 머지된 PR 수 가져오기
@@ -90,6 +109,7 @@ class GitHubRepository {
     final url = Uri.parse(
       '$_baseUrl/search/issues?q=repo:$owner/$repo+type:pr+is:merged&per_page=1',
     );
+    print('[GitHub API] Fetching merged PRs for $owner/$repo');
     final response = await http.get(
       url,
       headers: {
@@ -101,11 +121,14 @@ class GitHubRepository {
 
     if (response.statusCode != 200) {
       // 에러가 발생하면 0을 반환합니다
+      print('[GitHub API] Error ${response.statusCode} for $owner/$repo PRs, returning 0');
       return 0;
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
-    return data['total_count'] as int;
+    final count = data['total_count'] as int;
+    print('[GitHub API] $owner/$repo has $count merged PRs');
+    return count;
   }
 
   /// Repository의 통계 정보 가져오기
