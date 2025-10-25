@@ -8,6 +8,7 @@ class GithubRepositoryModel {
     required this.description,
     required this.isPrivate,
     required this.htmlUrl,
+    required this.createdAt,
   });
 
   /// JSON에서 모델로 변환
@@ -19,6 +20,7 @@ class GithubRepositoryModel {
       description: json['description'] as String?,
       isPrivate: json['private'] as bool,
       htmlUrl: json['html_url'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
 
@@ -40,6 +42,9 @@ class GithubRepositoryModel {
   /// GitHub URL
   final String htmlUrl;
 
+  /// 생성 날짜
+  final DateTime createdAt;
+
   /// 모델을 JSON으로 변환
   Map<String, dynamic> toJson() {
     return {
@@ -49,6 +54,7 @@ class GithubRepositoryModel {
       'description': description,
       'private': isPrivate,
       'html_url': htmlUrl,
+      'created_at': createdAt.toIso8601String(),
     };
   }
 }

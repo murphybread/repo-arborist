@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template/features/github/controllers/forest_controller.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
-import 'package:template/features/github/screens/forest_screen.dart';
+import 'package:template/features/github/screens/garden_overview_screen.dart';
 
 /// Forest 생성 중 로딩 위젯
 class ForestLoadingWidget extends ConsumerStatefulWidget {
@@ -134,7 +134,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
               if (mounted) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => const ForestScreen(),
+                    builder: (context) => const GardenOverviewScreen(),
                   ),
                 );
               }
