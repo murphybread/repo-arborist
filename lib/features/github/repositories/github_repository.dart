@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:template/features/github/models/commit_model.dart';
+import 'package:template/features/github/models/github_repo_model.dart';
 import 'package:template/features/github/models/github_repository_model.dart';
 import 'package:template/features/github/models/pull_request_model.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
@@ -9,6 +10,25 @@ import 'package:template/features/github/models/repository_stats_model.dart';
 /// GitHub Repository API와 통신하는 Repository
 class GitHubRepository {
   static const _baseUrl = 'https://api.github.com';
+
+  /// 특정 Repository 정보 가져오기 (인증 없이)
+  ///
+  /// [owner] Repository 소유자
+  /// [repo] Repository 이름
+  Future<GithubRepoModel> getRepo({
+    required String owner,
+    required String repo,
+  }) async {
+    final url = Uri.parse('$_baseUrl/repos/$owner/$repo');
+    final response = await http.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load repository: ${response.statusCode}');
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return GithubRepoModel.fromJson(data);
+  }
 
   /// 사용자의 모든 Repository 가져오기
   ///

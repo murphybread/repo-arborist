@@ -58,32 +58,19 @@ class _GardenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFF1E293B),
       body: Stack(
         children: [
           // 배경 그라디언트
           Container(
             decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.3, -0.8),
-                radius: 1.2,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
                 colors: [
-                  Color(0x26B4FFD2), // rgba(180, 255, 210, 0.15)
-                  Colors.transparent,
+                  Color(0xFF0F172A), // 진한 남색
+                  Color(0xFF1E293B), // 중간 남색
                 ],
-              ),
-            ),
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFF8FAFC),
-                    Color(0xFFFFFFFF),
-                  ],
-                  stops: [0.0, 0.7],
-                ),
               ),
             ),
           ),
@@ -158,10 +145,10 @@ class _GardenView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(24),
                         child: Stack(
                           children: [
-                            // 단순한 배경 (진한 초록/갈색 - 땅 느낌)
+                            // 단순한 배경 (진한 갈색 - 땅 느낌)
                             Container(
                               decoration: const BoxDecoration(
-                                color: Color(0xFF86A789), // 올리브/카키 초록 (흙 느낌)
+                                color: Color(0xFF5D4E37), // 진한 갈색 (흙 느낌)
                               ),
                             ),
 

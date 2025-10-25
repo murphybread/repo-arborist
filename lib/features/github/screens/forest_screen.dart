@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:template/core/themes/app_colors.dart';
 import 'package:template/features/github/controllers/forest_controller.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
-import 'package:template/features/github/screens/garden_overview_screen.dart';
 import 'package:template/features/github/screens/repository_detail_screen.dart';
 
 /// GitHub Repository Forest 화면
