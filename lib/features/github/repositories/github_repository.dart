@@ -169,16 +169,25 @@ class GitHubRepository {
     final owner = parts[0];
     final repo = parts[1];
 
-    // 병렬로 커밋 수와 PR 수 가져오기
+    // 병렬로 커밋 수, PR 수, 최근 활동 가져오기
     final results = await Future.wait([
       getRepositoryCommitCount(token: token, owner: owner, repo: repo),
       getRepositoryMergedPRCount(token: token, owner: owner, repo: repo),
+      getRecentCommits(token: token, owner: owner, repo: repo, limit: 1),
+      getRecentMergedPRs(token: token, owner: owner, repo: repo, limit: 1),
     ]);
+
+    final totalCommits = results[0] as int;
+    final totalMergedPRs = results[1] as int;
+    final recentCommits = results[2] as List<CommitModel>;
+    final recentPRs = results[3] as List<PullRequestModel>;
 
     return RepositoryStatsModel(
       repository: repository,
-      totalCommits: results[0],
-      totalMergedPRs: results[1],
+      totalCommits: totalCommits,
+      totalMergedPRs: totalMergedPRs,
+      lastCommitDate: recentCommits.isNotEmpty ? recentCommits.first.date : null,
+      lastMergedPRDate: recentPRs.isNotEmpty ? recentPRs.first.mergedAt : null,
     );
   }
 

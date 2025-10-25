@@ -121,11 +121,29 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Center(
-                  child: SizedBox(
-                    height: 200,
-                    child: SvgPicture.asset(
-                      _getTreeImagePath(stage, variantIndex),
-                      fit: BoxFit.contain,
+                  child: Transform.scale(
+                    scale: widget.repository.activityTier.scaleMultiplier,
+                    child: Container(
+                      height: 200,
+                      decoration: widget.repository.activityTier.glowIntensity > 0
+                          ? BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _getGlowColor()
+                                      .withValues(alpha: widget.repository.activityTier.glowIntensity * 0.6),
+                                  blurRadius: 40 * widget.repository.activityTier.glowIntensity,
+                                  spreadRadius: 10 * widget.repository.activityTier.glowIntensity,
+                                ),
+                              ],
+                            )
+                          : null,
+                      child: Opacity(
+                        opacity: 0.3 + (widget.repository.activityTier.saturationMultiplier * 0.7),
+                        child: SvgPicture.asset(
+                          _getTreeImagePath(stage, variantIndex),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -249,6 +267,21 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
 
   /// 트리 이미지 경로 가져오기
   String _getTreeImagePath(TreeStage stage, int variantIndex) {
+    final isCactus = widget.repository.isCactusMode;
+
+    // 선인장 모드 (1년 이상 방치)
+    if (isCactus) {
+      switch (stage) {
+        case TreeStage.sprout:
+          return 'assets/images/trees/cactus_sprout.svg';
+        case TreeStage.bloom:
+          return 'assets/images/trees/cactus_bloom.svg';
+        case TreeStage.tree:
+          return 'assets/images/trees/cactus_tree.svg';
+      }
+    }
+
+    // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
         return 'assets/images/trees/sprout.svg';
@@ -266,6 +299,42 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
           'assets/images/trees/tree_red.svg',
         ];
         return treeVariants[variantIndex];
+    }
+  }
+
+  /// Glow 색상 가져오기
+  Color _getGlowColor() {
+    final stage = widget.repository.treeStage;
+    final variantIndex = widget.repository.variantIndex;
+    final isCactus = widget.repository.isCactusMode;
+
+    // 선인장이면 선인장 색상
+    if (isCactus) {
+      return const Color(0xFF86A17A); // 선인장 색상
+    }
+
+    switch (stage) {
+      case TreeStage.sprout:
+        return const Color(0xFF34D399); // 초록색 글로우
+      case TreeStage.bloom:
+        switch (variantIndex) {
+          case 0:
+            return const Color(0xFFFDE047); // Yellow
+          case 1:
+            return const Color(0xFF60A5FA); // Blue
+          case 2:
+            return const Color(0xFFFB923C); // Orange
+          case 3:
+            return const Color(0xFFF472B6); // Pink
+          default:
+            return const Color(0xFF34D399); // 기본 초록
+        }
+      case TreeStage.tree:
+        if (variantIndex == 0) {
+          return const Color(0xFF4ADE80); // Green
+        } else {
+          return const Color(0xFFF43F5E); // Red
+        }
     }
   }
 }

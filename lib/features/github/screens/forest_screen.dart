@@ -288,9 +288,15 @@ class _RepositoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final treeImagePath = _getTreeImagePath();
-    final borderColor = _getBorderColor();
     final glowColor = _getGlowColor();
     final bgGradient = _getBackgroundGradient();
+
+    // ActivityTier 기반 효과
+    final activityTier = repository.activityTier;
+    final scale = activityTier.scaleMultiplier;
+    final glowIntensity = activityTier.glowIntensity;
+    final opacity = 0.3 + (activityTier.saturationMultiplier * 0.7);
+    final borderColor = _getBorderColor();
 
     return GestureDetector(
       onTap: () {
@@ -303,38 +309,24 @@ class _RepositoryCard extends StatelessWidget {
           ),
         );
       },
-      child: Container(
-      decoration: BoxDecoration(
-        gradient: bgGradient,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: borderColor,
-          width: 2,
+      child: Transform.scale(
+        scale: scale,
+        child: Container(
+        decoration: BoxDecoration(
+          gradient: bgGradient,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: borderColor,
+            width: 2,
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x1A000000),
+              offset: Offset(0, 2),
+              blurRadius: 8,
+            ),
+          ],
         ),
-        boxShadow: glowColor != null
-            ? [
-                BoxShadow(
-                  color: glowColor.withValues(alpha: 0.3),
-                  offset: const Offset(0, 4),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  offset: const Offset(0, 2),
-                  blurRadius: 8,
-                  spreadRadius: 0,
-                ),
-              ]
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  offset: const Offset(0, 2),
-                  blurRadius: 8,
-                  spreadRadius: 0,
-                ),
-              ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -353,9 +345,25 @@ class _RepositoryCard extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 34, 24, 26),
-                child: SvgPicture.asset(
-                  treeImagePath,
-                  fit: BoxFit.contain,
+                child: Container(
+                  decoration: glowIntensity > 0
+                      ? BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: glowColor.withValues(alpha: glowIntensity * 0.8),
+                              blurRadius: 50 * glowIntensity,
+                              spreadRadius: 10 * glowIntensity,
+                            ),
+                          ],
+                        )
+                      : null,
+                  child: Opacity(
+                    opacity: opacity,
+                    child: SvgPicture.asset(
+                      treeImagePath,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -407,6 +415,7 @@ class _RepositoryCard extends StatelessWidget {
           ),
         ],
       ),
+        ),
       ),
     );
   }
@@ -507,7 +516,21 @@ class _RepositoryCard extends StatelessWidget {
   String _getTreeImagePath() {
     final stage = repository.treeStage;
     final index = repository.variantIndex;
+    final isCactus = repository.isCactusMode;
 
+    // 선인장 모드 (1년 이상 방치)
+    if (isCactus) {
+      switch (stage) {
+        case TreeStage.sprout:
+          return 'assets/images/trees/cactus_sprout.svg';
+        case TreeStage.bloom:
+          return 'assets/images/trees/cactus_bloom.svg';
+        case TreeStage.tree:
+          return 'assets/images/trees/cactus_tree.svg';
+      }
+    }
+
+    // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
         return 'assets/images/trees/sprout.svg';
@@ -552,12 +575,18 @@ class _RepositoryCard extends StatelessWidget {
   }
 
   /// Glow 색상 가져오기
-  Color? _getGlowColor() {
+  Color _getGlowColor() {
     final stage = repository.treeStage;
+    final isCactus = repository.isCactusMode;
+
+    // 선인장이면 선인장 색상
+    if (isCactus) {
+      return const Color(0xFF86A17A); // 선인장 색상
+    }
 
     switch (stage) {
       case TreeStage.sprout:
-        return null;
+        return const Color(0xFF34D399); // 초록색 글로우
       case TreeStage.bloom:
         final index = repository.variantIndex;
         switch (index) {
@@ -570,7 +599,7 @@ class _RepositoryCard extends StatelessWidget {
           case 3:
             return const Color(0xFFF472B6); // Pink
           default:
-            return null;
+            return const Color(0xFF34D399); // 기본 초록
         }
       case TreeStage.tree:
         final index = repository.variantIndex;

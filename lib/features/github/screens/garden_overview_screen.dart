@@ -391,38 +391,77 @@ class _GardenTreeState extends State<_GardenTree>
 
   @override
   Widget build(BuildContext context) {
-    final stage = widget.repository.treeStage;
-    final variantIndex = widget.repository.variantIndex;
-    final imagePath = _getTreeImagePath(stage, variantIndex);
+    final repo = widget.repository;
+    final stage = repo.treeStage;
+    final variantIndex = repo.variantIndex;
+    final isCactus = repo.isCactusMode;
+    final activityTier = repo.activityTier;
+    final imagePath = _getTreeImagePath(stage, variantIndex, isCactus);
+
+    // ActivityTier 기반 스케일
+    final scale = activityTier.scaleMultiplier;
+    final glowIntensity = activityTier.glowIntensity;
 
     return AnimatedBuilder(
       animation: _swayAnimation,
       builder: (context, child) {
-        return Transform.rotate(
-          angle: _swayAnimation.value,
-          alignment: Alignment.bottomCenter,
-          child: child,
+        return Transform.scale(
+          scale: scale,
+          child: Transform.rotate(
+            angle: _swayAnimation.value,
+            alignment: Alignment.bottomCenter,
+            child: child,
+          ),
         );
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 나무 이미지
-          SizedBox(
+          // 나무 이미지 (글로우 효과 포함)
+          Container(
             width: widget.size,
             height: widget.size * 1.2,
-            child: SvgPicture.asset(
-              imagePath,
-              fit: BoxFit.contain,
+            decoration: glowIntensity > 0
+                ? BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: _getGlowColor(stage, isCactus)
+                            .withValues(alpha: glowIntensity * 0.6),
+                        blurRadius: 20 * glowIntensity,
+                        spreadRadius: 5 * glowIntensity,
+                      ),
+                    ],
+                  )
+                : null,
+            child: Opacity(
+              opacity: 0.3 + (activityTier.saturationMultiplier * 0.7),
+              child: SvgPicture.asset(
+                imagePath,
+              ),
             ),
           ),
-          // 그림자
+          // 이름표 (그림자 + 텍스트)
           Container(
             width: widget.size * 0.9,
             height: widget.size * 0.2,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.12),
+              color: Colors.black.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(100),
+            ),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              repo.repository.name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                fontSize: 7,
+                color: Colors.white.withValues(alpha: 0.9),
+                height: 1,
+              ),
             ),
           ),
         ],
@@ -431,7 +470,20 @@ class _GardenTreeState extends State<_GardenTree>
   }
 
   /// 트리 이미지 경로 가져오기
-  String _getTreeImagePath(TreeStage stage, int variantIndex) {
+  String _getTreeImagePath(TreeStage stage, int variantIndex, bool isCactus) {
+    // 선인장 모드 (1년 이상 방치)
+    if (isCactus) {
+      switch (stage) {
+        case TreeStage.sprout:
+          return 'assets/images/trees/cactus_sprout.svg';
+        case TreeStage.bloom:
+          return 'assets/images/trees/cactus_bloom.svg';
+        case TreeStage.tree:
+          return 'assets/images/trees/cactus_tree.svg';
+      }
+    }
+
+    // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
         return 'assets/images/trees/sprout.svg';
@@ -451,5 +503,20 @@ class _GardenTreeState extends State<_GardenTree>
         return treeVariants[variantIndex];
     }
   }
-}
 
+  /// 글로우 색상 가져오기
+  Color _getGlowColor(TreeStage stage, bool isCactus) {
+    if (isCactus) {
+      return const Color(0xFF86A17A); // 선인장 색상
+    }
+
+    switch (stage) {
+      case TreeStage.sprout:
+        return const Color(0xFF34D399); // 초록색
+      case TreeStage.bloom:
+        return const Color(0xFFFDE047); // 노란색
+      case TreeStage.tree:
+        return const Color(0xFF4ADE80); // 밝은 초록
+    }
+  }
+}
