@@ -5,20 +5,20 @@ import 'package:template/features/github/models/pull_request_model.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
 import 'package:template/features/github/repositories/github_repository.dart';
 
-/// 레포지토리 상세 정보 화면
+/// Repository detail view screen.
 class RepositoryDetailScreen extends StatefulWidget {
-  /// RepositoryDetailScreen 생성자
+  /// Creates a repository detail screen.
   const RepositoryDetailScreen({
     required this.repository,
-    required this.token,
+    this.token,
     super.key,
   });
 
-  /// 레포지토리 통계 모델
+  /// Selected repository stats.
   final RepositoryStatsModel repository;
 
-  /// GitHub Personal Access Token
-  final String token;
+  /// GitHub Personal Access Token (optional for public access).
+  final String? token;
 
   @override
   State<RepositoryDetailScreen> createState() => _RepositoryDetailScreenState();
@@ -688,3 +688,5 @@ class _PRItem extends StatelessWidget {
     );
   }
 }
+
+

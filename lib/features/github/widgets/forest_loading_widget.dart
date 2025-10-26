@@ -9,12 +9,16 @@ import 'package:template/features/github/screens/garden_overview_screen.dart';
 class ForestLoadingWidget extends ConsumerStatefulWidget {
   /// ForestLoadingWidget 생성자
   const ForestLoadingWidget({
-    required this.token,
+    this.token,
+    this.username,
     super.key,
   });
 
-  /// GitHub Personal Access Token
-  final String token;
+  /// GitHub Personal Access Token (null인 경우 username 사용)
+  final String? token;
+
+  /// GitHub username (token이 null일 때 public repos 조회용)
+  final String? username;
 
   @override
   ConsumerState<ForestLoadingWidget> createState() => _ForestLoadingWidgetState();
@@ -100,7 +104,10 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
 
   /// Repository 통계 로드 시작
   void _startLoadingAndNavigation() {
-    ref.read(forestProvider.notifier).loadRepositoryStats(widget.token);
+    ref.read(forestProvider.notifier).loadRepositoryStats(
+      token: widget.token,
+      username: widget.username,
+    );
   }
 
   @override
@@ -134,7 +141,10 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
               if (mounted) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => GardenOverviewScreen(token: widget.token),
+                    builder: (context) => GardenOverviewScreen(
+                      token: widget.token,
+                      username: widget.username,
+                    ),
                   ),
                 );
               }

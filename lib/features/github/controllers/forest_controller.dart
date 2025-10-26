@@ -18,16 +18,17 @@ class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {
     return [];
   }
 
-  /// GitHub Token으로 모든 Repository 통계 가져오기
-  Future<void> loadRepositoryStats(String token) async {
+  /// GitHub Token 또는 Username으로 모든 Repository 통계 가져오기
+  /// [token]이 있으면 private repos 포함, 없으면 [username]의 public repos만 조회
+  Future<void> loadRepositoryStats({String? token, String? username}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() {
-      return _repository.getAllRepositoryStats(token: token);
+      return _repository.getAllRepositoryStats(token: token, username: username);
     });
   }
 
   /// 새로고침
-  Future<void> refresh(String token) async {
-    await loadRepositoryStats(token);
+  Future<void> refresh({String? token, String? username}) async {
+    await loadRepositoryStats(token: token, username: username);
   }
 }

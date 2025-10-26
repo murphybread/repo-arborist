@@ -26,6 +26,14 @@ class GitHubAuthController extends AsyncNotifier<GithubUserModel?> {
     });
   }
 
+  /// GitHub Username으로 공개 사용자 정보 가져오기
+  Future<void> authenticateWithUsername(String username) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() {
+      return _repository.getUserByUsername(username: username);
+    });
+  }
+
   /// 로그아웃
   void signOut() {
     state = const AsyncData(null);

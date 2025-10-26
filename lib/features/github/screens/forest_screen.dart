@@ -263,7 +263,7 @@ class ForestScreen extends ConsumerWidget {
                   },
                   child: _RepositoryCard(
                     repository: repos[index],
-                    token: token!,
+                    token: token,
                   ),
                 );
               },
@@ -279,11 +279,11 @@ class ForestScreen extends ConsumerWidget {
 class _RepositoryCard extends StatelessWidget {
   const _RepositoryCard({
     required this.repository,
-    required this.token,
+    this.token,
   });
 
   final RepositoryStatsModel repository;
-  final String token;
+  final String? token;
 
   @override
   Widget build(BuildContext context) {

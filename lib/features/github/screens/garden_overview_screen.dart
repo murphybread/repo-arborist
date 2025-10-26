@@ -11,12 +11,16 @@ import 'package:template/features/github/screens/forest_screen.dart';
 class GardenOverviewScreen extends ConsumerWidget {
   /// GardenOverviewScreen 생성자
   const GardenOverviewScreen({
-    required this.token,
+    this.token,
+    this.username,
     super.key,
   });
 
-  /// GitHub Personal Access Token
-  final String token;
+  /// GitHub Personal Access Token (null인 경우 username 사용)
+  final String? token;
+
+  /// GitHub username (token이 null일 때 사용)
+  final String? username;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,6 +35,7 @@ class GardenOverviewScreen extends ConsumerWidget {
         return _GardenView(
           repositories: sortedRepos,
           token: token,
+          username: username,
         );
       },
       loading: () => const Scaffold(
@@ -49,11 +54,13 @@ class GardenOverviewScreen extends ConsumerWidget {
 class _GardenView extends StatelessWidget {
   const _GardenView({
     required this.repositories,
-    required this.token,
+    this.token,
+    this.username,
   });
 
   final List<RepositoryStatsModel> repositories;
-  final String token;
+  final String? token;
+  final String? username;
 
   @override
   Widget build(BuildContext context) {
