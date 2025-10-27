@@ -101,6 +101,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
 
   bool _hasStartedLoading = false;
   bool _hasNavigated = false;
+  bool _hasTimedOut = false;
 
   /// Repository 통계 로드 시작
   void _startLoadingAndNavigation() {
@@ -108,6 +109,15 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
       token: widget.token,
       username: widget.username,
     );
+
+    // 60초 타임아웃 설정
+    Future.delayed(const Duration(seconds: 60), () {
+      if (mounted && !_hasNavigated) {
+        setState(() {
+          _hasTimedOut = true;
+        });
+      }
+    });
   }
 
   @override
@@ -130,6 +140,8 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
     }
 
     // forestProvider 상태 감지
+    final forestState = ref.watch(forestProvider);
+
     ref.listen<AsyncValue<List<RepositoryStatsModel>>>(
       forestProvider,
       (previous, next) {
@@ -153,6 +165,71 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
         });
       },
     );
+
+    // 타임아웃 또는 에러 발생 시 에러 화면 표시
+    if (_hasTimedOut || forestState.hasError) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF8FAFC),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Color(0xFFEF4444),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Loading Failed',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 24,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _hasTimedOut
+                        ? 'Request timed out. Please check your connection and try again.'
+                        : 'Failed to load repositories: ${forestState.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF14B8A6),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Go Back'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Container(
       decoration: const BoxDecoration(

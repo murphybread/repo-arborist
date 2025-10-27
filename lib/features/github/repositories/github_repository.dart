@@ -10,6 +10,7 @@ import 'package:template/features/github/models/repository_stats_model.dart';
 /// GitHub Repository API와 통신하는 Repository
 class GitHubRepository {
   static const _baseUrl = 'https://api.github.com';
+  static const _timeout = Duration(seconds: 30); // HTTP 요청 타임아웃
 
   /// API 요청 헤더 생성 (token이 있으면 포함, 없으면 public API 사용)
   Map<String, String> _getHeaders({String? token}) {
@@ -57,7 +58,7 @@ class GitHubRepository {
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
       },
-    );
+    ).timeout(_timeout);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -81,7 +82,7 @@ class GitHubRepository {
     final response = await http.get(
       url,
       headers: _getHeaders(),
-    );
+    ).timeout(_timeout);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -113,7 +114,7 @@ class GitHubRepository {
     final response = await http.get(
       url,
       headers: _getHeaders(token: token),
-    );
+    ).timeout(_timeout);
 
     if (response.statusCode == 409) {
       // 빈 레포지토리
@@ -168,7 +169,7 @@ class GitHubRepository {
     final response = await http.get(
       url,
       headers: _getHeaders(token: token),
-    );
+    ).timeout(_timeout);
 
     if (response.statusCode != 200) {
       // 에러가 발생하면 0을 반환합니다
@@ -263,7 +264,7 @@ class GitHubRepository {
     final response = await http.get(
       url,
       headers: _getHeaders(token: token),
-    );
+    ).timeout(_timeout);
 
     if (response.statusCode != 200) {
       // 에러 발생 시 빈 리스트 반환
@@ -294,7 +295,7 @@ class GitHubRepository {
     final response = await http.get(
       url,
       headers: _getHeaders(token: token),
-    );
+    ).timeout(_timeout);
 
     if (response.statusCode != 200) {
       // 에러 발생 시 빈 리스트 반환

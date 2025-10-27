@@ -121,52 +121,53 @@ class _GardenView extends StatelessWidget {
 
                 // 정원 영역
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ForestScreen(token: token),
+                  child: Container(
+                    margin: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x0D000000), // rgba(0, 0, 0, 0.05)
+                          offset: Offset(0, 4),
+                          blurRadius: 12,
                         ),
-                      );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x0D000000), // rgba(0, 0, 0, 0.05)
-                            offset: Offset(0, 4),
-                            blurRadius: 12,
-                            spreadRadius: 0,
-                          ),
-                          BoxShadow(
-                            color: Color(0x14000000), // rgba(0, 0, 0, 0.08)
-                            offset: Offset(0, 30),
-                            blurRadius: 80,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Stack(
-                          children: [
-                            // 단순한 배경 (진한 갈색 - 땅 느낌)
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF5D4E37), // 진한 갈색 (흙 느낌)
-                              ),
+                        BoxShadow(
+                          color: Color(0x14000000), // rgba(0, 0, 0, 0.08)
+                          offset: Offset(0, 30),
+                          blurRadius: 80,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Stack(
+                        children: [
+                          // 단순한 배경 (진한 갈색 - 땅 느낌)
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF5D4E37), // 진한 갈색 (흙 느낌)
                             ),
+                          ),
 
-                            // 정원 트리들
-                            _NaturalGardenLayout(repositories: repositories),
+                          // InteractiveViewer로 정원 트리들 감싸기
+                          InteractiveViewer(
+                            minScale: 0.5,
+                            maxScale: 4,
+                            boundaryMargin: const EdgeInsets.all(double.infinity),
+                            constrained: false,
+                            child: SizedBox(
+                              width: 2000,
+                              height: 2000,
+                              child: _NaturalGardenLayout(repositories: repositories),
+                            ),
+                          ),
 
-                            // "Press anywhere" 힌트 (하단)
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 20,
+                          // "Press anywhere" 힌트 (하단) - 터치 무시하도록 수정
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 20,
+                            child: IgnorePointer(
                               child: Center(
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -178,7 +179,7 @@ class _GardenView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: const Text(
-                                    'Tap anywhere to see details',
+                                    'Pinch to zoom • Drag to explore',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w500,
@@ -189,8 +190,60 @@ class _GardenView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+
+                          // ForestScreen으로 이동하는 버튼 (우측 상단)
+                          Positioned(
+                            top: 16,
+                            right: 16,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ForestScreen(token: token),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF14B8A6),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF14B8A6).withValues(alpha: 0.3),
+                                      offset: const Offset(0, 2),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.grid_view_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      'Details',
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -217,6 +270,7 @@ class _NaturalGardenLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // 더 큰 캔버스 크기 사용
         final width = constraints.maxWidth;
         final height = constraints.maxHeight;
 
@@ -226,7 +280,7 @@ class _NaturalGardenLayout extends StatelessWidget {
 
         // 그리드 계산
         final cols = (width / spacing).floor();
-        final rows = ((height - 80) / spacing).floor(); // 하단 힌트 영역 제외
+        final rows = (height / spacing).floor();
 
         // 외곽부터 안쪽으로 채워나가는 순서
         final positions = _calculateSpiralPositions(
@@ -235,7 +289,7 @@ class _NaturalGardenLayout extends StatelessWidget {
           rows,
           spacing,
           width,
-          height - 80,
+          height,
         );
 
         return Stack(
@@ -272,8 +326,8 @@ class _NaturalGardenLayout extends StatelessWidget {
   ) {
     final positions = <Offset>[];
 
-    // 중앙 정렬을 위한 오프셋
-    final offsetX = (width - (cols * spacing)) / 2;
+    // 중앙 정렬을 위한 오프셋 (중심을 왼쪽으로 이동)
+    final offsetX = (width - (cols * spacing)) / 2 - 100; // 왼쪽으로 100px 이동
     final offsetY = (height - (rows * spacing)) / 2;
 
     // 중심 좌표
