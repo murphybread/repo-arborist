@@ -74,14 +74,16 @@ class GitHubRepository {
 
   /// Username으로 공개 Repository 가져오기
   ///
-  /// [username] GitHub username (토큰 불필요, 공개 레포만 조회)
+  /// [username] GitHub username
+  /// [token] GitHub Personal Access Token (선택 사항, 있으면 5,000회/시간 제한 적용)
   Future<List<GithubRepositoryModel>> getPublicRepositoriesByUsername({
     required String username,
+    String? token,
   }) async {
     final url = Uri.parse('$_baseUrl/users/$username/repos?per_page=100');
     final response = await http.get(
       url,
-      headers: _getHeaders(),
+      headers: _getHeaders(token: token),
     ).timeout(_timeout);
 
     if (response.statusCode != 200) {
@@ -229,12 +231,19 @@ class GitHubRepository {
     String? token,
     String? username,
   }) async {
-    // token이 있으면 token 사용, 없으면 username 사용
+    // username이 있으면 해당 사용자의 public repos 조회 (token이 있으면 함께 전달)
+    // username이 없고 token만 있으면 내 repos 조회
     final List<GithubRepositoryModel> repositories;
-    if (token != null) {
+    if (username != null) {
+      // username이 있으면 해당 사용자의 public repos 조회
+      // token이 있으면 5,000회/시간, 없으면 60회/시간
+      repositories = await getPublicRepositoriesByUsername(
+        username: username,
+        token: token,
+      );
+    } else if (token != null) {
+      // username이 없고 token만 있으면 내 repos 조회
       repositories = await getUserRepositories(token: token);
-    } else if (username != null) {
-      repositories = await getPublicRepositoriesByUsername(username: username);
     } else {
       throw Exception('Either token or username must be provided');
     }
