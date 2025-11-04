@@ -81,3 +81,8 @@ GoogleService-Info.plist
 devtools_options.yaml
 
 .vscode/
+
+# Test scripts and logs
+*.log
+nul
+test_*.dart
