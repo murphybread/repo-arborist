@@ -27,6 +27,8 @@ class _GithubLoginScreenState extends ConsumerState<GithubLoginScreen> {
 
   Future<void> _handleUsernameLogin() async {
     final username = _usernameController.text.trim();
+    print('🔵 [Login] Username 입력됨: $username');
+
     if (username.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter your GitHub username')),
@@ -35,12 +37,15 @@ class _GithubLoginScreenState extends ConsumerState<GithubLoginScreen> {
     }
 
     setState(() => _isLoading = true);
+    print('🔵 [Login] 로딩 시작...');
 
     try {
       // Username으로 사용자 인증
+      print('🔵 [Login] authenticateWithUsername 호출 중...');
       await ref
           .read(githubAuthProvider.notifier)
           .authenticateWithUsername(username);
+      print('🔵 [Login] authenticateWithUsername 완료');
 
       if (mounted) {
         final authState = ref.read(githubAuthProvider);

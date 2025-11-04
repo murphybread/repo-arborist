@@ -105,10 +105,16 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
 
   /// Repository 통계 로드 시작
   void _startLoadingAndNavigation() {
+    print('🟢 [ForestLoading] loadRepositoryStats 호출');
+    print('   - token: ${widget.token != null ? "있음" : "없음"}');
+    print('   - username: ${widget.username}');
+
     ref.read(forestProvider.notifier).loadRepositoryStats(
       token: widget.token,
       username: widget.username,
     );
+
+    print('🟢 [ForestLoading] loadRepositoryStats 호출 완료');
 
     // 60초 타임아웃 설정
     Future.delayed(const Duration(seconds: 60), () {

@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:template/core/services/local_cache_service.dart';
 import 'package:template/features/github/models/commit_model.dart';
 import 'package:template/features/github/models/github_repo_model.dart';
 import 'package:template/features/github/models/github_repository_model.dart';
@@ -9,8 +12,15 @@ import 'package:template/features/github/models/repository_stats_model.dart';
 
 /// GitHub Repository API와 통신하는 Repository
 class GitHubRepository {
+  /// GitHubRepository 생성자
+  GitHubRepository({LocalCacheService? cacheService})
+      : _cacheService = cacheService ?? LocalCacheService();
+
   static const _baseUrl = 'https://api.github.com';
   static const _timeout = Duration(seconds: 30); // HTTP 요청 타임아웃
+  static const _cacheDuration = Duration(hours: 1); // 캐시 유효 시간
+
+  final LocalCacheService _cacheService;
 
   /// API 요청 헤더 생성 (token이 있으면 포함, 없으면 public API 사용)
   Map<String, String> _getHeaders({String? token}) {
@@ -80,10 +90,17 @@ class GitHubRepository {
     required String username,
     String? token,
   }) async {
+    // .env에서 토큰 자동 로드
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
+    if (kDebugMode) {
+      print('🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}');
+    }
+
     final url = Uri.parse('$_baseUrl/users/$username/repos?per_page=100');
     final response = await http.get(
       url,
-      headers: _getHeaders(token: token),
+      headers: _getHeaders(token: effectiveToken),
     ).timeout(_timeout);
 
     if (response.statusCode != 200) {
@@ -108,6 +125,9 @@ class GitHubRepository {
     required String owner,
     required String repo,
   }) async {
+    // .env에서 토큰 자동 로드
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
     // /commits API를 사용해서 커밋 수 가져오기
     // per_page=1로 설정하고 Link 헤더에서 마지막 페이지 번호를 확인합니다
     print('[GitHub API] Fetching commits for $owner/$repo');
@@ -115,7 +135,7 @@ class GitHubRepository {
     final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=1');
     final response = await http.get(
       url,
-      headers: _getHeaders(token: token),
+      headers: _getHeaders(token: effectiveToken),
     ).timeout(_timeout);
 
     if (response.statusCode == 409) {
@@ -164,13 +184,16 @@ class GitHubRepository {
     required String owner,
     required String repo,
   }) async {
+    // .env에서 토큰 자동 로드
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
     final url = Uri.parse(
       '$_baseUrl/search/issues?q=repo:$owner/$repo+type:pr+is:merged&per_page=1',
     );
     print('[GitHub API] Fetching merged PRs for $owner/$repo');
     final response = await http.get(
       url,
-      headers: _getHeaders(token: token),
+      headers: _getHeaders(token: effectiveToken),
     ).timeout(_timeout);
 
     if (response.statusCode != 200) {
@@ -201,24 +224,23 @@ class GitHubRepository {
     final owner = parts[0];
     final repo = parts[1];
 
-    // 병렬로 커밋 수, PR 수, 최근 활동 가져오기
+    // 병렬로 커밋 수, PR 수, 최근 PR만 가져오기
+    // pushed_at을 사용하여 최근 커밋 날짜는 별도 API 호출 불필요
     final results = await Future.wait([
       getRepositoryCommitCount(token: token, owner: owner, repo: repo),
       getRepositoryMergedPRCount(token: token, owner: owner, repo: repo),
-      getRecentCommits(token: token, owner: owner, repo: repo, limit: 1),
       getRecentMergedPRs(token: token, owner: owner, repo: repo, limit: 1),
     ]);
 
     final totalCommits = results[0] as int;
     final totalMergedPRs = results[1] as int;
-    final recentCommits = results[2] as List<CommitModel>;
-    final recentPRs = results[3] as List<PullRequestModel>;
+    final recentPRs = results[2] as List<PullRequestModel>;
 
     return RepositoryStatsModel(
       repository: repository,
       totalCommits: totalCommits,
       totalMergedPRs: totalMergedPRs,
-      lastCommitDate: recentCommits.isNotEmpty ? recentCommits.first.date : null,
+      lastCommitDate: repository.pushedAt, // pushed_at 활용
       lastMergedPRDate: recentPRs.isNotEmpty ? recentPRs.first.mergedAt : null,
     );
   }
@@ -227,10 +249,47 @@ class GitHubRepository {
   ///
   /// [token] GitHub Personal Access Token (null인 경우 username 사용)
   /// [username] GitHub username (token이 null일 때 public repos만 조회)
+  /// [forceRefresh] 캐시 무시하고 강제로 새로 가져오기
   Future<List<RepositoryStatsModel>> getAllRepositoryStats({
     String? token,
     String? username,
+    bool forceRefresh = false,
   }) async {
+    // .env에서 토큰 가져오기 (token 파라미터가 없을 때만)
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
+    if (kDebugMode) {
+      print('═══════════════════════════════════════');
+      print('🔑 [GitHub API] 토큰 체크');
+      print('   - 파라미터 token: ${token != null ? "있음" : "없음"}');
+      print('   - .env GITHUB_TOKEN: ${dotenv.env['GITHUB_TOKEN'] != null ? "있음" : "없음"}');
+      print('   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}');
+      print('═══════════════════════════════════════');
+    }
+
+    // 캐시 키 생성
+    final cacheKey = 'github_stats_${username ?? 'user'}';
+
+    // 캐시 확인 (forceRefresh가 false일 때만)
+    if (!forceRefresh) {
+      final cachedStats = await _cacheService.getJsonList<RepositoryStatsModel>(
+        cacheKey,
+        fromJson: RepositoryStatsModel.fromJson,
+      );
+
+      if (cachedStats != null) {
+        if (kDebugMode) {
+          print('[Cache] 캐시에서 ${cachedStats.length}개 레포 통계 로드');
+        }
+        return cachedStats;
+      }
+    }
+
+    // 캐시가 없거나 forceRefresh인 경우 API 호출
+    if (kDebugMode) {
+      print('[API] GitHub API에서 레포 통계 가져오는 중...');
+    }
+
     // username이 있으면 해당 사용자의 public repos 조회 (token이 있으면 함께 전달)
     // username이 없고 token만 있으면 내 repos 조회
     final List<GithubRepositoryModel> repositories;
@@ -239,11 +298,11 @@ class GitHubRepository {
       // token이 있으면 5,000회/시간, 없으면 60회/시간
       repositories = await getPublicRepositoriesByUsername(
         username: username,
-        token: token,
+        token: effectiveToken,
       );
-    } else if (token != null) {
+    } else if (effectiveToken != null) {
       // username이 없고 token만 있으면 내 repos 조회
-      repositories = await getUserRepositories(token: token);
+      repositories = await getUserRepositories(token: effectiveToken);
     } else {
       throw Exception('Either token or username must be provided');
     }
@@ -251,10 +310,24 @@ class GitHubRepository {
     // 병렬로 모든 레포의 통계 가져오기
     // token이 null이면 public API로 조회 (rate limit 주의)
     final statsFutures = repositories.map((repo) {
-      return getRepositoryStats(token: token, repository: repo);
+      return getRepositoryStats(token: effectiveToken, repository: repo);
     }).toList();
 
-    return Future.wait(statsFutures);
+    final stats = await Future.wait(statsFutures);
+
+    // 캐시에 저장
+    await _cacheService.setJsonList<RepositoryStatsModel>(
+      cacheKey,
+      stats,
+      ttl: _cacheDuration,
+      toJson: (stat) => stat.toJson(),
+    );
+
+    if (kDebugMode) {
+      print('[Cache] ${stats.length}개 레포 통계를 캐시에 저장');
+    }
+
+    return stats;
   }
 
   /// Repository의 최근 커밋 가져오기
@@ -269,10 +342,13 @@ class GitHubRepository {
     required String repo,
     int limit = 3,
   }) async {
+    // .env에서 토큰 자동 로드
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
     final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=$limit');
     final response = await http.get(
       url,
-      headers: _getHeaders(token: token),
+      headers: _getHeaders(token: effectiveToken),
     ).timeout(_timeout);
 
     if (response.statusCode != 200) {
@@ -298,12 +374,15 @@ class GitHubRepository {
     required String repo,
     int limit = 3,
   }) async {
+    // .env에서 토큰 자동 로드
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
     final url = Uri.parse(
       '$_baseUrl/repos/$owner/$repo/pulls?state=closed&sort=updated&direction=desc&per_page=$limit',
     );
     final response = await http.get(
       url,
-      headers: _getHeaders(token: token),
+      headers: _getHeaders(token: effectiveToken),
     ).timeout(_timeout);
 
     if (response.statusCode != 200) {

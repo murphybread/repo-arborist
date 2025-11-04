@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:template/core/services/local_cache_service.dart';
 import 'package:template/firebase_options.dart';
 
 /// 앱 초기화 및 외부 서비스 설정
@@ -18,7 +20,41 @@ class AppSetup {
 
   /// 앱 초기화
   static Future<void> initialize() async {
+    await _initializeDotEnv();
+    await _initializeCache();
     await _initializeFirebase();
+  }
+
+  /// 환경변수 초기화
+  static Future<void> _initializeDotEnv() async {
+    try {
+      await dotenv.load();
+      if (kDebugMode) {
+        print('환경변수 로드 완료');
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('환경변수 로드 실패 (선택사항): $e');
+      }
+      // .env 파일이 없어도 앱은 정상 동작
+    }
+  }
+
+  /// 로컬 캐시 초기화
+  static Future<void> _initializeCache() async {
+    try {
+      final cacheService = LocalCacheService();
+      await cacheService.init();
+      if (kDebugMode) {
+        print('로컬 캐시 초기화 완료');
+      }
+    } catch (e, stack) {
+      if (kDebugMode) {
+        print('로컬 캐시 초기화 실패: $e');
+        print('Stack trace: $stack');
+      }
+      rethrow;
+    }
   }
 
   /// Firebase 초기화

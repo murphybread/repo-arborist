@@ -11,6 +11,34 @@ class RepositoryStatsModel {
     this.lastMergedPRDate,
   });
 
+  /// JSON에서 모델로 변환
+  factory RepositoryStatsModel.fromJson(Map<String, dynamic> json) {
+    return RepositoryStatsModel(
+      repository: GithubRepositoryModel.fromJson(
+        json['repository'] as Map<String, dynamic>,
+      ),
+      totalCommits: json['total_commits'] as int,
+      totalMergedPRs: json['total_merged_prs'] as int,
+      lastCommitDate: json['last_commit_date'] != null
+          ? DateTime.parse(json['last_commit_date'] as String)
+          : null,
+      lastMergedPRDate: json['last_merged_pr_date'] != null
+          ? DateTime.parse(json['last_merged_pr_date'] as String)
+          : null,
+    );
+  }
+
+  /// 모델을 JSON으로 변환
+  Map<String, dynamic> toJson() {
+    return {
+      'repository': repository.toJson(),
+      'total_commits': totalCommits,
+      'total_merged_prs': totalMergedPRs,
+      'last_commit_date': lastCommitDate?.toIso8601String(),
+      'last_merged_pr_date': lastMergedPRDate?.toIso8601String(),
+    };
+  }
+
   /// Repository 기본 정보
   final GithubRepositoryModel repository;
 

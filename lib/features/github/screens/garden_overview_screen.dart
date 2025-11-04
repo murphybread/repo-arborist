@@ -153,13 +153,8 @@ class _GardenView extends StatelessWidget {
                           InteractiveViewer(
                             minScale: 0.5,
                             maxScale: 4,
-                            boundaryMargin: const EdgeInsets.all(double.infinity),
-                            constrained: false,
-                            child: SizedBox(
-                              width: 2000,
-                              height: 2000,
-                              child: _NaturalGardenLayout(repositories: repositories),
-                            ),
+                            boundaryMargin: const EdgeInsets.all(200),
+                            child: _NaturalGardenLayout(repositories: repositories),
                           ),
 
                           // "Press anywhere" 힌트 (하단) - 터치 무시하도록 수정
@@ -270,7 +265,6 @@ class _NaturalGardenLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 더 큰 캔버스 크기 사용
         final width = constraints.maxWidth;
         final height = constraints.maxHeight;
 
@@ -278,9 +272,9 @@ class _NaturalGardenLayout extends StatelessWidget {
         const treeSize = 64.0; // 48 → 64
         const spacing = 64.0; // 48 → 64
 
-        // 그리드 계산
-        final cols = (width / spacing).floor();
-        final rows = (height / spacing).floor();
+        // 그리드 계산 - 패딩 고려
+        final cols = ((width - 100) / spacing).floor();
+        final rows = ((height - 100) / spacing).floor();
 
         // 외곽부터 안쪽으로 채워나가는 순서
         final positions = _calculateSpiralPositions(
@@ -288,8 +282,8 @@ class _NaturalGardenLayout extends StatelessWidget {
           cols,
           rows,
           spacing,
-          width,
-          height,
+          width - 100,
+          height - 100,
         );
 
         return Stack(
@@ -299,6 +293,11 @@ class _NaturalGardenLayout extends StatelessWidget {
               final repo = repositories[index];
               final position = positions[index];
 
+              // 레포지토리 나이 계산 (년 단위)
+              final createdAt = repo.repository.createdAt;
+              final now = DateTime.now();
+              final ageInYears = now.difference(createdAt).inDays / 365.0;
+
               return Positioned(
                 left: position.dx,
                 top: position.dy,
@@ -306,6 +305,8 @@ class _NaturalGardenLayout extends StatelessWidget {
                   repository: repo,
                   size: treeSize,
                   index: index,
+                  ageInYears: ageInYears,
+                  totalRepos: repositories.length,
                 ),
               );
             },
@@ -327,8 +328,8 @@ class _NaturalGardenLayout extends StatelessWidget {
     final positions = <Offset>[];
 
     // 중앙 정렬을 위한 오프셋 (중심을 왼쪽으로 이동)
-    final offsetX = (width - (cols * spacing)) / 2 - 100; // 왼쪽으로 100px 이동
-    final offsetY = (height - (rows * spacing)) / 2;
+    final offsetX = (width - (cols * spacing)) / 2 + 50; // 왼쪽으로 조금만 이동 (50px 오른쪽)
+    final offsetY = (height - (rows * spacing)) / 2 + 50; // 패딩 고려
 
     // 중심 좌표
     final centerCol = cols ~/ 2;
@@ -407,11 +408,15 @@ class _GardenTree extends StatefulWidget {
     required this.repository,
     required this.size,
     required this.index,
+    required this.ageInYears,
+    required this.totalRepos,
   });
 
   final RepositoryStatsModel repository;
   final double size;
   final int index;
+  final double ageInYears;
+  final int totalRepos;
 
   @override
   State<_GardenTree> createState() => _GardenTreeState();
@@ -463,6 +468,11 @@ class _GardenTreeState extends State<_GardenTree>
     final scale = activityTier.scaleMultiplier;
     final glowIntensity = activityTier.glowIntensity;
 
+    // 나이 기반 색상 조정 (0년 = 1.0, 10년+ = 0.5)
+    final ageInYears = widget.ageInYears;
+    final ageFactor = 1.0 - (ageInYears / 10).clamp(0.0, 0.5); // 최대 50% 감소
+    final treeOpacity = (0.3 + (activityTier.saturationMultiplier * 0.7)) * ageFactor;
+
     return AnimatedBuilder(
       animation: _swayAnimation,
       builder: (context, child) {
@@ -475,12 +485,35 @@ class _GardenTreeState extends State<_GardenTree>
           ),
         );
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
-          // 나무 이미지 (글로우 효과 포함)
-          // 단계별 크기: 새싹 < 꽃 < 나무
-          Transform.scale(
+          // 땅바닥 원형 (나이별 색상)
+          Positioned(
+            bottom: widget.size * 0.1,
+            child: Container(
+              width: widget.size * 1.5,
+              height: widget.size * 1.5,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    _getGroundColor(ageInYears).withValues(alpha: 0.6),
+                    _getGroundColor(ageInYears).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 나무와 라벨
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 나무 이미지 (글로우 효과 포함)
+              // 단계별 크기: 새싹 < 꽃 < 나무
+              Transform.scale(
             scale: _getSizeMultiplier(stage),
             child: Container(
               width: widget.size,
@@ -497,37 +530,42 @@ class _GardenTreeState extends State<_GardenTree>
                       ],
                     )
                   : null,
-              child: Opacity(
-                opacity: 0.3 + (activityTier.saturationMultiplier * 0.7),
-                child: SvgPicture.asset(
-                  imagePath,
+              child: ColorFiltered(
+                colorFilter: ColorFilter.matrix(_getAgeColorMatrix(ageFactor)),
+                child: Opacity(
+                  opacity: treeOpacity,
+                  child: SvgPicture.asset(
+                    imagePath,
+                  ),
                 ),
               ),
             ),
           ),
-          // 이름표 (그림자 + 텍스트)
-          Container(
-            width: widget.size * 0.9,
-            height: widget.size * 0.2,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(100),
-            ),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text(
-              repo.repository.name,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                fontSize: 7,
-                color: Colors.white.withValues(alpha: 0.9),
-                height: 1,
+              // 이름표 (그림자 + 텍스트)
+              Container(
+                width: widget.size * 0.9,
+                height: widget.size * 0.2,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  repo.repository.name,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 7,
+                    color: Colors.white.withValues(alpha: 0.9),
+                    height: 1,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
@@ -594,6 +632,42 @@ class _GardenTreeState extends State<_GardenTree>
         return const Color(0xFFFDE047); // 노란색
       case TreeStage.tree:
         return const Color(0xFF4ADE80); // 밝은 초록
+    }
+  }
+
+  /// 나이 기반 색상 매트릭스 (세피아/탈색 효과)
+  /// [ageFactor] 1.0 = 새로운, 0.5 = 오래된
+  List<double> _getAgeColorMatrix(double ageFactor) {
+    // 세피아 톤으로 변환 (오래될수록 강하게)
+    final sepiaStrength = 1.0 - ageFactor; // 0 = 없음, 0.5 = 강함
+
+    return [
+      // R  G  B  A  Const
+      0.393 + 0.607 * (1 - sepiaStrength), 0.769 - 0.769 * (1 - sepiaStrength), 0.189 - 0.189 * (1 - sepiaStrength), 0, 0, // R
+      0.349 - 0.349 * (1 - sepiaStrength), 0.686 + 0.314 * (1 - sepiaStrength), 0.168 - 0.168 * (1 - sepiaStrength), 0, 0, // G
+      0.272 - 0.272 * (1 - sepiaStrength), 0.534 - 0.534 * (1 - sepiaStrength), 0.131 + 0.869 * (1 - sepiaStrength), 0, 0, // B
+      0, 0, 0, 1, 0, // A
+    ];
+  }
+
+  /// 레포지토리 나이에 따른 땅바닥 색상
+  /// 0년 = 밝은 색, 5년+ = 어두운 색
+  Color _getGroundColor(double ageInYears) {
+    if (ageInYears < 1) {
+      // 1년 미만: 밝은 갈색/연두
+      return const Color(0xFF8B7355);
+    } else if (ageInYears < 2) {
+      // 1-2년: 중간 밝은 갈색
+      return const Color(0xFF7A6F5D);
+    } else if (ageInYears < 3) {
+      // 2-3년: 중간 갈색
+      return const Color(0xFF6B5D4F);
+    } else if (ageInYears < 5) {
+      // 3-5년: 어두운 갈색
+      return const Color(0xFF5D4E37);
+    } else {
+      // 5년 이상: 매우 어두운 갈색
+      return const Color(0xFF4A3C28);
     }
   }
 }
