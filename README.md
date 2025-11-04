@@ -100,6 +100,16 @@ lib/
 - **[Firebase 설정](docs/setup/FIREBASE_SETUP.md)** - Firebase & Crashlytics 설정
 - **[Claude Code MCP 설정](docs/setup/CLAUDE_CODE_MCP_SETUP.md)** - Figma 연동 설정
 
+## ⚠️ 보안 참고사항
+
+이 프로젝트는 개인 토이 프로젝트입니다.
+
+- **Firebase API 키**: `google-services.json`의 API 키는 공개 가능합니다 ([Firebase 공식 문서](https://firebase.google.com/docs/projects/api-keys) 참고)
+  - 실제 보안은 Firebase Security Rules로 관리됩니다
+  - 프로덕션 앱 배포 시 Security Rules 강화 필요
+- **GitHub Token**: `.env` 파일은 `.gitignore`에 포함되어 있으며 절대 커밋되지 않습니다
+  - `.env.example` 파일을 복사하여 개인 토큰 설정
+
 ## 라이센스
 
 MIT

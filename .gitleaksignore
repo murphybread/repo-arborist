@@ -1,0 +1,7 @@
+# Firebase 클라이언트 API 키는 공개 가능 (Firebase Security Rules로 보호됨)
+# https://firebase.google.com/docs/projects/api-keys
+google-services.json:current_key
+GoogleService-Info.plist:API_KEY
+
+# GitHub Personal Access Token (실제 시크릿)
+.env:GITHUB_TOKEN
