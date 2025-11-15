@@ -4,12 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Blueberry Template is a Flutter starter template (Korean-language project) with clean architecture, Material 3 theming, Riverpod 3.0 state management, easy_localization, and Firebase Crashlytics.
+Repo Arborist는 GitHub 저장소를 살아있는 숲으로 시각화하는 Flutter 앱입니다. 각 저장소는 활동량, 나이, 크기에 따라 다른 모습의 나무로 표현됩니다.
 
 - **Flutter Version:** 3.35.6 (managed via FVM)
 - **Primary Language:** Korean (documentation and comments in Korean)
 - **State Management:** Riverpod 3.0
 - **Min SDK:** 3.8.1
+
+### 핵심 기능
+- GitHub 저장소를 나무로 시각화 (새싹 → 꽃 → 나무)
+- 저장소 통계 표시 (커밋, PR, 프로젝트 점수)
+- 활동 기반 시각 효과 (빛 효과, 세피아 톤)
+- 인터랙티브 정원 뷰 (확대/축소, 드래그)
+- GitHub API 연동 및 로컬 캐싱 (Hive)
 
 ## Development Commands
 
@@ -70,14 +77,12 @@ lib/
 │   ├── controllers/   # Global state (e.g., ThemeController)
 │   └── themes/        # Design system (AppColors, AppTypography, AppTheme)
 └── features/          # Feature modules (isolated & independent)
-    ├── todo/
-    ├── github/
-    └── [feature]/
-        ├── controllers/  # Riverpod state management
-        ├── models/       # Data models
-        ├── screens/      # UI screens
-        ├── widgets/      # Feature-specific widgets (optional)
-        └── repositories/ # API/data layer (optional - see guidelines below)
+    └── github/        # GitHub 저장소 시각화 (메인 기능)
+        ├── controllers/  # Riverpod 상태 관리 (GithubAuthController, ForestController)
+        ├── models/       # 데이터 모델 (GithubRepo, TreeVisualProperties)
+        ├── screens/      # UI 화면 (로그인, 정원, 숲, 상세)
+        ├── widgets/      # 나무 위젯 및 UI 컴포넌트
+        └── repositories/ # GitHub API 연동 및 캐싱
 ```
 
 ### When to Create a Repository Layer
@@ -144,16 +149,16 @@ class GitHubNotifier extends AsyncNotifier<GithubRepoModel> {
 
 ```dart
 // ✅ GOOD: 동기 상태는 NotifierProvider 사용
-final todoProvider = NotifierProvider<TodoController, List<Todo>>(
-  TodoController.new,
+final themeControllerProvider = NotifierProvider<ThemeController, ThemeMode>(
+  ThemeController.new,
 );
 
-class TodoController extends Notifier<List<Todo>> {
+class ThemeController extends Notifier<ThemeMode> {
   @override
-  List<Todo> build() => [];  // 동기 초기값
+  ThemeMode build() => ThemeMode.light;  // 동기 초기값
 
-  void add(String title) {
-    state = [...state, Todo(title)];
+  void toggleTheme() {
+    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
   }
 }
 ```
@@ -162,31 +167,31 @@ class TodoController extends Notifier<List<Todo>> {
 
 ```dart
 // ✅ GOOD: 비동기 상태는 AsyncNotifierProvider 사용
-final userProvider = AsyncNotifierProvider<UserController, User?>(
-  UserController.new,
+final forestProvider = AsyncNotifierProvider<ForestController, List<GithubRepo>>(
+  ForestController.new,
 );
 
-class UserController extends AsyncNotifier<User?> {
-  final _userRepository = UserRepository();
-  final _authRepository = AuthRepository();
+class ForestController extends AsyncNotifier<List<GithubRepo>> {
+  final _githubRepository = GitHubRepository();
 
   @override
-  Future<User?> build() async {
-    // 비동기 초기화 (API 호출, DB 읽기 등)
-    return await _userRepository.getCurrentUser();
+  Future<List<GithubRepo>> build() async {
+    // 비동기 초기화 (GitHub API 호출)
+    final username = ref.watch(githubAuthProvider).username;
+    if (username == null) return [];
+    return await _githubRepository.getUserRepos(username);
   }
 
-  Future<void> signIn(String email, String password) async {
+  Future<void> refresh({bool forceRefresh = false}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      return await _authRepository.signIn(email, password);
+      final username = ref.read(githubAuthProvider).username;
+      if (username == null) return [];
+      return await _githubRepository.getUserRepos(
+        username,
+        forceRefresh: forceRefresh,
+      );
     });
-  }
-
-  Future<void> signOut() async {
-    state = const AsyncLoading();
-    await _authRepository.signOut();
-    state = const AsyncData(null);
   }
 }
 ```
@@ -195,12 +200,15 @@ class UserController extends AsyncNotifier<User?> {
 
 ```dart
 // 동기 Provider
-final todos = ref.watch(todoProvider);
+final themeMode = ref.watch(themeControllerProvider);
 
 // 비동기 Provider
-final userAsync = ref.watch(userProvider);
-userAsync.when(
-  data: (user) => Text(user?.name ?? 'Guest'),
+final reposAsync = ref.watch(forestProvider);
+reposAsync.when(
+  data: (repos) => ListView.builder(
+    itemCount: repos.length,
+    itemBuilder: (context, i) => RepoCard(repos[i]),
+  ),
   loading: () => CircularProgressIndicator(),
   error: (err, stack) => Text('Error: $err'),
 );
@@ -209,10 +217,10 @@ userAsync.when(
 **❌ BAD: 구식 패턴**
 ```dart
 // StateNotifierProvider (Riverpod 2.0 이전)
-final todoProvider = StateNotifierProvider<TodoController, List<Todo>>(...);
+final forestProvider = StateNotifierProvider<ForestController, List<GithubRepo>>(...);
 
 // FutureProvider (간단한 경우 외에는 AsyncNotifierProvider 사용 권장)
-final userProvider = FutureProvider<User?>(...);
+final reposProvider = FutureProvider<List<GithubRepo>>(...);
 ```
 
 ### Riverpod 3.0 주요 기능
@@ -230,39 +238,44 @@ final userProvider = FutureProvider<User?>(...);
 - 앱 재시작 시 복원
 
 ```dart
-// 예: Mutation 사용
-final saveTodoMutation = Mutation<void, String>(
-  (ref, title) async {
-    final todoRepository = TodoRepository();
-    await todoRepository.save(title);
+// 예: Mutation 사용 (실험적 기능)
+final refreshReposMutation = Mutation<void, bool>(
+  (ref, forceRefresh) async {
+    final controller = ref.read(forestProvider.notifier);
+    await controller.refresh(forceRefresh: forceRefresh);
   },
 );
 
 // Widget에서 사용
-ref.read(saveTodoMutation).future('New todo');
-if (saveTodoMutation.isLoading) CircularProgressIndicator();
+ref.read(refreshReposMutation).future(true);  // 강제 새로고침
+if (refreshReposMutation.isLoading) CircularProgressIndicator();
 ```
 
 ### Widget에서 사용
 
 ```dart
 // ✅ GOOD: ConsumerWidget 사용
-class MyScreen extends ConsumerWidget {
-  const MyScreen({super.key});
+class ForestScreen extends ConsumerWidget {
+  const ForestScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(todoProvider);
+    final reposAsync = ref.watch(forestProvider);
 
-    return ListView.builder(
-      itemCount: todos.length,
-      itemBuilder: (context, i) => TodoItem(todos[i]),
+    return reposAsync.when(
+      data: (repos) => GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        itemCount: repos.length,
+        itemBuilder: (context, i) => RepoCard(repos[i]),
+      ),
+      loading: () => CircularProgressIndicator(),
+      error: (err, stack) => ErrorWidget(err),
     );
   }
 }
 
 // ✅ GOOD: 메서드 호출
-ref.read(todoProvider.notifier).add('New todo');
+ref.read(forestProvider.notifier).refresh(forceRefresh: true);
 ```
 
 ## 디자인 시스템
@@ -363,15 +376,16 @@ Padding(padding: EdgeInsets.all(24));
 ### 번역 키 규칙
 
 - 파일 위치: `assets/translations/ko.json`, `assets/translations/en.json`
-- 키 네이밍: `feature.component.text` (예: `todo.add_button`, `common.cancel`)
+- 키 네이밍: `feature.component.text` (예: `github.login_button`, `common.cancel`)
 
 ```dart
 // ✅ GOOD: 번역 키 사용
-Text('todo.add_button'.tr());
-Text('common.welcome'.tr(args: [userName]));
+Text('github.login_button'.tr());
+Text('forest.welcome'.tr(args: [username]));
+Text('common.cancel'.tr());
 
 // ❌ BAD: 하드코딩된 문자열
-Text('추가하기');
+Text('로그인');
 ```
 
 ## 코드 스타일
@@ -379,16 +393,18 @@ Text('추가하기');
 ### 문서화
 
 ```dart
-/// Todo 항목을 관리하는 컨트롤러
+/// GitHub 저장소 목록을 관리하는 컨트롤러
 ///
-/// 추가, 삭제, 완료 상태 변경 기능을 제공합니다.
-class TodoController extends Notifier<List<Todo>> {
-  /// 새로운 할 일을 추가합니다.
+/// 저장소 로드, 새로고침, 통계 계산 기능을 제공합니다.
+class ForestController extends AsyncNotifier<List<GithubRepo>> {
+  /// 저장소 목록을 새로고침합니다.
   ///
-  /// [title]이 비어있으면 추가하지 않습니다.
-  void add(String title) {
-    if (title.isEmpty) return;
-    state = [...state, Todo(title)];
+  /// [forceRefresh]가 true면 캐시를 무시하고 API 호출합니다.
+  Future<void> refresh({bool forceRefresh = false}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return await _githubRepository.getUserRepos(username, forceRefresh: forceRefresh);
+    });
   }
 }
 ```
@@ -426,22 +442,38 @@ linter:
    - `controllers/` - Riverpod 상태 관리
    - `models/` - 데이터 모델
    - `widgets/` - 해당 기능 전용 위젯 (선택)
+   - `repositories/` - API/데이터 계층 (필요 시)
 
 ### 새 화면(Screen) 추가 시
 
 ```dart
-/// [FeatureName] 메인 화면
-class FeatureNameScreen extends ConsumerWidget {
-  /// [FeatureNameScreen] 생성자
-  const FeatureNameScreen({super.key});
+/// GitHub 저장소 상세 화면
+class RepositoryDetailScreen extends ConsumerWidget {
+  /// [RepositoryDetailScreen] 생성자
+  const RepositoryDetailScreen({
+    super.key,
+    required this.repo,
+  });
+
+  /// 저장소 정보
+  final GithubRepo repo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
 
     return Scaffold(
-      appBar: AppBar(title: Text('feature.title'.tr())),
-      body: const Center(child: Text('Content')),
+      appBar: AppBar(title: Text(repo.name)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TreeWidget(repo: repo),
+            SizedBox(height: 24),
+            Text('github.commits'.tr()),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -451,19 +483,27 @@ class FeatureNameScreen extends ConsumerWidget {
 
 **간단한 모델:**
 ```dart
-/// [ModelName] 데이터 모델
-class ModelName {
-  /// [ModelName] 생성자
-  const ModelName({
-    required this.id,
-    required this.name,
+/// 나무 시각적 속성 모델
+class TreeVisualProperties {
+  /// [TreeVisualProperties] 생성자
+  const TreeVisualProperties({
+    required this.stage,
+    required this.variant,
+    required this.activityTier,
+    required this.isCactus,
   });
 
-  /// 고유 식별자
-  final String id;
+  /// 성장 단계 (sprout, bloom, tree)
+  final String stage;
 
-  /// 이름
-  final String name;
+  /// 변종 (색상)
+  final String variant;
+
+  /// 활동 티어 (fresh, warm, cooling, dormant)
+  final String activityTier;
+
+  /// 선인장 모드 여부
+  final bool isCactus;
 }
 ```
 
@@ -555,72 +595,71 @@ lib/
 **Controller (상태 관리)**
 ```dart
 ✅ GOOD:
-- TodoController (동기)
-- UserController (비동기)
-- ThemeController
-- AuthController
+- ForestController (비동기 - GitHub 저장소 목록)
+- GithubAuthController (동기 - 인증 상태)
+- ThemeController (동기 - 테마)
 
 ❌ BAD:
-- TodoNotifier
-- TodoProvider
-- TodoState
+- ForestNotifier
+- ForestProvider
+- ForestState
 ```
 
 **파일명 매핑:**
-- `TodoController` → `todo_controller.dart`
-- `UserProfileController` → `user_profile_controller.dart`
+- `ForestController` → `forest_controller.dart`
+- `GithubAuthController` → `github_auth_controller.dart`
 
 **Screen (화면)**
 ```dart
 ✅ GOOD:
-- SampleScreen
-- HomeScreen
-- UserProfileScreen
+- GithubLoginScreen
+- ForestScreen
+- GardenOverviewScreen
+- RepositoryDetailScreen
 
-파일명: sample_screen.dart
+파일명: github_login_screen.dart, forest_screen.dart
 ```
 
 **Model (데이터)**
 ```dart
 ✅ GOOD:
-- User
-- Todo
-- Product
+- GithubRepo
+- TreeVisualProperties
+- CommitInfo
 
-파일명: user.dart, todo.dart
+파일명: github_repo.dart, tree_visual_properties.dart
 ```
 
 **Widget (재사용 컴포넌트)**
 ```dart
 ✅ GOOD:
-- CustomButton
-- LoadingIndicator
-- UserAvatar
+- TreeWidget
+- RepoCard
+- ForestLoadingWidget
+- StatCard
 
-파일명: custom_button.dart
+파일명: tree_widget.dart, repo_card.dart
 ```
 
 **Repository (데이터 계층)**
 ```dart
 ✅ GOOD:
-- UserRepository
-- TodoRepository
-- AuthRepository
+- GitHubRepository
 
-파일명: user_repository.dart
+파일명: github_repository.dart
 ```
 
 ### Provider 변수명 (camelCase)
 
 ```dart
 ✅ GOOD:
-final todoProvider = NotifierProvider<TodoController, List<Todo>>(...);
-final userProvider = AsyncNotifierProvider<UserController, User?>(...);
+final forestProvider = AsyncNotifierProvider<ForestController, List<GithubRepo>>(...);
+final githubAuthProvider = NotifierProvider<GithubAuthController, AuthState>(...);
 final themeControllerProvider = NotifierProvider<ThemeController, ThemeMode>(...);
 
 ❌ BAD:
-final TodoProvider = ...  (PascalCase)
-final todo_provider = ...  (snake_case)
+final ForestProvider = ...  (PascalCase)
+final forest_provider = ...  (snake_case)
 ```
 
 ## 요약

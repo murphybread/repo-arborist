@@ -1,6 +1,31 @@
-# Blueberry Template
+# Repo Arborist 🌳
 
-Flutter 프로젝트를 빠르게 시작할 수 있는 심플한 템플릿
+GitHub 저장소를 살아있는 숲으로 시각화하는 Flutter 앱
+
+당신의 GitHub 저장소를 아름다운 나무로 표현합니다. 각 저장소는 활동량, 나이, 크기에 따라 다른 모습의 나무로 성장합니다.
+
+## ✨ 주요 기능
+
+### 🌲 나무 시각화
+- **성장 단계**: 저장소 활동량에 따라 새싹 → 꽃 → 나무로 성장
+- **다양한 변종**: 노란색, 파란색, 주황색, 분홍색 꽃과 초록색, 빨간색 나무
+- **선인장 모드**: 365일 이상 활동이 없는 저장소는 선인장으로 변신
+
+### 📊 저장소 통계
+- 총 커밋 수
+- 병합된 Pull Request 수
+- 프로젝트 점수 (커밋 + PR × 5)
+- 최근 활동 내역 (커밋 & PR)
+
+### 🎨 시각적 특징
+- **활동 티어**: 최근 활동에 따른 빛 효과 (Fresh/Warm/Cooling/Dormant)
+- **나이 효과**: 오래된 저장소는 세피아 톤 적용
+- **인터랙티브 정원**: 확대/축소, 드래그로 숲 탐험
+- **자연스러운 애니메이션**: 각 나무가 개별적으로 흔들림
+
+### 🔐 GitHub 인증
+- **Public 모드**: 공개 저장소만 보기 (토큰 불필요)
+- **Token 모드**: Private 저장소 포함 + API 제한 완화 (시간당 5,000회)
 
 ## ⚙️ Setup (설정)
 
@@ -60,17 +85,15 @@ git push --force
 ```
 lib/
 ├── core/
-│   ├── controllers/    # 전역 컨트롤러
-│   └── themes/         # 테마 설정
+│   ├── controllers/    # 전역 컨트롤러 (테마)
+│   └── themes/         # 테마 설정 (AppColors, AppTypography)
 └── features/           # 기능별 모듈
-    ├── todo/
-    │   ├── controllers/
-    │   ├── models/
-    │   └── screens/
-    └── github/         # API 연동 예제
-        ├── controllers/
-        ├── models/
-        └── repositories/
+    └── github/         # GitHub 저장소 시각화
+        ├── controllers/    # 상태 관리 (인증, 숲 데이터)
+        ├── models/         # 데이터 모델 (저장소, 나무)
+        ├── repositories/   # GitHub API 연동
+        ├── screens/        # 화면 (로그인, 정원, 숲, 상세)
+        └── widgets/        # 나무 위젯 및 UI 컴포넌트
 ```
 
 ## 주요 패키지
@@ -78,7 +101,9 @@ lib/
 - `flutter_riverpod: ^3.0.3` - 상태 관리
 - `easy_localization: ^3.0.8` - 다국어 지원
 - `google_fonts: ^6.3.2` - 폰트
-- `http: ^1.2.2` - HTTP 클라이언트
+- `http: ^1.2.2` - GitHub API 클라이언트
+- `hive: ^2.2.3` - 로컬 캐싱 (API 호출 최소화)
+- `flutter_svg: ^2.0.16` - SVG 나무 이미지 렌더링
 - `firebase_core: ^4.2.0` - Firebase 코어
 - `firebase_crashlytics: ^5.0.3` - 크래시 리포팅
 - `pedantic_mono: ^1.34.0` - 린트 규칙
