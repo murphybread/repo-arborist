@@ -14,7 +14,7 @@ import 'package:template/features/github/models/repository_stats_model.dart';
 class GitHubRepository {
   /// GitHubRepository 생성자
   GitHubRepository({LocalCacheService? cacheService})
-      : _cacheService = cacheService ?? LocalCacheService();
+    : _cacheService = cacheService ?? LocalCacheService();
 
   static const _baseUrl = 'https://api.github.com';
   static const _timeout = Duration(seconds: 30); // HTTP 요청 타임아웃
@@ -61,14 +61,16 @@ class GitHubRepository {
     required String token,
   }) async {
     final url = Uri.parse('$_baseUrl/user/repos?per_page=100');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    ).timeout(_timeout);
+    final response = await http
+        .get(
+          url,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        )
+        .timeout(_timeout);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -78,7 +80,10 @@ class GitHubRepository {
 
     final data = jsonDecode(response.body) as List<dynamic>;
     return data
-        .map((json) => GithubRepositoryModel.fromJson(json as Map<String, dynamic>))
+        .map(
+          (json) =>
+              GithubRepositoryModel.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
   }
 
@@ -94,14 +99,18 @@ class GitHubRepository {
     final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
 
     if (kDebugMode) {
-      print('🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}');
+      print(
+        '🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}',
+      );
     }
 
     final url = Uri.parse('$_baseUrl/users/$username/repos?per_page=100');
-    final response = await http.get(
-      url,
-      headers: _getHeaders(token: effectiveToken),
-    ).timeout(_timeout);
+    final response = await http
+        .get(
+          url,
+          headers: _getHeaders(token: effectiveToken),
+        )
+        .timeout(_timeout);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -111,7 +120,10 @@ class GitHubRepository {
 
     final data = jsonDecode(response.body) as List<dynamic>;
     return data
-        .map((json) => GithubRepositoryModel.fromJson(json as Map<String, dynamic>))
+        .map(
+          (json) =>
+              GithubRepositoryModel.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
   }
 
@@ -133,10 +145,12 @@ class GitHubRepository {
     print('[GitHub API] Fetching commits for $owner/$repo');
 
     final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=1');
-    final response = await http.get(
-      url,
-      headers: _getHeaders(token: effectiveToken),
-    ).timeout(_timeout);
+    final response = await http
+        .get(
+          url,
+          headers: _getHeaders(token: effectiveToken),
+        )
+        .timeout(_timeout);
 
     if (response.statusCode == 409) {
       // 빈 레포지토리
@@ -146,7 +160,9 @@ class GitHubRepository {
 
     if (response.statusCode != 200) {
       // 에러가 발생하면 0을 반환합니다
-      print('[GitHub API] Error ${response.statusCode} for $owner/$repo, returning 0');
+      print(
+        '[GitHub API] Error ${response.statusCode} for $owner/$repo, returning 0',
+      );
       return 0;
     }
 
@@ -162,7 +178,9 @@ class GitHubRepository {
 
     // Link 헤더에서 마지막 페이지 번호 파싱
     // 예: <https://api.github.com/repos/owner/repo/commits?per_page=1&page=3500>; rel="last"
-    final lastPageMatch = RegExp(r'page=(\d+)>; rel="last"').firstMatch(linkHeader);
+    final lastPageMatch = RegExp(
+      r'page=(\d+)>; rel="last"',
+    ).firstMatch(linkHeader);
     if (lastPageMatch != null) {
       final totalCommits = int.parse(lastPageMatch.group(1)!);
       print('[GitHub API] $owner/$repo has $totalCommits total commits');
@@ -170,7 +188,9 @@ class GitHubRepository {
     }
 
     // 파싱 실패 시 1을 반환 (최소 1개는 있음)
-    print('[GitHub API] Failed to parse Link header for $owner/$repo, returning 1');
+    print(
+      '[GitHub API] Failed to parse Link header for $owner/$repo, returning 1',
+    );
     return 1;
   }
 
@@ -191,14 +211,18 @@ class GitHubRepository {
       '$_baseUrl/search/issues?q=repo:$owner/$repo+type:pr+is:merged&per_page=1',
     );
     print('[GitHub API] Fetching merged PRs for $owner/$repo');
-    final response = await http.get(
-      url,
-      headers: _getHeaders(token: effectiveToken),
-    ).timeout(_timeout);
+    final response = await http
+        .get(
+          url,
+          headers: _getHeaders(token: effectiveToken),
+        )
+        .timeout(_timeout);
 
     if (response.statusCode != 200) {
       // 에러가 발생하면 0을 반환합니다
-      print('[GitHub API] Error ${response.statusCode} for $owner/$repo PRs, returning 0');
+      print(
+        '[GitHub API] Error ${response.statusCode} for $owner/$repo PRs, returning 0',
+      );
       return 0;
     }
 
@@ -262,8 +286,12 @@ class GitHubRepository {
       print('═══════════════════════════════════════');
       print('🔑 [GitHub API] 토큰 체크');
       print('   - 파라미터 token: ${token != null ? "있음" : "없음"}');
-      print('   - .env GITHUB_TOKEN: ${dotenv.env['GITHUB_TOKEN'] != null ? "있음" : "없음"}');
-      print('   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}');
+      print(
+        '   - .env GITHUB_TOKEN: ${dotenv.env['GITHUB_TOKEN'] != null ? "있음" : "없음"}',
+      );
+      print(
+        '   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}',
+      );
       print('═══════════════════════════════════════');
     }
 
@@ -345,11 +373,15 @@ class GitHubRepository {
     // .env에서 토큰 자동 로드
     final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
 
-    final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=$limit');
-    final response = await http.get(
-      url,
-      headers: _getHeaders(token: effectiveToken),
-    ).timeout(_timeout);
+    final url = Uri.parse(
+      '$_baseUrl/repos/$owner/$repo/commits?per_page=$limit',
+    );
+    final response = await http
+        .get(
+          url,
+          headers: _getHeaders(token: effectiveToken),
+        )
+        .timeout(_timeout);
 
     if (response.statusCode != 200) {
       // 에러 발생 시 빈 리스트 반환
@@ -380,10 +412,12 @@ class GitHubRepository {
     final url = Uri.parse(
       '$_baseUrl/repos/$owner/$repo/pulls?state=closed&sort=updated&direction=desc&per_page=$limit',
     );
-    final response = await http.get(
-      url,
-      headers: _getHeaders(token: effectiveToken),
-    ).timeout(_timeout);
+    final response = await http
+        .get(
+          url,
+          headers: _getHeaders(token: effectiveToken),
+        )
+        .timeout(_timeout);
 
     if (response.statusCode != 200) {
       // 에러 발생 시 빈 리스트 반환

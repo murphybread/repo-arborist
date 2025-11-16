@@ -119,26 +119,54 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
 
               // 트리 이미지
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Center(
                   child: Transform.scale(
-                    scale: widget.repository.activityTier.scaleMultiplier * _getSizeMultiplier(stage),
+                    scale:
+                        widget.repository.activityTier.scaleMultiplier *
+                        _getSizeMultiplier(stage),
                     child: Container(
                       height: 240,
-                      decoration: widget.repository.activityTier.glowIntensity > 0
+                      decoration:
+                          widget.repository.activityTier.glowIntensity > 0
                           ? BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: _getGlowColor()
-                                      .withValues(alpha: widget.repository.activityTier.glowIntensity * 0.6),
-                                  blurRadius: 40 * widget.repository.activityTier.glowIntensity,
-                                  spreadRadius: 10 * widget.repository.activityTier.glowIntensity,
+                                  color: _getGlowColor().withValues(
+                                    alpha:
+                                        widget
+                                            .repository
+                                            .activityTier
+                                            .glowIntensity *
+                                        0.6,
+                                  ),
+                                  blurRadius:
+                                      40 *
+                                      widget
+                                          .repository
+                                          .activityTier
+                                          .glowIntensity,
+                                  spreadRadius:
+                                      10 *
+                                      widget
+                                          .repository
+                                          .activityTier
+                                          .glowIntensity,
                                 ),
                               ],
                             )
                           : null,
                       child: Opacity(
-                        opacity: 0.3 + (widget.repository.activityTier.saturationMultiplier * 0.7),
+                        opacity:
+                            0.3 +
+                            (widget
+                                    .repository
+                                    .activityTier
+                                    .saturationMultiplier *
+                                0.7),
                         child: SvgPicture.asset(
                           _getTreeImagePath(stage, variantIndex),
                           fit: BoxFit.contain,
@@ -209,14 +237,17 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                       )
                     else ...[
                       // 최근 커밋
-                      if (_recentCommits != null && _recentCommits!.isNotEmpty) ...[
+                      if (_recentCommits != null &&
+                          _recentCommits!.isNotEmpty) ...[
                         _SectionHeader(
                           icon: Icons.commit,
                           title: 'Recent Commits',
                           count: _recentCommits!.length,
                         ),
                         const SizedBox(height: 12),
-                        ..._recentCommits!.map((commit) => _CommitItem(commit: commit)),
+                        ..._recentCommits!.map(
+                          (commit) => _CommitItem(commit: commit),
+                        ),
                         const SizedBox(height: 24),
                       ],
 
@@ -549,7 +580,11 @@ class _CommitItem extends StatelessWidget {
           // 작성자와 날짜
           Row(
             children: [
-              const Icon(Icons.person_outline, size: 14, color: Color(0xFF94A3B8)),
+              const Icon(
+                Icons.person_outline,
+                size: 14,
+                color: Color(0xFF94A3B8),
+              ),
               const SizedBox(width: 4),
               Text(
                 commit.author,
@@ -660,7 +695,11 @@ class _PRItem extends StatelessWidget {
           // 작성자와 날짜
           Row(
             children: [
-              const Icon(Icons.person_outline, size: 14, color: Color(0xFF94A3B8)),
+              const Icon(
+                Icons.person_outline,
+                size: 14,
+                color: Color(0xFF94A3B8),
+              ),
               const SizedBox(width: 4),
               Text(
                 pr.author,
@@ -688,5 +727,3 @@ class _PRItem extends StatelessWidget {
     );
   }
 }
-
-

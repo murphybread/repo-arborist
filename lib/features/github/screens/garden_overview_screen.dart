@@ -30,7 +30,9 @@ class GardenOverviewScreen extends ConsumerWidget {
       data: (repos) {
         // created_at 기준으로 정렬 (오래된 것부터)
         final sortedRepos = List<RepositoryStatsModel>.from(repos)
-          ..sort((a, b) => a.repository.createdAt.compareTo(b.repository.createdAt));
+          ..sort(
+            (a, b) => a.repository.createdAt.compareTo(b.repository.createdAt),
+          );
 
         return _GardenView(
           repositories: sortedRepos,
@@ -154,7 +156,9 @@ class _GardenView extends StatelessWidget {
                             minScale: 0.5,
                             maxScale: 4,
                             boundaryMargin: const EdgeInsets.all(200),
-                            child: _NaturalGardenLayout(repositories: repositories),
+                            child: _NaturalGardenLayout(
+                              repositories: repositories,
+                            ),
                           ),
 
                           // "Press anywhere" 힌트 (하단) - 터치 무시하도록 수정
@@ -195,7 +199,8 @@ class _GardenView extends StatelessWidget {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => ForestScreen(token: token),
+                                    builder: (context) =>
+                                        ForestScreen(token: token),
                                   ),
                                 );
                               },
@@ -209,7 +214,9 @@ class _GardenView extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF14B8A6).withValues(alpha: 0.3),
+                                      color: const Color(
+                                        0xFF14B8A6,
+                                      ).withValues(alpha: 0.3),
                                       offset: const Offset(0, 2),
                                       blurRadius: 8,
                                     ),
@@ -328,7 +335,8 @@ class _NaturalGardenLayout extends StatelessWidget {
     final positions = <Offset>[];
 
     // 중앙 정렬을 위한 오프셋 (중심을 왼쪽으로 이동)
-    final offsetX = (width - (cols * spacing)) / 2 + 50; // 왼쪽으로 조금만 이동 (50px 오른쪽)
+    final offsetX =
+        (width - (cols * spacing)) / 2 + 50; // 왼쪽으로 조금만 이동 (50px 오른쪽)
     final offsetY = (height - (rows * spacing)) / 2 + 50; // 패딩 고려
 
     // 중심 좌표
@@ -336,10 +344,12 @@ class _NaturalGardenLayout extends StatelessWidget {
     final centerRow = rows ~/ 2;
 
     // 중심부터 시작
-    positions.add(Offset(
-      offsetX + centerCol * spacing + spacing / 2,
-      offsetY + centerRow * spacing + spacing / 2,
-    ));
+    positions.add(
+      Offset(
+        offsetX + centerCol * spacing + spacing / 2,
+        offsetY + centerRow * spacing + spacing / 2,
+      ),
+    );
 
     if (count <= 1) return positions;
 
@@ -353,10 +363,12 @@ class _NaturalGardenLayout extends StatelessWidget {
       for (var i = 0; i < steps && positions.length < count; i++) {
         x++;
         if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(Offset(
-            offsetX + x * spacing + spacing / 2,
-            offsetY + y * spacing + spacing / 2,
-          ));
+          positions.add(
+            Offset(
+              offsetX + x * spacing + spacing / 2,
+              offsetY + y * spacing + spacing / 2,
+            ),
+          );
         }
       }
 
@@ -364,10 +376,12 @@ class _NaturalGardenLayout extends StatelessWidget {
       for (var i = 0; i < steps && positions.length < count; i++) {
         y++;
         if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(Offset(
-            offsetX + x * spacing + spacing / 2,
-            offsetY + y * spacing + spacing / 2,
-          ));
+          positions.add(
+            Offset(
+              offsetX + x * spacing + spacing / 2,
+              offsetY + y * spacing + spacing / 2,
+            ),
+          );
         }
       }
 
@@ -377,10 +391,12 @@ class _NaturalGardenLayout extends StatelessWidget {
       for (var i = 0; i < steps && positions.length < count; i++) {
         x--;
         if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(Offset(
-            offsetX + x * spacing + spacing / 2,
-            offsetY + y * spacing + spacing / 2,
-          ));
+          positions.add(
+            Offset(
+              offsetX + x * spacing + spacing / 2,
+              offsetY + y * spacing + spacing / 2,
+            ),
+          );
         }
       }
 
@@ -388,10 +404,12 @@ class _NaturalGardenLayout extends StatelessWidget {
       for (var i = 0; i < steps && positions.length < count; i++) {
         y--;
         if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(Offset(
-            offsetX + x * spacing + spacing / 2,
-            offsetY + y * spacing + spacing / 2,
-          ));
+          positions.add(
+            Offset(
+              offsetX + x * spacing + spacing / 2,
+              offsetY + y * spacing + spacing / 2,
+            ),
+          );
         }
       }
 
@@ -440,13 +458,16 @@ class _GardenTreeState extends State<_GardenTree>
 
     // 각 나무마다 다른 각도로 흔들림
     final maxAngle = 0.02 + (widget.index % 3) * 0.005; // 0.02 - 0.03 라디안
-    _swayAnimation = Tween<double>(
-      begin: -maxAngle,
-      end: maxAngle,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _swayAnimation =
+        Tween<double>(
+          begin: -maxAngle,
+          end: maxAngle,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.easeInOut,
+          ),
+        );
   }
 
   @override
@@ -471,7 +492,8 @@ class _GardenTreeState extends State<_GardenTree>
     // 나이 기반 색상 조정 (0년 = 1.0, 10년+ = 0.5)
     final ageInYears = widget.ageInYears;
     final ageFactor = 1.0 - (ageInYears / 10).clamp(0.0, 0.5); // 최대 50% 감소
-    final treeOpacity = (0.3 + (activityTier.saturationMultiplier * 0.7)) * ageFactor;
+    final treeOpacity =
+        (0.3 + (activityTier.saturationMultiplier * 0.7)) * ageFactor;
 
     return AnimatedBuilder(
       animation: _swayAnimation,
@@ -514,33 +536,37 @@ class _GardenTreeState extends State<_GardenTree>
               // 나무 이미지 (글로우 효과 포함)
               // 단계별 크기: 새싹 < 꽃 < 나무
               Transform.scale(
-            scale: _getSizeMultiplier(stage),
-            child: Container(
-              width: widget.size,
-              height: widget.size * 1.2,
-              decoration: glowIntensity > 0
-                  ? BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: _getGlowColor(stage, isCactus)
-                              .withValues(alpha: glowIntensity * 0.6),
-                          blurRadius: 20 * glowIntensity,
-                          spreadRadius: 5 * glowIntensity,
-                        ),
-                      ],
-                    )
-                  : null,
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix(_getAgeColorMatrix(ageFactor)),
-                child: Opacity(
-                  opacity: treeOpacity,
-                  child: SvgPicture.asset(
-                    imagePath,
+                scale: _getSizeMultiplier(stage),
+                child: Container(
+                  width: widget.size,
+                  height: widget.size * 1.2,
+                  decoration: glowIntensity > 0
+                      ? BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: _getGlowColor(
+                                stage,
+                                isCactus,
+                              ).withValues(alpha: glowIntensity * 0.6),
+                              blurRadius: 20 * glowIntensity,
+                              spreadRadius: 5 * glowIntensity,
+                            ),
+                          ],
+                        )
+                      : null,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.matrix(
+                      _getAgeColorMatrix(ageFactor),
+                    ),
+                    child: Opacity(
+                      opacity: treeOpacity,
+                      child: SvgPicture.asset(
+                        imagePath,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
               // 이름표 (그림자 + 텍스트)
               Container(
                 width: widget.size * 0.9,
@@ -643,9 +669,21 @@ class _GardenTreeState extends State<_GardenTree>
 
     return [
       // R  G  B  A  Const
-      0.393 + 0.607 * (1 - sepiaStrength), 0.769 - 0.769 * (1 - sepiaStrength), 0.189 - 0.189 * (1 - sepiaStrength), 0, 0, // R
-      0.349 - 0.349 * (1 - sepiaStrength), 0.686 + 0.314 * (1 - sepiaStrength), 0.168 - 0.168 * (1 - sepiaStrength), 0, 0, // G
-      0.272 - 0.272 * (1 - sepiaStrength), 0.534 - 0.534 * (1 - sepiaStrength), 0.131 + 0.869 * (1 - sepiaStrength), 0, 0, // B
+      0.393 + 0.607 * (1 - sepiaStrength),
+      0.769 - 0.769 * (1 - sepiaStrength),
+      0.189 - 0.189 * (1 - sepiaStrength),
+      0,
+      0, // R
+      0.349 - 0.349 * (1 - sepiaStrength),
+      0.686 + 0.314 * (1 - sepiaStrength),
+      0.168 - 0.168 * (1 - sepiaStrength),
+      0,
+      0, // G
+      0.272 - 0.272 * (1 - sepiaStrength),
+      0.534 - 0.534 * (1 - sepiaStrength),
+      0.131 + 0.869 * (1 - sepiaStrength),
+      0,
+      0, // B
       0, 0, 0, 1, 0, // A
     ];
   }
