@@ -1,7 +1,9 @@
 # Firebase 클라이언트 API 키는 공개 가능 (Firebase Security Rules로 보호됨)
 # https://firebase.google.com/docs/projects/api-keys
-google-services.json:current_key
-GoogleService-Info.plist:API_KEY
+# .gitignore에 포함되어 있으므로 커밋되지 않음
 
 # GitHub Personal Access Token (실제 시크릿)
-.env:GITHUB_TOKEN
+# .gitignore에 포함되어 있으므로 커밋되지 않음
+
+# Firebase 클라이언트 키는 공개 가능 (앱에 포함되어 배포됨)
+lib/firebase_options.dart

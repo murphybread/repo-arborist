@@ -10,7 +10,9 @@ final forestProvider =
 
 /// Forest Controller - Repository 통계를 관리
 class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {
-  final _repository = GitHubRepository();
+  // ✅ Firestore 캐시 사용 중 (클라우드 저장)
+  // 로컬 캐시로 변경하려면: GitHubRepository() 또는 GitHubRepository(useFirestore: false)
+  final _repository = GitHubRepository(useFirestore: true);
 
   @override
   Future<List<RepositoryStatsModel>> build() async {

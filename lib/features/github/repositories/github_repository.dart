@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:template/core/services/cache_service.dart';
+import 'package:template/core/services/firestore_cache_service.dart';
 import 'package:template/core/services/local_cache_service.dart';
 import 'package:template/features/github/models/commit_model.dart';
 import 'package:template/features/github/models/github_repo_model.dart';
@@ -13,14 +15,20 @@ import 'package:template/features/github/models/repository_stats_model.dart';
 /// GitHub Repository API와 통신하는 Repository
 class GitHubRepository {
   /// GitHubRepository 생성자
-  GitHubRepository({LocalCacheService? cacheService})
-      : _cacheService = cacheService ?? LocalCacheService();
+  ///
+  /// [cacheService] 캐시 서비스 (기본값: LocalCacheService)
+  /// [useFirestore] Firestore 캐시 사용 여부 (기본값: false)
+  GitHubRepository({
+    CacheService<Map<String, dynamic>>? cacheService,
+    bool useFirestore = false,
+  }) : _cacheService = cacheService ??
+            (useFirestore ? FirestoreCacheService() : LocalCacheService());
 
   static const _baseUrl = 'https://api.github.com';
   static const _timeout = Duration(seconds: 30); // HTTP 요청 타임아웃
-  static const _cacheDuration = Duration(hours: 1); // 캐시 유효 시간
+  static const _cacheDuration = Duration(hours: 24); // 캐시 유효 시간
 
-  final LocalCacheService _cacheService;
+  final CacheService<Map<String, dynamic>> _cacheService;
 
   /// API 요청 헤더 생성 (token이 있으면 포함, 없으면 public API 사용)
   Map<String, String> _getHeaders({String? token}) {
@@ -272,16 +280,34 @@ class GitHubRepository {
 
     // 캐시 확인 (forceRefresh가 false일 때만)
     if (!forceRefresh) {
-      final cachedStats = await _cacheService.getJsonList<RepositoryStatsModel>(
-        cacheKey,
-        fromJson: RepositoryStatsModel.fromJson,
-      );
+      try {
+        // 5초 타임아웃 - Firestore가 응답 안 하면 빠르게 API로 전환
+        final cachedStats = await _cacheService
+            .getJsonList<RepositoryStatsModel>(
+              cacheKey,
+              fromJson: RepositoryStatsModel.fromJson,
+            )
+            .timeout(
+              const Duration(seconds: 5),
+              onTimeout: () {
+                if (kDebugMode) {
+                  print('[Cache] ⏱️ 캐시 읽기 타임아웃 - API 호출로 전환');
+                }
+                return null;
+              },
+            );
 
-      if (cachedStats != null) {
-        if (kDebugMode) {
-          print('[Cache] 캐시에서 ${cachedStats.length}개 레포 통계 로드');
+        if (cachedStats != null) {
+          if (kDebugMode) {
+            print('[Cache] ✅ 캐시에서 ${cachedStats.length}개 레포 통계 로드');
+          }
+          return cachedStats;
         }
-        return cachedStats;
+      } on Exception catch (e) {
+        if (kDebugMode) {
+          print('[Cache] ❌ 캐시 읽기 실패: $e - API 호출로 전환');
+        }
+        // 캐시 실패해도 계속 진행
       }
     }
 
@@ -316,15 +342,31 @@ class GitHubRepository {
     final stats = await Future.wait(statsFutures);
 
     // 캐시에 저장
-    await _cacheService.setJsonList<RepositoryStatsModel>(
-      cacheKey,
-      stats,
-      ttl: _cacheDuration,
-      toJson: (stat) => stat.toJson(),
-    );
-
     if (kDebugMode) {
-      print('[Cache] ${stats.length}개 레포 통계를 캐시에 저장');
+      print('[Cache] 🔵 캐시 저장 시작...');
+      print('   - cacheKey: $cacheKey');
+      print('   - stats.length: ${stats.length}');
+      print('   - ttl: $_cacheDuration');
+      print('   - cache service: ${_cacheService.runtimeType}');
+    }
+
+    try {
+      await _cacheService.setJsonList<RepositoryStatsModel>(
+        cacheKey,
+        stats,
+        ttl: _cacheDuration,
+        toJson: (stat) => stat.toJson(),
+      );
+
+      if (kDebugMode) {
+        print('[Cache] ✅ ${stats.length}개 레포 통계를 캐시에 저장 완료');
+      }
+    } on Exception catch (e, stack) {
+      if (kDebugMode) {
+        print('[Cache] ❌ 캐시 저장 실패: $e');
+        print('Stack trace: $stack');
+      }
+      // 캐시 저장 실패해도 데이터는 반환
     }
 
     return stats;

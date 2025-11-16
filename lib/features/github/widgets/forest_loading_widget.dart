@@ -346,8 +346,8 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                               child: SizedBox(
                                 width: 87,
                                 height: 100,
-                                child: SvgPicture.asset(
-                                  'assets/images/trees/tree_green.svg',
+                                child: Image.asset(
+                                  'assets/images/trees/maple.png',
                                   fit: BoxFit.contain,
                                 ),
                               ),

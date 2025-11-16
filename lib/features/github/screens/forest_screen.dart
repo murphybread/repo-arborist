@@ -430,10 +430,15 @@ class _RepositoryCard extends StatelessWidget {
                     scale: _getSizeMultiplier(),
                     child: Opacity(
                       opacity: opacity,
-                      child: SvgPicture.asset(
-                        treeImagePath,
-                        fit: BoxFit.contain,
-                      ),
+                      child: treeImagePath.endsWith('.png')
+                          ? Image.asset(
+                              treeImagePath,
+                              fit: BoxFit.contain,
+                            )
+                          : SvgPicture.asset(
+                              treeImagePath,
+                              fit: BoxFit.contain,
+                            ),
                     ),
                   ),
                 ),
@@ -610,8 +615,8 @@ class _RepositoryCard extends StatelessWidget {
         const bloomColors = ['yellow', 'blue', 'orange', 'pink'];
         return 'assets/images/trees/bloom_${bloomColors[index]}.svg';
       case TreeStage.tree:
-        const treeColors = ['green', 'red'];
-        return 'assets/images/trees/tree_${treeColors[index]}.svg';
+        // 모든 tree 단계는 maple.png 사용
+        return 'assets/images/trees/maple.png';
     }
   }
 

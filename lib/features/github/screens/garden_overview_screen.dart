@@ -534,9 +534,9 @@ class _GardenTreeState extends State<_GardenTree>
                 colorFilter: ColorFilter.matrix(_getAgeColorMatrix(ageFactor)),
                 child: Opacity(
                   opacity: treeOpacity,
-                  child: SvgPicture.asset(
-                    imagePath,
-                  ),
+                  child: imagePath.endsWith('.png')
+                      ? Image.asset(imagePath)
+                      : SvgPicture.asset(imagePath),
                 ),
               ),
             ),
@@ -599,11 +599,8 @@ class _GardenTreeState extends State<_GardenTree>
         ];
         return bloomVariants[variantIndex];
       case TreeStage.tree:
-        const treeVariants = [
-          'assets/images/trees/tree_green.svg',
-          'assets/images/trees/tree_red.svg',
-        ];
-        return treeVariants[variantIndex];
+        // 모든 tree 단계는 maple.png 사용
+        return 'assets/images/trees/maple.png';
     }
   }
 

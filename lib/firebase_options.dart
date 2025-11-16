@@ -39,10 +39,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -56,12 +53,13 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: 'YOUR_WEB_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'YOUR_AUTH_DOMAIN',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyBBmhdiguNcO9Kiz-MEUrt3_LT-P1rn8P4',
+    appId: '1:363758710643:web:40bc6f3b9280a5ff4e1f06',
+    messagingSenderId: '363758710643',
+    projectId: 'chickentone-a0f5c',
+    authDomain: 'chickentone-a0f5c.firebaseapp.com',
+    storageBucket: 'chickentone-a0f5c.firebasestorage.app',
+    measurementId: 'G-DH6CKQ3HKX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -88,5 +86,16 @@ class DefaultFirebaseOptions {
     projectId: 'YOUR_PROJECT_ID',
     storageBucket: 'YOUR_STORAGE_BUCKET',
     iosBundleId: 'YOUR_MACOS_BUNDLE_ID',
+  );
+
+  // Windows는 Web 설정을 사용 (FlutterFire는 Windows 공식 미지원)
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBBmhdiguNcO9Kiz-MEUrt3_LT-P1rn8P4',
+    appId: '1:363758710643:web:40bc6f3b9280a5ff4e1f06',
+    messagingSenderId: '363758710643',
+    projectId: 'chickentone-a0f5c',
+    storageBucket: 'chickentone-a0f5c.firebasestorage.app',
+    authDomain: 'chickentone-a0f5c.firebaseapp.com',
+    measurementId: 'G-DH6CKQ3HKX',
   );
 }

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:template/core/services/firestore_cache_service.dart';
 import 'package:template/core/services/local_cache_service.dart';
 import 'package:template/firebase_options.dart';
 
@@ -18,11 +19,14 @@ class AppSetup {
   /// Firebase 활성화 여부
   static const enableFirebase = true;
 
+  /// Firestore 캐시 사용 여부
+  static const enableFirestoreCache = true;
+
   /// 앱 초기화
   static Future<void> initialize() async {
     await _initializeDotEnv();
-    await _initializeCache();
     await _initializeFirebase();
+    await _initializeCache();
   }
 
   /// 환경변수 초기화
@@ -43,14 +47,24 @@ class AppSetup {
   /// 로컬 캐시 초기화
   static Future<void> _initializeCache() async {
     try {
-      final cacheService = LocalCacheService();
-      await cacheService.init();
+      // Hive 로컬 캐시 초기화
+      final localCache = LocalCacheService();
+      await localCache.init();
       if (kDebugMode) {
-        print('로컬 캐시 초기화 완료');
+        print('로컬 캐시 (Hive) 초기화 완료');
+      }
+
+      // Firestore 캐시 초기화 (선택적)
+      if (enableFirebase && enableFirestoreCache) {
+        final firestoreCache = FirestoreCacheService();
+        await firestoreCache.init();
+        if (kDebugMode) {
+          print('Firestore 캐시 초기화 완료');
+        }
       }
     } catch (e, stack) {
       if (kDebugMode) {
-        print('로컬 캐시 초기화 실패: $e');
+        print('캐시 초기화 실패: $e');
         print('Stack trace: $stack');
       }
       rethrow;

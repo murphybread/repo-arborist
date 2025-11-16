@@ -28,4 +28,46 @@ abstract class CacheService<T> {
   /// [key] 확인할 캐시 키
   /// 만료되었거나 없으면 true 반환
   Future<bool> isExpired(String key);
+
+  /// JSON으로 인코딩하여 저장
+  ///
+  /// [key] 캐시 키
+  /// [data] 저장할 객체 (toJson() 메서드 필요)
+  /// [ttl] Time To Live
+  Future<void> setJson<TData>(
+    String key,
+    TData data, {
+    Duration? ttl,
+    required Map<String, dynamic> Function(TData) toJson,
+  });
+
+  /// JSON에서 디코딩하여 가져오기
+  ///
+  /// [key] 캐시 키
+  /// [fromJson] JSON에서 객체로 변환하는 함수
+  Future<TData?> getJson<TData>(
+    String key, {
+    required TData Function(Map<String, dynamic>) fromJson,
+  });
+
+  /// JSON 리스트로 인코딩하여 저장
+  ///
+  /// [key] 캐시 키
+  /// [dataList] 저장할 객체 리스트
+  /// [ttl] Time To Live
+  Future<void> setJsonList<TData>(
+    String key,
+    List<TData> dataList, {
+    Duration? ttl,
+    required Map<String, dynamic> Function(TData) toJson,
+  });
+
+  /// JSON 리스트에서 디코딩하여 가져오기
+  ///
+  /// [key] 캐시 키
+  /// [fromJson] JSON에서 객체로 변환하는 함수
+  Future<List<TData>?> getJsonList<TData>(
+    String key, {
+    required TData Function(Map<String, dynamic>) fromJson,
+  });
 }
