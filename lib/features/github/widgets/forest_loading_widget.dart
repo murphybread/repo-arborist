@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template/features/github/controllers/forest_controller.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
 import 'package:template/features/github/screens/garden_overview_screen.dart';
@@ -318,9 +317,10 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                               child: SizedBox(
                                 width: 87,
                                 height: 100,
-                                child: SvgPicture.asset(
-                                  'assets/images/trees/sprout.svg',
+                                child: Image.asset(
+                                  'assets/images/trees/sprout_dot.png',
                                   fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.none,
                                 ),
                               ),
                             ),
@@ -332,9 +332,10 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                               child: SizedBox(
                                 width: 80,
                                 height: 80,
-                                child: SvgPicture.asset(
-                                  'assets/images/trees/bloom_yellow.svg',
+                                child: Image.asset(
+                                  'assets/images/trees/bloom_orange_dot.png',
                                   fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.none,
                                 ),
                               ),
                             ),

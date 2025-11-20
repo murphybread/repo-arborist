@@ -535,7 +535,10 @@ class _GardenTreeState extends State<_GardenTree>
                 child: Opacity(
                   opacity: treeOpacity,
                   child: imagePath.endsWith('.png')
-                      ? Image.asset(imagePath)
+                      ? Image.asset(
+                          imagePath,
+                          filterQuality: FilterQuality.none,
+                        )
                       : SvgPicture.asset(imagePath),
                 ),
               ),
@@ -589,15 +592,13 @@ class _GardenTreeState extends State<_GardenTree>
     // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
-        return 'assets/images/trees/sprout.svg';
+        return 'assets/images/trees/sprout_dot.png';
       case TreeStage.bloom:
         const bloomVariants = [
-          'assets/images/trees/bloom_yellow.svg',
-          'assets/images/trees/bloom_blue.svg',
-          'assets/images/trees/bloom_orange.svg',
-          'assets/images/trees/bloom_pink.svg',
+          'assets/images/trees/bloom_orange_dot.png',
+          'assets/images/trees/bloom_purple_dot.png',
         ];
-        return bloomVariants[variantIndex];
+        return bloomVariants[variantIndex % bloomVariants.length];
       case TreeStage.tree:
         // 모든 tree 단계는 maple.png 사용
         return 'assets/images/trees/maple.png';

@@ -610,10 +610,10 @@ class _RepositoryCard extends StatelessWidget {
     // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
-        return 'assets/images/trees/sprout.svg';
+        return 'assets/images/trees/sprout_dot.png';
       case TreeStage.bloom:
-        const bloomColors = ['yellow', 'blue', 'orange', 'pink'];
-        return 'assets/images/trees/bloom_${bloomColors[index]}.svg';
+        const bloomColors = ['orange', 'purple'];
+        return 'assets/images/trees/bloom_${bloomColors[index % bloomColors.length]}_dot.png';
       case TreeStage.tree:
         // 모든 tree 단계는 maple.png 사용
         return 'assets/images/trees/maple.png';

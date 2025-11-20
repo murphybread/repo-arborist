@@ -284,21 +284,16 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
     // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
-        return 'assets/images/trees/sprout.svg';
+        return 'assets/images/trees/sprout_dot.png';
       case TreeStage.bloom:
         const bloomVariants = [
-          'assets/images/trees/bloom_yellow.svg',
-          'assets/images/trees/bloom_blue.svg',
-          'assets/images/trees/bloom_orange.svg',
-          'assets/images/trees/bloom_pink.svg',
+          'assets/images/trees/bloom_orange_dot.png',
+          'assets/images/trees/bloom_purple_dot.png',
         ];
-        return bloomVariants[variantIndex];
+        return bloomVariants[variantIndex % bloomVariants.length];
       case TreeStage.tree:
-        const treeVariants = [
-          'assets/images/trees/tree_green.svg',
-          'assets/images/trees/tree_red.svg',
-        ];
-        return treeVariants[variantIndex];
+        // tree_green, tree_red는 _dot 버전이 없으므로 maple.png 사용
+        return 'assets/images/trees/maple.png';
     }
   }
 
