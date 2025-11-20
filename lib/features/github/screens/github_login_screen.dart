@@ -92,9 +92,7 @@ class _GithubLoginScreenState extends ConsumerState<GithubLoginScreen> {
 
     try {
       // 토큰으로 사용자 인증
-      await ref
-          .read(githubAuthProvider.notifier)
-          .authenticateWithToken(token);
+      await ref.read(githubAuthProvider.notifier).authenticateWithToken(token);
 
       if (mounted) {
         final authState = ref.read(githubAuthProvider);
@@ -239,26 +237,27 @@ class _GithubLoginScreenState extends ConsumerState<GithubLoginScreen> {
                         onPressed: _isLoading
                             ? null
                             : (_selectedTabIndex == 0
-                                ? _handleUsernameLogin
-                                : _handleTokenLogin),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF14B8A6),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          elevation: 0,
-                          shadowColor: const Color(0xFF14B8A6),
-                        ).copyWith(
-                          shadowColor: WidgetStateProperty.all(
-                            const Color(0xFF14B8A6),
-                          ),
-                          elevation: WidgetStateProperty.all(20),
-                        ),
+                                  ? _handleUsernameLogin
+                                  : _handleTokenLogin),
+                        style:
+                            ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF14B8A6),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              elevation: 0,
+                              shadowColor: const Color(0xFF14B8A6),
+                            ).copyWith(
+                              shadowColor: WidgetStateProperty.all(
+                                const Color(0xFF14B8A6),
+                              ),
+                              elevation: WidgetStateProperty.all(20),
+                            ),
                         child: _isLoading
                             ? const SizedBox(
                                 height: 24,
@@ -506,7 +505,9 @@ class _TabButton extends StatelessWidget {
             fontFamily: 'Inter',
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: isSelected ? const Color(0xFF14B8A6) : const Color(0xFF64748B),
+            color: isSelected
+                ? const Color(0xFF14B8A6)
+                : const Color(0xFF64748B),
           ),
         ),
       ),

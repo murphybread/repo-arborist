@@ -20,7 +20,8 @@ class ForestLoadingWidget extends ConsumerStatefulWidget {
   final String? username;
 
   @override
-  ConsumerState<ForestLoadingWidget> createState() => _ForestLoadingWidgetState();
+  ConsumerState<ForestLoadingWidget> createState() =>
+      _ForestLoadingWidgetState();
 }
 
 class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
@@ -108,10 +109,12 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
     print('   - token: ${widget.token != null ? "있음" : "없음"}');
     print('   - username: ${widget.username}');
 
-    ref.read(forestProvider.notifier).loadRepositoryStats(
-      token: widget.token,
-      username: widget.username,
-    );
+    ref
+        .read(forestProvider.notifier)
+        .loadRepositoryStats(
+          token: widget.token,
+          username: widget.username,
+        );
 
     print('🟢 [ForestLoading] loadRepositoryStats 호출 완료');
 
@@ -402,8 +405,9 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                                       borderRadius: BorderRadius.circular(9999),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFFDCFCE7)
-                                              .withValues(alpha: 0.7),
+                                          color: const Color(
+                                            0xFFDCFCE7,
+                                          ).withValues(alpha: 0.7),
                                           offset: const Offset(0, 10),
                                           blurRadius: 30,
                                           spreadRadius: -10,

@@ -83,7 +83,10 @@ class ForestScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildForestView(BuildContext context, List<RepositoryStatsModel> repos) {
+  Widget _buildForestView(
+    BuildContext context,
+    List<RepositoryStatsModel> repos,
+  ) {
     if (repos.isEmpty) {
       return Center(
         child: Padding(
@@ -184,14 +187,16 @@ class ForestScreen extends ConsumerWidget {
                             ),
                             actions: [
                               TextButton(
-                                onPressed: () => Navigator.of(dialogContext).pop(false),
+                                onPressed: () =>
+                                    Navigator.of(dialogContext).pop(false),
                                 child: const Text(
                                   'Cancel',
                                   style: TextStyle(color: Color(0xFF94A3B8)),
                                 ),
                               ),
                               TextButton(
-                                onPressed: () => Navigator.of(dialogContext).pop(true),
+                                onPressed: () =>
+                                    Navigator.of(dialogContext).pop(true),
                                 child: const Text(
                                   'Logout',
                                   style: TextStyle(color: Color(0xFFF43F5E)),
@@ -381,117 +386,119 @@ class _RepositoryCard extends StatelessWidget {
       child: Transform.scale(
         scale: scale,
         child: Container(
-        decoration: BoxDecoration(
-          gradient: bgGradient,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: borderColor,
-            width: 2,
-          ),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x1A000000),
-              offset: Offset(0, 2),
-              blurRadius: 8,
+          decoration: BoxDecoration(
+            gradient: bgGradient,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: borderColor,
+              width: 2,
             ),
-          ],
-        ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Tree Image with better background
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.center,
-                  radius: 0.8,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.05),
-                    Colors.transparent,
-                  ],
-                ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1A000000),
+                offset: Offset(0, 2),
+                blurRadius: 8,
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 34, 24, 26),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Tree Image with better background
+              Expanded(
                 child: Container(
-                  decoration: glowIntensity > 0
-                      ? BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: glowColor.withValues(alpha: glowIntensity * 0.8),
-                              blurRadius: 50 * glowIntensity,
-                              spreadRadius: 10 * glowIntensity,
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: Transform.scale(
-                    scale: _getSizeMultiplier(),
-                    child: Opacity(
-                      opacity: opacity,
-                      child: treeImagePath.endsWith('.png')
-                          ? Image.asset(
-                              treeImagePath,
-                              fit: BoxFit.contain,
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 0.8,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.05),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 34, 24, 26),
+                    child: Container(
+                      decoration: glowIntensity > 0
+                          ? BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: glowColor.withValues(
+                                    alpha: glowIntensity * 0.8,
+                                  ),
+                                  blurRadius: 50 * glowIntensity,
+                                  spreadRadius: 10 * glowIntensity,
+                                ),
+                              ],
                             )
-                          : SvgPicture.asset(
-                              treeImagePath,
-                              fit: BoxFit.contain,
-                            ),
+                          : null,
+                      child: Transform.scale(
+                        scale: _getSizeMultiplier(),
+                        child: Opacity(
+                          opacity: opacity,
+                          child: treeImagePath.endsWith('.png')
+                              ? Image.asset(
+                                  treeImagePath,
+                                  fit: BoxFit.contain,
+                                )
+                              : SvgPicture.asset(
+                                  treeImagePath,
+                                  fit: BoxFit.contain,
+                                ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
 
-          // Repository Info with clearer background
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.2),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
+              // Repository Info with clearer background
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Repository Name
+                    Text(
+                      repository.repository.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        height: 1.25,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+
+                    // Stats
+                    Text(
+                      _getStatsText(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                        height: 1.4,
+                        color: const Color(0xFFCBD5E1),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Repository Name
-                Text(
-                  repository.repository.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    height: 1.25,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 6),
-
-                // Stats
-                Text(
-                  _getStatsText(),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 11,
-                    height: 1.4,
-                    color: const Color(0xFFCBD5E1),
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-        ],
-      ),
         ),
       ),
     );
