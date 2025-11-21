@@ -5,8 +5,8 @@ import 'package:template/features/github/repositories/github_repository.dart';
 /// Forest 데이터를 관리하는 Provider
 final forestProvider =
     AsyncNotifierProvider<ForestController, List<RepositoryStatsModel>>(
-  ForestController.new,
-);
+      ForestController.new,
+    );
 
 /// Forest Controller - Repository 통계를 관리
 class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {

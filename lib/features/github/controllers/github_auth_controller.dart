@@ -5,8 +5,8 @@ import 'package:template/features/github/repositories/github_user_repository.dar
 /// GitHub 인증 상태를 관리하는 Provider
 final githubAuthProvider =
     AsyncNotifierProvider<GitHubAuthController, GithubUserModel?>(
-  GitHubAuthController.new,
-);
+      GitHubAuthController.new,
+    );
 
 /// GitHub 인증을 관리하는 Controller
 class GitHubAuthController extends AsyncNotifier<GithubUserModel?> {

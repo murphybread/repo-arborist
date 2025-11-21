@@ -49,7 +49,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
             const Duration(seconds: 10),
             onTimeout: () {
               if (kDebugMode) {
-                print('[FirestoreCacheService] ⏱️ get 타임아웃 ($key) - 오프라인 상태일 수 있음');
+                print(
+                  '[FirestoreCacheService] ⏱️ get 타임아웃 ($key) - 오프라인 상태일 수 있음',
+                );
               }
               throw Exception('Firestore get timeout');
             },
@@ -122,7 +124,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
             const Duration(seconds: 10),
             onTimeout: () {
               if (kDebugMode) {
-                print('[FirestoreCacheService] ⏱️ set 타임아웃 ($key) - 오프라인 상태일 수 있음');
+                print(
+                  '[FirestoreCacheService] ⏱️ set 타임아웃 ($key) - 오프라인 상태일 수 있음',
+                );
               }
               throw Exception('Firestore set timeout');
             },
@@ -195,7 +199,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
             const Duration(seconds: 10),
             onTimeout: () {
               if (kDebugMode) {
-                print('[FirestoreCacheService] ⏱️ isExpired 타임아웃 ($key) - 오프라인 상태일 수 있음');
+                print(
+                  '[FirestoreCacheService] ⏱️ isExpired 타임아웃 ($key) - 오프라인 상태일 수 있음',
+                );
               }
               throw Exception('Firestore isExpired timeout');
             },
