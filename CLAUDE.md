@@ -680,3 +680,11 @@ final forest_provider = ...  (snake_case)
   - Provider 변수: camelCase + Provider 접미사
 - **스타일**: 심플, const 최대 활용, 문서화
 - **모델**: 간단한 경우 plain class, 복잡한 경우 freezed 사용
+
+로그 출력 가이드 (debugPrint)
+if (kDebugMode) print() 대신 **debugPrint()**를 사용하여, 불필요한 조건문 없이 코드를 간결하게 유지하세요.
+안드로이드에서 긴 로그가 잘리는 현상을 방지하고, 출력 속도를 조절(Throttling)하여 앱 버벅임 없이 안전하게 디버깅할 수 있습니다.
+
+리소스 관리 가이드 (flutter_gen)
+이미지 경로를 문자열('assets/...')로 하드코딩하지 말고, **flutter_gen**으로 생성된 변수(Assets.images...)를 사용하세요.
+오타 발생 시 실행 전(컴파일 타임)에 즉시 에러를 잡아주며, 자동완성 기능을 통해 개발 속도와 유지보수 효율을 극대화합니다.
