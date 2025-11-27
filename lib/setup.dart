@@ -32,15 +32,11 @@ class AppSetup {
   /// 환경변수 초기화
   static Future<void> _initializeDotEnv() async {
     try {
-      await dotenv.load();
-      if (kDebugMode) {
-        print('환경변수 로드 완료');
-      }
-    } on Exception catch (e) {
-      if (kDebugMode) {
-        print('환경변수 로드 실패 (선택사항): $e');
-      }
-      // .env 파일이 없어도 앱은 정상 동작
+      await dotenv.load(fileName: '.env');
+      debugPrint('환경변수 로드 완료');
+    } catch (e) {
+      // .env 파일이 없어도 앱은 정상 동작 (CI/CD, 테스트 환경)
+      debugPrint('환경변수 로드 실패 (선택사항): $e');
     }
   }
 
@@ -50,23 +46,17 @@ class AppSetup {
       // Hive 로컬 캐시 초기화
       final localCache = LocalCacheService();
       await localCache.init();
-      if (kDebugMode) {
-        print('로컬 캐시 (Hive) 초기화 완료');
-      }
+      debugPrint('로컬 캐시 (Hive) 초기화 완료');
 
       // Firestore 캐시 초기화 (선택적)
       if (enableFirebase && enableFirestoreCache) {
         final firestoreCache = FirestoreCacheService();
         await firestoreCache.init();
-        if (kDebugMode) {
-          print('Firestore 캐시 초기화 완료');
-        }
+        debugPrint('Firestore 캐시 초기화 완료');
       }
     } catch (e, stack) {
-      if (kDebugMode) {
-        print('캐시 초기화 실패: $e');
-        print('Stack trace: $stack');
-      }
+      debugPrint('캐시 초기화 실패: $e');
+      debugPrint('Stack trace: $stack');
       rethrow;
     }
   }
@@ -74,9 +64,7 @@ class AppSetup {
   /// Firebase 초기화
   static Future<void> _initializeFirebase() async {
     if (!enableFirebase) {
-      if (kDebugMode) {
-        print('Firebase가 비활성화되어 있습니다 (템플릿 모드)');
-      }
+      debugPrint('Firebase가 비활성화되어 있습니다 (템플릿 모드)');
       return;
     }
 
@@ -96,14 +84,10 @@ class AppSetup {
         return true;
       };
 
-      if (kDebugMode) {
-        print('Firebase 초기화 완료');
-      }
+      debugPrint('Firebase 초기화 완료');
     } catch (e, stack) {
-      if (kDebugMode) {
-        print('Firebase 초기화 실패: $e');
-        print('Stack trace: $stack');
-      }
+      debugPrint('Firebase 초기화 실패: $e');
+      debugPrint('Stack trace: $stack');
       rethrow;
     }
   }
@@ -114,9 +98,9 @@ class AppSetup {
   static void handleZoneError(Object error, StackTrace stack) {
     if (enableFirebase) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    } else if (kDebugMode) {
-      print('Uncaught error: $error');
-      print('Stack trace: $stack');
+    } else {
+      debugPrint('Uncaught error: $error');
+      debugPrint('Stack trace: $stack');
     }
   }
 }

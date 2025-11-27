@@ -9,50 +9,73 @@ import 'package:template/core/services/cache_service.dart';
 /// 로컬 캐시(Hive)와 달리 클라우드 저장소에 데이터를 보관하여
 /// 여러 기기 간 동기화가 가능합니다.
 class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
+  /// 싱글톤 인스턴스
+  factory FirestoreCacheService() {
+    return _instance;
+  }
+
+  FirestoreCacheService._internal();
+
+  static final _instance = FirestoreCacheService._internal();
+
   /// Firestore 인스턴스 (Database ID: githubjson)
-  final FirebaseFirestore _firestore = FirebaseFirestore.instanceFor(
-    app: Firebase.app(),
-    databaseId: 'githubjson',
-  );
+  FirebaseFirestore? _firestore;
 
   /// 캐시 컬렉션 이름
   static const String _collectionName = 'cache';
 
   /// Firestore 초기화 및 오프라인 지속성 설정
   Future<void> init() async {
+    if (_firestore != null) {
+      return; // 이미 초기화됨
+    }
+
     try {
+      _firestore = FirebaseFirestore.instanceFor(
+        app: Firebase.app(),
+        databaseId: 'githubjson',
+      );
+
       // Windows/Desktop에서는 오프라인 지속성 비활성화
       // (mobile에서만 제대로 동작)
-      _firestore.settings = const Settings(
+      _firestore!.settings = const Settings(
         persistenceEnabled: false,
       );
 
       if (kDebugMode) {
-        print('[FirestoreCacheService] 초기화 완료 (오프라인 지속성: 비활성화)');
+        debugPrint('[FirestoreCacheService] 초기화 완료 (오프라인 지속성: 비활성화)');
       }
     } on Exception catch (e) {
       if (kDebugMode) {
-        print('[FirestoreCacheService] 초기화 실패: $e');
+        debugPrint('[FirestoreCacheService] 초기화 실패: $e');
       }
+      rethrow;
+    }
+  }
+
+  /// Firestore가 초기화되었는지 확인
+  Future<void> _ensureInitialized() async {
+    if (_firestore == null) {
+      await init();
     }
   }
 
   @override
   Future<Map<String, dynamic>?> get(String key) async {
+    await _ensureInitialized();
+
     try {
       // 10초 타임아웃 설정
-      final doc = await _firestore
+      final doc = await _firestore!
           .collection(_collectionName)
           .doc(key)
           .get()
           .timeout(
             const Duration(seconds: 10),
             onTimeout: () {
-              if (kDebugMode) {
-                print(
-                  '[FirestoreCacheService] ⏱️ get 타임아웃 ($key) - 오프라인 상태일 수 있음',
-                );
-              }
+              debugPrint(
+                '[FirestoreCacheService] ⏱️ get 타임아웃 ($key) - 오프라인 상태일 수 있음',
+              );
               throw Exception('Firestore get timeout');
             },
           );
@@ -71,9 +94,7 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
       if (expiresAt != null) {
         final now = DateTime.now();
         if (now.isAfter(expiresAt.toDate())) {
-          if (kDebugMode) {
-            print('[FirestoreCacheService] ⏰ 캐시 만료됨 ($key) - 삭제 후 null 반환');
-          }
+          debugPrint('[FirestoreCacheService] ⏰ 캐시 만료됨 ($key) - 삭제 후 null 반환');
           // 백그라운드에서 삭제 (await 하지 않음 - fire-and-forget)
           delete(key).ignore();
           return null;
@@ -88,9 +109,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
         if (errorMessage.contains('unavailable') ||
             errorMessage.contains('offline') ||
             errorMessage.contains('timeout')) {
-          print('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 읽기 건너뜀');
+          debugPrint('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 읽기 건너뜀');
         } else {
-          print('[FirestoreCacheService] get 실패 ($key): $e');
+          debugPrint('[FirestoreCacheService] get 실패 ($key): $e');
         }
       }
       return null;
@@ -103,6 +124,8 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
     Map<String, dynamic> value, {
     Duration? ttl,
   }) async {
+    await _ensureInitialized();
+
     try {
       final data = <String, dynamic>{
         'value': value,
@@ -116,34 +139,30 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
       }
 
       // 10초 타임아웃 설정
-      await _firestore
+      await _firestore!
           .collection(_collectionName)
           .doc(key)
           .set(data)
           .timeout(
             const Duration(seconds: 10),
             onTimeout: () {
-              if (kDebugMode) {
-                print(
-                  '[FirestoreCacheService] ⏱️ set 타임아웃 ($key) - 오프라인 상태일 수 있음',
-                );
-              }
+              debugPrint(
+                '[FirestoreCacheService] ⏱️ set 타임아웃 ($key) - 오프라인 상태일 수 있음',
+              );
               throw Exception('Firestore set timeout');
             },
           );
 
-      if (kDebugMode) {
-        print('[FirestoreCacheService] 캐시 저장: $key (TTL: $ttl)');
-      }
+      debugPrint('[FirestoreCacheService] 캐시 저장: $key (TTL: $ttl)');
     } on Exception catch (e) {
       if (kDebugMode) {
         final errorMessage = e.toString();
         if (errorMessage.contains('unavailable') ||
             errorMessage.contains('offline') ||
             errorMessage.contains('timeout')) {
-          print('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 저장 건너뜀');
+          debugPrint('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 저장 건너뜀');
         } else {
-          print('[FirestoreCacheService] set 실패 ($key): $e');
+          debugPrint('[FirestoreCacheService] set 실패 ($key): $e');
         }
       }
       // 오프라인이어도 예외를 던지지 않음 (앱 계속 동작)
@@ -152,24 +171,24 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
 
   @override
   Future<void> delete(String key) async {
-    try {
-      await _firestore.collection(_collectionName).doc(key).delete();
+    await _ensureInitialized();
 
-      if (kDebugMode) {
-        print('[FirestoreCacheService] 캐시 삭제: $key');
-      }
+    try {
+      await _firestore!.collection(_collectionName).doc(key).delete();
+
+      debugPrint('[FirestoreCacheService] 캐시 삭제: $key');
     } on Exception catch (e) {
-      if (kDebugMode) {
-        print('[FirestoreCacheService] delete 실패 ($key): $e');
-      }
+      debugPrint('[FirestoreCacheService] delete 실패 ($key): $e');
     }
   }
 
   @override
   Future<void> clear() async {
+    await _ensureInitialized();
+
     try {
-      final batch = _firestore.batch();
-      final snapshot = await _firestore.collection(_collectionName).get();
+      final batch = _firestore!.batch();
+      final snapshot = await _firestore!.collection(_collectionName).get();
 
       for (final doc in snapshot.docs) {
         batch.delete(doc.reference);
@@ -177,32 +196,28 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
 
       await batch.commit();
 
-      if (kDebugMode) {
-        print('[FirestoreCacheService] 모든 캐시 삭제 (${snapshot.docs.length}개)');
-      }
+      debugPrint('[FirestoreCacheService] 모든 캐시 삭제 (${snapshot.docs.length}개)');
     } on Exception catch (e) {
-      if (kDebugMode) {
-        print('[FirestoreCacheService] clear 실패: $e');
-      }
+      debugPrint('[FirestoreCacheService] clear 실패: $e');
     }
   }
 
   @override
   Future<bool> isExpired(String key) async {
+    await _ensureInitialized();
+
     try {
       // 10초 타임아웃 설정
-      final doc = await _firestore
+      final doc = await _firestore!
           .collection(_collectionName)
           .doc(key)
           .get()
           .timeout(
             const Duration(seconds: 10),
             onTimeout: () {
-              if (kDebugMode) {
-                print(
-                  '[FirestoreCacheService] ⏱️ isExpired 타임아웃 ($key) - 오프라인 상태일 수 있음',
-                );
-              }
+              debugPrint(
+                '[FirestoreCacheService] ⏱️ isExpired 타임아웃 ($key) - 오프라인 상태일 수 있음',
+              );
               throw Exception('Firestore isExpired timeout');
             },
           );
@@ -229,9 +244,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
         final errorMessage = e.toString();
         if (errorMessage.contains('unavailable') ||
             errorMessage.contains('offline')) {
-          print('[FirestoreCacheService] ⚠️ 오프라인 상태 - 캐시를 만료된 것으로 처리');
+          debugPrint('[FirestoreCacheService] ⚠️ 오프라인 상태 - 캐시를 만료된 것으로 처리');
         } else {
-          print('[FirestoreCacheService] isExpired 실패 ($key): $e');
+          debugPrint('[FirestoreCacheService] isExpired 실패 ($key): $e');
         }
       }
       return true;
@@ -284,18 +299,14 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
     required Map<String, dynamic> Function(T) toJson,
   }) async {
     try {
-      if (kDebugMode) {
-        print('[FirestoreCacheService] 🔵 setJsonList 시작');
-        print('   - key: $key');
-        print('   - dataList.length: ${dataList.length}');
-        print('   - ttl: $ttl');
-      }
+      debugPrint('[FirestoreCacheService] 🔵 setJsonList 시작');
+      debugPrint('   - key: $key');
+      debugPrint('   - dataList.length: ${dataList.length}');
+      debugPrint('   - ttl: $ttl');
 
       final jsonList = dataList.map(toJson).toList();
 
-      if (kDebugMode) {
-        print('[FirestoreCacheService] 🔵 JSON 변환 완료 (${jsonList.length}개)');
-      }
+      debugPrint('[FirestoreCacheService] 🔵 JSON 변환 완료 (${jsonList.length}개)');
 
       await set(
         key,
@@ -303,14 +314,10 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
         ttl: ttl,
       );
 
-      if (kDebugMode) {
-        print('[FirestoreCacheService] ✅ setJsonList 완료');
-      }
+      debugPrint('[FirestoreCacheService] ✅ setJsonList 완료');
     } on Exception catch (e, stack) {
-      if (kDebugMode) {
-        print('[FirestoreCacheService] ❌ setJsonList 실패: $e');
-        print('Stack trace: $stack');
-      }
+      debugPrint('[FirestoreCacheService] ❌ setJsonList 실패: $e');
+      debugPrint('Stack trace: $stack');
       rethrow;
     }
   }

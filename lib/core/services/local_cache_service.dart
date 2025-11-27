@@ -5,6 +5,15 @@ import 'package:template/core/services/cache_service.dart';
 ///
 /// JSON 직렬화 가능한 데이터를 로컬에 캐싱합니다.
 class LocalCacheService implements CacheService<Map<String, dynamic>> {
+  /// 싱글톤 인스턴스
+  factory LocalCacheService() {
+    return _instance;
+  }
+
+  LocalCacheService._internal();
+
+  static final _instance = LocalCacheService._internal();
+
   static const _boxName = 'cache_box';
   static const _metaBoxName = 'cache_meta_box';
 

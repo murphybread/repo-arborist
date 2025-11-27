@@ -107,11 +107,9 @@ class GitHubRepository {
     // .env에서 토큰 자동 로드
     final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
 
-    if (kDebugMode) {
-      print(
-        '🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}',
-      );
-    }
+    debugPrint(
+      '🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}',
+    );
 
     final url = Uri.parse('$_baseUrl/users/$username/repos?per_page=100');
     final response = await http
@@ -151,7 +149,7 @@ class GitHubRepository {
 
     // /commits API를 사용해서 커밋 수 가져오기
     // per_page=1로 설정하고 Link 헤더에서 마지막 페이지 번호를 확인합니다
-    print('[GitHub API] Fetching commits for $owner/$repo');
+    debugPrint('[GitHub API] Fetching commits for $owner/$repo');
 
     final url = Uri.parse('$_baseUrl/repos/$owner/$repo/commits?per_page=1');
     final response = await http
@@ -163,13 +161,13 @@ class GitHubRepository {
 
     if (response.statusCode == 409) {
       // 빈 레포지토리
-      print('[GitHub API] Empty repository for $owner/$repo');
+      debugPrint('[GitHub API] Empty repository for $owner/$repo');
       return 0;
     }
 
     if (response.statusCode != 200) {
       // 에러가 발생하면 0을 반환합니다
-      print(
+      debugPrint(
         '[GitHub API] Error ${response.statusCode} for $owner/$repo, returning 0',
       );
       return 0;
@@ -181,7 +179,7 @@ class GitHubRepository {
       // Link 헤더가 없으면 커밋이 1개 이하
       final data = jsonDecode(response.body) as List<dynamic>;
       final count = data.isEmpty ? 0 : 1;
-      print('[GitHub API] $owner/$repo has $count commit(s) (no pagination)');
+      debugPrint('[GitHub API] $owner/$repo has $count commit(s) (no pagination)');
       return count;
     }
 
@@ -192,12 +190,12 @@ class GitHubRepository {
     ).firstMatch(linkHeader);
     if (lastPageMatch != null) {
       final totalCommits = int.parse(lastPageMatch.group(1)!);
-      print('[GitHub API] $owner/$repo has $totalCommits total commits');
+      debugPrint('[GitHub API] $owner/$repo has $totalCommits total commits');
       return totalCommits;
     }
 
     // 파싱 실패 시 1을 반환 (최소 1개는 있음)
-    print(
+    debugPrint(
       '[GitHub API] Failed to parse Link header for $owner/$repo, returning 1',
     );
     return 1;
@@ -219,7 +217,7 @@ class GitHubRepository {
     final url = Uri.parse(
       '$_baseUrl/search/issues?q=repo:$owner/$repo+type:pr+is:merged&per_page=1',
     );
-    print('[GitHub API] Fetching merged PRs for $owner/$repo');
+    debugPrint('[GitHub API] Fetching merged PRs for $owner/$repo');
     final response = await http
         .get(
           url,
@@ -229,7 +227,7 @@ class GitHubRepository {
 
     if (response.statusCode != 200) {
       // 에러가 발생하면 0을 반환합니다
-      print(
+      debugPrint(
         '[GitHub API] Error ${response.statusCode} for $owner/$repo PRs, returning 0',
       );
       return 0;
@@ -237,7 +235,7 @@ class GitHubRepository {
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     final count = data['total_count'] as int;
-    print('[GitHub API] $owner/$repo has $count merged PRs');
+    debugPrint('[GitHub API] $owner/$repo has $count merged PRs');
     return count;
   }
 
@@ -291,18 +289,16 @@ class GitHubRepository {
     // .env에서 토큰 가져오기 (token 파라미터가 없을 때만)
     final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
 
-    if (kDebugMode) {
-      print('═══════════════════════════════════════');
-      print('🔑 [GitHub API] 토큰 체크');
-      print('   - 파라미터 token: ${token != null ? "있음" : "없음"}');
-      print(
-        '   - .env GITHUB_TOKEN: ${dotenv.env['GITHUB_TOKEN'] != null ? "있음" : "없음"}',
-      );
-      print(
-        '   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}',
-      );
-      print('═══════════════════════════════════════');
-    }
+    debugPrint('═══════════════════════════════════════');
+    debugPrint('🔑 [GitHub API] 토큰 체크');
+    debugPrint('   - 파라미터 token: ${token != null ? "있음" : "없음"}');
+    debugPrint(
+      '   - .env GITHUB_TOKEN: ${dotenv.env['GITHUB_TOKEN'] != null ? "있음" : "없음"}',
+    );
+    debugPrint(
+      '   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}',
+    );
+    debugPrint('═══════════════════════════════════════');
 
     // 캐시 키 생성
     final cacheKey = 'github_stats_${username ?? 'user'}';
@@ -319,31 +315,23 @@ class GitHubRepository {
             .timeout(
               const Duration(seconds: 5),
               onTimeout: () {
-                if (kDebugMode) {
-                  print('[Cache] ⏱️ 캐시 읽기 타임아웃 - API 호출로 전환');
-                }
+                debugPrint('[Cache] ⏱️ 캐시 읽기 타임아웃 - API 호출로 전환');
                 return null;
               },
             );
 
         if (cachedStats != null) {
-          if (kDebugMode) {
-            print('[Cache] ✅ 캐시에서 ${cachedStats.length}개 레포 통계 로드');
-          }
+          debugPrint('[Cache] ✅ 캐시에서 ${cachedStats.length}개 레포 통계 로드');
           return cachedStats;
         }
       } on Exception catch (e) {
-        if (kDebugMode) {
-          print('[Cache] ❌ 캐시 읽기 실패: $e - API 호출로 전환');
-        }
+        debugPrint('[Cache] ❌ 캐시 읽기 실패: $e - API 호출로 전환');
         // 캐시 실패해도 계속 진행
       }
     }
 
     // 캐시가 없거나 forceRefresh인 경우 API 호출
-    if (kDebugMode) {
-      print('[API] GitHub API에서 레포 통계 가져오는 중...');
-    }
+    debugPrint('[API] GitHub API에서 레포 통계 가져오는 중...');
 
     // username이 있으면 해당 사용자의 public repos 조회 (token이 있으면 함께 전달)
     // username이 없고 token만 있으면 내 repos 조회
@@ -371,13 +359,11 @@ class GitHubRepository {
     final stats = await Future.wait(statsFutures);
 
     // 캐시에 저장
-    if (kDebugMode) {
-      print('[Cache] 🔵 캐시 저장 시작...');
-      print('   - cacheKey: $cacheKey');
-      print('   - stats.length: ${stats.length}');
-      print('   - ttl: $_cacheDuration');
-      print('   - cache service: ${_cacheService.runtimeType}');
-    }
+    debugPrint('[Cache] 🔵 캐시 저장 시작...');
+    debugPrint('   - cacheKey: $cacheKey');
+    debugPrint('   - stats.length: ${stats.length}');
+    debugPrint('   - ttl: $_cacheDuration');
+    debugPrint('   - cache service: ${_cacheService.runtimeType}');
 
     try {
       await _cacheService.setJsonList<RepositoryStatsModel>(
@@ -387,14 +373,10 @@ class GitHubRepository {
         toJson: (stat) => stat.toJson(),
       );
 
-      if (kDebugMode) {
-        print('[Cache] ✅ ${stats.length}개 레포 통계를 캐시에 저장 완료');
-      }
+      debugPrint('[Cache] ✅ ${stats.length}개 레포 통계를 캐시에 저장 완료');
     } on Exception catch (e, stack) {
-      if (kDebugMode) {
-        print('[Cache] ❌ 캐시 저장 실패: $e');
-        print('Stack trace: $stack');
-      }
+      debugPrint('[Cache] ❌ 캐시 저장 실패: $e');
+      debugPrint('Stack trace: $stack');
       // 캐시 저장 실패해도 데이터는 반환
     }
 
