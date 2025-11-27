@@ -6,6 +6,7 @@ import 'package:template/features/github/controllers/github_auth_controller.dart
 import 'package:template/features/github/models/repository_stats_model.dart';
 import 'package:template/features/github/screens/github_login_screen.dart';
 import 'package:template/features/github/screens/repository_detail_screen.dart';
+import 'package:template/gen/assets.gen.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerWidget {
@@ -606,24 +607,27 @@ class _RepositoryCard extends StatelessWidget {
     if (isCactus) {
       switch (stage) {
         case TreeStage.sprout:
-          return 'assets/images/trees/cactus_sprout.svg';
+          return Assets.images.trees.cactusSprout.path;
         case TreeStage.bloom:
-          return 'assets/images/trees/cactus_bloom.svg';
+          return Assets.images.trees.cactusBloom.path;
         case TreeStage.tree:
-          return 'assets/images/trees/cactus_tree.svg';
+          return Assets.images.trees.cactusTree.path;
       }
     }
 
     // 일반 나무
     switch (stage) {
       case TreeStage.sprout:
-        return 'assets/images/trees/sprout_dot.png';
+        return Assets.images.trees.sproutDot.path;
       case TreeStage.bloom:
-        const bloomColors = ['orange', 'purple'];
-        return 'assets/images/trees/bloom_${bloomColors[index % bloomColors.length]}_dot.png';
+        final bloomAssets = [
+          Assets.images.trees.bloomOrangeDot.path,
+          Assets.images.trees.bloomPurpleDot.path,
+        ];
+        return bloomAssets[index % bloomAssets.length];
       case TreeStage.tree:
         // 모든 tree 단계는 maple.png 사용
-        return 'assets/images/trees/maple.png';
+        return Assets.images.trees.maple.path;
     }
   }
 
