@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:template/features/github/controllers/forest_controller.dart';
 import 'package:template/features/github/models/repository_stats_model.dart';
 import 'package:template/features/github/screens/garden_overview_screen.dart';
@@ -21,7 +20,8 @@ class ForestLoadingWidget extends ConsumerStatefulWidget {
   final String? username;
 
   @override
-  ConsumerState<ForestLoadingWidget> createState() => _ForestLoadingWidgetState();
+  ConsumerState<ForestLoadingWidget> createState() =>
+      _ForestLoadingWidgetState();
 }
 
 class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
@@ -109,10 +109,12 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
     print('   - token: ${widget.token != null ? "있음" : "없음"}');
     print('   - username: ${widget.username}');
 
-    ref.read(forestProvider.notifier).loadRepositoryStats(
-      token: widget.token,
-      username: widget.username,
-    );
+    ref
+        .read(forestProvider.notifier)
+        .loadRepositoryStats(
+          token: widget.token,
+          username: widget.username,
+        );
 
     print('🟢 [ForestLoading] loadRepositoryStats 호출 완료');
 
@@ -318,9 +320,10 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                               child: SizedBox(
                                 width: 87,
                                 height: 100,
-                                child: SvgPicture.asset(
-                                  'assets/images/trees/sprout.svg',
+                                child: Image.asset(
+                                  'assets/images/trees/sprout_dot.png',
                                   fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.none,
                                 ),
                               ),
                             ),
@@ -332,9 +335,10 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                               child: SizedBox(
                                 width: 80,
                                 height: 80,
-                                child: SvgPicture.asset(
-                                  'assets/images/trees/bloom_yellow.svg',
+                                child: Image.asset(
+                                  'assets/images/trees/bloom_orange_dot.png',
                                   fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.none,
                                 ),
                               ),
                             ),
@@ -401,8 +405,9 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                                       borderRadius: BorderRadius.circular(9999),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFFDCFCE7)
-                                              .withValues(alpha: 0.7),
+                                          color: const Color(
+                                            0xFFDCFCE7,
+                                          ).withValues(alpha: 0.7),
                                           offset: const Offset(0, 10),
                                           blurRadius: 30,
                                           spreadRadius: -10,
