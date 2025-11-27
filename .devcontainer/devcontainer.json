@@ -1,10 +1,6 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/devcontainers/features/flutter:1": {
-      "version": "latest"
-    }
-  },
+  "name": "Flutter",
+  "image": "ghcr.io/cirruslabs/flutter:stable",
   "customizations": {
     "vscode": {
       "extensions": [
