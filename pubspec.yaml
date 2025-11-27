@@ -43,7 +43,6 @@ flutter:
     - assets/translations/
     - assets/images/playground/
     - assets/images/trees/
-    - .env
 flutter_gen:
   output: lib/gen/
   line_length: 80
