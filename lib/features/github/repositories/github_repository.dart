@@ -7,6 +7,7 @@ import 'package:template/core/services/cache_service.dart';
 import 'package:template/core/services/firestore_cache_service.dart';
 import 'package:template/core/services/local_cache_service.dart';
 import 'package:template/features/github/models/commit_model.dart';
+import 'package:template/features/github/models/contributor_model.dart';
 import 'package:template/features/github/models/github_repo_model.dart';
 import 'package:template/features/github/models/github_repository_model.dart';
 import 'package:template/features/github/models/pull_request_model.dart';
@@ -455,5 +456,52 @@ class GitHubRepository {
         .map((json) => PullRequestModel.fromJson(json as Map<String, dynamic>))
         .where((pr) => pr.mergedAt != null)
         .toList();
+  }
+
+  /// Repository의 컨트리뷰터 목록 가져오기
+  ///
+  /// [token] GitHub Personal Access Token (nullable)
+  /// [owner] Repository 소유자
+  /// [repo] Repository 이름
+  /// [limit] 가져올 컨트리뷰터 수 (기본값: 30, 최대 100)
+  Future<List<ContributorModel>> getContributors({
+    String? token,
+    required String owner,
+    required String repo,
+    int limit = 30,
+  }) async {
+    // .env에서 토큰 자동 로드
+    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+
+    // limit는 최대 100으로 제한
+    final perPage = limit > 100 ? 100 : limit;
+
+    final url = Uri.parse(
+      '$_baseUrl/repos/$owner/$repo/contributors?per_page=$perPage',
+    );
+    debugPrint('[GitHub API] Fetching contributors for $owner/$repo');
+
+    final response = await http
+        .get(
+          url,
+          headers: _getHeaders(token: effectiveToken),
+        )
+        .timeout(_timeout);
+
+    if (response.statusCode != 200) {
+      // 에러 발생 시 빈 리스트 반환
+      debugPrint(
+        '[GitHub API] Error ${response.statusCode} for $owner/$repo contributors, returning empty list',
+      );
+      return [];
+    }
+
+    final data = jsonDecode(response.body) as List<dynamic>;
+    final contributors = data
+        .map((json) => ContributorModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+    debugPrint('[GitHub API] $owner/$repo has ${contributors.length} contributors');
+    return contributors;
   }
 }
