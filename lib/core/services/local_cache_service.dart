@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:template/core/services/cache_service.dart';
+import 'package:repo_arborist/core/services/cache_service.dart';
 
 /// 로컬 캐싱 서비스 (Hive 기반)
 ///

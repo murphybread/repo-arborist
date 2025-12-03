@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:template/features/github/models/github_user_model.dart';
+import 'package:repo_arborist/features/github/models/github_user_model.dart';
 
 /// GitHub User API와 통신하는 Repository
 class GitHubUserRepository {

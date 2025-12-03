@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:template/features/todo/models/todo.dart';
+import 'package:repo_arborist/features/todo/models/todo.dart';
 
 /// 할일 리스트 상태 관리
 final todoControllerProvider = NotifierProvider<TodoController, List<Todo>>(

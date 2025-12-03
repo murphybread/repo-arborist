@@ -2,9 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:template/core/services/firestore_cache_service.dart';
-import 'package:template/core/services/local_cache_service.dart';
-import 'package:template/firebase_options.dart';
+import 'package:repo_arborist/core/services/firestore_cache_service.dart';
+import 'package:repo_arborist/core/services/local_cache_service.dart';
+import 'package:repo_arborist/firebase_options.dart';
 
 /// 앱 초기화 및 외부 서비스 설정
 ///

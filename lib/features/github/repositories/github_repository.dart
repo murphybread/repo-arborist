@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:template/core/services/cache_service.dart';
-import 'package:template/core/services/firestore_cache_service.dart';
-import 'package:template/core/services/local_cache_service.dart';
-import 'package:template/features/github/models/commit_model.dart';
-import 'package:template/features/github/models/contributor_model.dart';
-import 'package:template/features/github/models/github_repo_model.dart';
-import 'package:template/features/github/models/github_repository_model.dart';
-import 'package:template/features/github/models/pull_request_model.dart';
-import 'package:template/features/github/models/repository_stats_model.dart';
+import 'package:repo_arborist/core/services/cache_service.dart';
+import 'package:repo_arborist/core/services/firestore_cache_service.dart';
+import 'package:repo_arborist/core/services/local_cache_service.dart';
+import 'package:repo_arborist/features/github/models/commit_model.dart';
+import 'package:repo_arborist/features/github/models/contributor_model.dart';
+import 'package:repo_arborist/features/github/models/github_repo_model.dart';
+import 'package:repo_arborist/features/github/models/github_repository_model.dart';
+import 'package:repo_arborist/features/github/models/pull_request_model.dart';
+import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 
 /// GitHub Repository API와 통신하는 Repository
 class GitHubRepository {

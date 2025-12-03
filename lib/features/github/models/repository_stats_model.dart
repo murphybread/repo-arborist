@@ -1,4 +1,4 @@
-import 'package:template/features/github/models/github_repository_model.dart';
+import 'package:repo_arborist/features/github/models/github_repository_model.dart';
 
 /// Repository 통계 정보를 포함한 모델
 class RepositoryStatsModel {

@@ -10,6 +10,7 @@ class GithubRepositoryModel {
     required this.htmlUrl,
     required this.createdAt,
     required this.pushedAt,
+    this.language,
   });
 
   /// JSON에서 모델로 변환
@@ -25,6 +26,7 @@ class GithubRepositoryModel {
       pushedAt: json['pushed_at'] != null
           ? DateTime.parse(json['pushed_at'] as String)
           : null,
+      language: json['language'] as String?,
     );
   }
 
@@ -52,6 +54,9 @@ class GithubRepositoryModel {
   /// 마지막 푸시 날짜 (최근 커밋 날짜)
   final DateTime? pushedAt;
 
+  /// 주요 프로그래밍 언어 (Dart, JavaScript, Python 등)
+  final String? language;
+
   /// 모델을 JSON으로 변환
   Map<String, dynamic> toJson() {
     return {
@@ -63,6 +68,7 @@ class GithubRepositoryModel {
       'html_url': htmlUrl,
       'created_at': createdAt.toIso8601String(),
       'pushed_at': pushedAt?.toIso8601String(),
+      'language': language,
     };
   }
 }

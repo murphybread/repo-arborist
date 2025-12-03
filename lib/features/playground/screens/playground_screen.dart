@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:template/features/playground/widgets/activity_timeline_card.dart';
-import 'package:template/features/playground/widgets/stat_card.dart';
+import 'package:repo_arborist/features/playground/widgets/activity_timeline_card.dart';
+import 'package:repo_arborist/features/playground/widgets/stat_card.dart';
 
 /// AI Playground 메인 화면
 class PlaygroundScreen extends StatelessWidget {

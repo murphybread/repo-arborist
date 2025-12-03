@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:template/features/github/models/commit_model.dart';
-import 'package:template/features/github/models/pull_request_model.dart';
-import 'package:template/features/github/models/repository_stats_model.dart';
-import 'package:template/features/github/repositories/github_repository.dart';
+import 'package:repo_arborist/features/github/models/commit_model.dart';
+import 'package:repo_arborist/features/github/models/pull_request_model.dart';
+import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
+import 'package:repo_arborist/features/github/repositories/github_repository.dart';
 
 /// Repository detail view screen.
 class RepositoryDetailScreen extends StatefulWidget {

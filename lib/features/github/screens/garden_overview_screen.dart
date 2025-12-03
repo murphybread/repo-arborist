@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:template/features/github/controllers/forest_controller.dart';
-import 'package:template/features/github/models/repository_stats_model.dart';
-import 'package:template/features/github/screens/forest_screen.dart';
+import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
+import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
+import 'package:repo_arborist/features/github/screens/forest_screen.dart';
 
 /// 정원 오버뷰 화면 - 모든 레포지토리를 자연스럽게 배치
 class GardenOverviewScreen extends ConsumerWidget {

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:template/core/services/cache_service.dart';
+import 'package:repo_arborist/core/services/cache_service.dart';
 
 /// Firestore 기반 캐싱 서비스
 ///

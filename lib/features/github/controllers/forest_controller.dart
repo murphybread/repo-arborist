@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template/features/github/models/repository_stats_model.dart';
-import 'package:template/features/github/repositories/github_repository.dart';
+import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
+import 'package:repo_arborist/features/github/repositories/github_repository.dart';
 
 /// Forest 데이터를 관리하는 Provider
 final forestProvider =

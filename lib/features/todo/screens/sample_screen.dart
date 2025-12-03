@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template/core/controllers/theme_controller.dart';
-import 'package:template/core/themes/app_colors.dart';
-import 'package:template/core/themes/app_typography.dart';
-import 'package:template/features/github/controllers/github_controller.dart';
-import 'package:template/features/todo/controllers/todo_controller.dart';
+import 'package:repo_arborist/core/controllers/theme_controller.dart';
+import 'package:repo_arborist/core/themes/app_colors.dart';
+import 'package:repo_arborist/core/themes/app_typography.dart';
+import 'package:repo_arborist/features/github/controllers/github_controller.dart';
+import 'package:repo_arborist/features/todo/controllers/todo_controller.dart';
 
 /// 블루베리 템플릿 샘플 스크린
 class SampleScreen extends ConsumerWidget {

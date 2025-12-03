@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template/features/github/models/github_repo_model.dart';
-import 'package:template/features/github/repositories/github_repository.dart';
+import 'package:repo_arborist/features/github/models/github_repo_model.dart';
+import 'package:repo_arborist/features/github/repositories/github_repository.dart';
 
 /// GitHub 레포지토리 정보를 관리하는 Provider
 final githubProvider = AsyncNotifierProvider<GitHubNotifier, GithubRepoModel>(

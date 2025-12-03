@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template/features/github/controllers/github_auth_controller.dart';
-import 'package:template/features/github/widgets/forest_loading_widget.dart';
+import 'package:repo_arborist/features/github/controllers/github_auth_controller.dart';
+import 'package:repo_arborist/features/github/widgets/forest_loading_widget.dart';
 
 /// GitHub 로그인 화면
 class GithubLoginScreen extends ConsumerStatefulWidget {
@@ -27,7 +27,7 @@ class _GithubLoginScreenState extends ConsumerState<GithubLoginScreen> {
 
   Future<void> _handleUsernameLogin() async {
     final username = _usernameController.text.trim();
-    print('🔵 [Login] Username 입력됨: $username');
+    debugPrint('🔵 [Login] Username 입력됨: $username');
 
     if (username.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,15 +37,15 @@ class _GithubLoginScreenState extends ConsumerState<GithubLoginScreen> {
     }
 
     setState(() => _isLoading = true);
-    print('🔵 [Login] 로딩 시작...');
+    debugPrint('🔵 [Login] 로딩 시작...');
 
     try {
       // Username으로 사용자 인증
-      print('🔵 [Login] authenticateWithUsername 호출 중...');
+      debugPrint('🔵 [Login] authenticateWithUsername 호출 중...');
       await ref
           .read(githubAuthProvider.notifier)
           .authenticateWithUsername(username);
-      print('🔵 [Login] authenticateWithUsername 완료');
+      debugPrint('🔵 [Login] authenticateWithUsername 완료');
 
       if (mounted) {
         final authState = ref.read(githubAuthProvider);

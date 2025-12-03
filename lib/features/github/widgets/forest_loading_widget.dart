@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template/features/github/controllers/forest_controller.dart';
-import 'package:template/features/github/models/repository_stats_model.dart';
-import 'package:template/features/github/screens/garden_overview_screen.dart';
+import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
+import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
+import 'package:repo_arborist/features/github/screens/garden_overview_screen.dart';
 
 /// Forest 생성 중 로딩 위젯
 class ForestLoadingWidget extends ConsumerStatefulWidget {
@@ -105,9 +105,9 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
 
   /// Repository 통계 로드 시작
   void _startLoadingAndNavigation() {
-    print('🟢 [ForestLoading] loadRepositoryStats 호출');
-    print('   - token: ${widget.token != null ? "있음" : "없음"}');
-    print('   - username: ${widget.username}');
+    debugPrint('🟢 [ForestLoading] loadRepositoryStats 호출');
+    debugPrint('   - token: ${widget.token != null ? "있음" : "없음"}');
+    debugPrint('   - username: ${widget.username}');
 
     ref
         .read(forestProvider.notifier)
@@ -116,7 +116,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
           username: widget.username,
         );
 
-    print('🟢 [ForestLoading] loadRepositoryStats 호출 완료');
+    debugPrint('🟢 [ForestLoading] loadRepositoryStats 호출 완료');
 
     // 60초 타임아웃 설정
     Future.delayed(const Duration(seconds: 60), () {
@@ -158,16 +158,22 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
             _hasNavigated = true;
             // 2초 대기 후 네비게이션
             Future.delayed(const Duration(milliseconds: 2000), () {
-              if (mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => GardenOverviewScreen(
-                      token: widget.token,
-                      username: widget.username,
-                    ),
-                  ),
-                );
+              // async gap 후 context 유효성 검사
+              if (!mounted) {
+                return;
               }
+              if (!context.mounted) {
+                return;
+              }
+
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => GardenOverviewScreen(
+                    token: widget.token,
+                    username: widget.username,
+                  ),
+                ),
+              );
             });
           }
         });
