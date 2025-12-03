@@ -1,0 +1,11 @@
+# GitGuardian 설정
+# https://docs.gitguardian.com/internal-repositories-monitoring/integrations/git_hooks/pre_commit
+
+version: 2
+
+paths-ignore:
+  - lib/firebase_options.dart  # Firebase 클라이언트 키 (공개 가능)
+
+matches-ignore:
+  - name: Firebase API Key
+    match: AIzaSy.*  # Firebase API 키 패턴 무시

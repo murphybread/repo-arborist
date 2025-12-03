@@ -282,3 +282,5 @@ ImageMagick이 없는 경우:
 **최종 수정**: 2025-11-21
 **관련 이슈**: PNG 투명 배경 처리 (체크무늬 격자 제거)
 **해결 방법**: Python PIL/Numpy로 밝기 기반 배경 제거 (threshold=180)
+
+kDebugMode는 사용하지말기 debugPrint사용.
