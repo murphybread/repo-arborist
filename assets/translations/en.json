@@ -1,7 +1,117 @@
 {
-  "app_title": "Blueberry TODO",
-  "new_todo": "New Todo",
-  "add": "Add",
-  "cancel": "Cancel",
-  "hint_enter_todo": "Enter a todo"
+  "app_title": "Repo Arborist",
+
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+
+  "error": {
+    "network_title": "Network Error",
+    "network_message": "Please check your internet connection.",
+    "api_title": "API Error",
+    "not_found": "User or repository not found.",
+    "forbidden": "Access forbidden.",
+    "unauthorized": "Authentication failed. Please check your GitHub Token.",
+    "rate_limit": "API rate limit exceeded. Please try again later.",
+    "rate_limit_title": "Rate Limit Exceeded",
+    "rate_limit_message": "GitHub API rate limit (60 requests/hour) exceeded.\n\nUsing a GitHub Personal Access Token increases the limit to 5,000 requests/hour.",
+    "server_error": "Server error occurred. (Code: {})",
+    "user_not_found_title": "User Not Found",
+    "user_not_found_message": "User '{}' not found.\nPlease check the username.",
+    "timeout_title": "Request Timeout",
+    "timeout_message": "Request timed out.\nPlease check your network connection and try again."
+  },
+
+  "empty": {
+    "repositories_title": "No Repositories",
+    "repositories_message": "You don't have any repositories yet.\nCreate a project on GitHub!",
+    "search_title": "No Results",
+    "search_message": "No results found for '{}'.",
+    "no_connection_title": "No Internet Connection",
+    "no_connection_message": "You are not connected to the internet.\nPlease check your connection and try again."
+  },
+
+  "login": {
+    "title": "GitHub Login",
+    "username_label": "GitHub Username",
+    "username_hint": "Enter your username",
+    "token_label": "Personal Access Token (Optional)",
+    "token_hint": "Enter your token",
+    "login_button": "Login",
+    "what_is_token": "What is a Token?",
+    "token_guide_title": "How to Get GitHub Token",
+    "token_guide_message": "1. Login to GitHub.com\n2. Settings > Developer settings\n3. Personal access tokens > Tokens (classic)\n4. Generate new token\n5. Select scope: public_repo\n\n💡 With a token, you can make up to 5,000 requests per hour!",
+    "get_token": "Get Token",
+    "error_empty_username": "Please enter your username"
+  },
+
+  "forest": {
+    "title": "My Code Forest",
+    "loading": "Loading repositories...",
+    "repository_count": "{} repositories",
+    "sort_by": "Sort",
+    "sort_name": "By Name",
+    "sort_updated": "By Recent Activity",
+    "sort_size": "By Size",
+    "filter": "Filter",
+    "filter_all": "All",
+    "filter_language": "By Language"
+  },
+
+  "garden": {
+    "title": "Garden Overview",
+    "total_repositories": "Total Repositories",
+    "total_commits": "Total Commits",
+    "active_repositories": "Active Repositories",
+    "stats": "Statistics"
+  },
+
+  "repository": {
+    "title": "Repository Details",
+    "commits": "Commits",
+    "pull_requests": "Pull Requests",
+    "issues": "Issues",
+    "stars": "Stars",
+    "forks": "Forks",
+    "watchers": "Watchers",
+    "language": "Language",
+    "created": "Created",
+    "updated": "Updated",
+    "size": "Size",
+    "open_in_github": "Open in GitHub"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "dark_mode": "Dark Mode",
+    "language": "Language",
+    "language_korean": "한국어",
+    "language_english": "English",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "licenses": "Open Source Licenses",
+    "app_version": "App Version",
+    "developer_info": "Developer Info",
+    "logout": "Logout",
+    "logout_confirm": "Are you sure you want to logout?"
+  },
+
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Get Started",
+    "page1_title": "Visualize GitHub\nRepositories as Trees",
+    "page1_description": "See your repositories come alive as trees",
+    "page2_title": "Trees Grow with\nYour Activity",
+    "page2_description": "More commits, PRs, and issues = bigger trees",
+    "page3_title": "Create Your Own\nCode Forest",
+    "page3_description": "Let's get started!"
+  }
 }

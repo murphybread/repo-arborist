@@ -1,7 +1,117 @@
 {
-  "app_title": "블루베리 TODO",
-  "new_todo": "새 할 일",
-  "add": "추가",
-  "cancel": "취소",
-  "hint_enter_todo": "할 일을 입력하세요"
+  "app_title": "Repo Arborist",
+
+  "common": {
+    "close": "닫기",
+    "cancel": "취소",
+    "ok": "확인",
+    "retry": "다시 시도",
+    "refresh": "새로고침",
+    "loading": "로딩 중...",
+    "error": "오류",
+    "success": "성공"
+  },
+
+  "error": {
+    "network_title": "네트워크 오류",
+    "network_message": "인터넷 연결을 확인해주세요.",
+    "api_title": "API 오류",
+    "not_found": "사용자 또는 저장소를 찾을 수 없습니다.",
+    "forbidden": "접근 권한이 없습니다.",
+    "unauthorized": "인증에 실패했습니다. GitHub Token을 확인해주세요.",
+    "rate_limit": "API 요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.",
+    "rate_limit_title": "API 제한 초과",
+    "rate_limit_message": "GitHub API 요청 제한(시간당 60회)을 초과했습니다.\n\nGitHub Personal Access Token을 사용하면 시간당 5,000회까지 사용할 수 있습니다.",
+    "server_error": "서버 오류가 발생했습니다. (코드: {})",
+    "user_not_found_title": "사용자를 찾을 수 없음",
+    "user_not_found_message": "'{}' 사용자를 찾을 수 없습니다.\n사용자명을 확인해주세요.",
+    "timeout_title": "요청 시간 초과",
+    "timeout_message": "요청 시간이 초과되었습니다.\n네트워크 연결을 확인하고 다시 시도해주세요."
+  },
+
+  "empty": {
+    "repositories_title": "저장소가 없습니다",
+    "repositories_message": "아직 생성된 저장소가 없습니다.\nGitHub에서 프로젝트를 만들어보세요!",
+    "search_title": "검색 결과 없음",
+    "search_message": "'{}'에 대한 검색 결과가 없습니다.",
+    "no_connection_title": "인터넷 연결 없음",
+    "no_connection_message": "인터넷에 연결되어 있지 않습니다.\n연결을 확인하고 다시 시도해주세요."
+  },
+
+  "login": {
+    "title": "GitHub 로그인",
+    "username_label": "GitHub 사용자명",
+    "username_hint": "사용자명을 입력하세요",
+    "token_label": "Personal Access Token (선택)",
+    "token_hint": "Token을 입력하세요",
+    "login_button": "로그인",
+    "what_is_token": "Token이 뭔가요?",
+    "token_guide_title": "GitHub Token 발급 방법",
+    "token_guide_message": "1. GitHub.com 로그인\n2. Settings > Developer settings\n3. Personal access tokens > Tokens (classic)\n4. Generate new token\n5. 권한: public_repo 선택\n\n💡 Token을 사용하면 시간당 5,000회까지 조회 가능합니다!",
+    "get_token": "발급하러 가기",
+    "error_empty_username": "사용자명을 입력해주세요"
+  },
+
+  "forest": {
+    "title": "나의 코드 숲",
+    "loading": "저장소 불러오는 중...",
+    "repository_count": "저장소 {}개",
+    "sort_by": "정렬",
+    "sort_name": "이름순",
+    "sort_updated": "최근 활동순",
+    "sort_size": "크기순",
+    "filter": "필터",
+    "filter_all": "전체",
+    "filter_language": "언어별"
+  },
+
+  "garden": {
+    "title": "정원 개요",
+    "total_repositories": "전체 저장소",
+    "total_commits": "전체 커밋",
+    "active_repositories": "활동 중인 저장소",
+    "stats": "통계"
+  },
+
+  "repository": {
+    "title": "저장소 상세",
+    "commits": "커밋",
+    "pull_requests": "Pull Request",
+    "issues": "이슈",
+    "stars": "Star",
+    "forks": "Fork",
+    "watchers": "Watcher",
+    "language": "언어",
+    "created": "생성일",
+    "updated": "업데이트",
+    "size": "크기",
+    "open_in_github": "GitHub에서 열기"
+  },
+
+  "settings": {
+    "title": "설정",
+    "dark_mode": "다크 모드",
+    "language": "언어",
+    "language_korean": "한국어",
+    "language_english": "English",
+    "privacy_policy": "개인정보 처리방침",
+    "terms_of_service": "서비스 이용약관",
+    "licenses": "오픈소스 라이선스",
+    "app_version": "앱 버전",
+    "developer_info": "개발자 정보",
+    "logout": "로그아웃",
+    "logout_confirm": "로그아웃 하시겠습니까?"
+  },
+
+  "onboarding": {
+    "skip": "건너뛰기",
+    "next": "다음",
+    "start": "시작하기",
+    "page1_title": "GitHub 저장소를\n나무로 시각화",
+    "page1_description": "당신의 저장소를 살아있는 나무로 만나보세요",
+    "page2_title": "활동량에 따라\n성장하는 나무",
+    "page2_description": "커밋, PR, 이슈가 많을수록 나무가 자랍니다",
+    "page3_title": "나만의\n코드 숲 만들기",
+    "page3_description": "지금 시작해보세요!"
+  }
 }
