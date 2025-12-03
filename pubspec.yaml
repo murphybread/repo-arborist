@@ -1,5 +1,5 @@
-name: template
-description: "A new Flutter project."
+name: repo_arborist
+description: "GitHub 저장소를 살아있는 숲으로 시각화하는 Flutter 앱"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
