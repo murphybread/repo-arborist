@@ -40,6 +40,10 @@ class $AssetsTranslationsGen {
 class $AssetsImagesEtcGen {
   const $AssetsImagesEtcGen();
 
+  /// File path: assets/images/etc/bg_cloud_sky.png
+  AssetGenImage get bgCloudSky =>
+      const AssetGenImage('assets/images/etc/bg_cloud_sky.png');
+
   /// File path: assets/images/etc/bg_sky_gradient.png
   AssetGenImage get bgSkyGradient =>
       const AssetGenImage('assets/images/etc/bg_sky_gradient.png');
@@ -73,8 +77,33 @@ class $AssetsImagesEtcGen {
   AssetGenImage get squareGroudtileDot =>
       const AssetGenImage('assets/images/etc/square_groudtile_dot.png');
 
+  /// File path: assets/images/etc/square_groudtile_dot_before.png
+  AssetGenImage get squareGroudtileDotBefore =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot_before.png');
+
+  /// File path: assets/images/etc/square_groudtile_dot_ver1.png
+  AssetGenImage get squareGroudtileDotVer1 =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot_ver1.png');
+
+  /// File path: assets/images/etc/square_groudtile_dot_ver2.png
+  AssetGenImage get squareGroudtileDotVer2 =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot_ver2.png');
+
+  /// File path: assets/images/etc/square_groudtile_dot_ver3.png
+  AssetGenImage get squareGroudtileDotVer3 =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot_ver3.png');
+
+  /// File path: assets/images/etc/square_groudtile_dot_ver4.png
+  AssetGenImage get squareGroudtileDotVer4 =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot_ver4.png');
+
+  /// File path: assets/images/etc/square_groudtile_dot_ver5.png
+  AssetGenImage get squareGroudtileDotVer5 =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot_ver5.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
+    bgCloudSky,
     bgSkyGradient,
     freshEffectSpriteDot,
     gardenBorderHedge,
@@ -83,6 +112,12 @@ class $AssetsImagesEtcGen {
     signpostEmpty,
     sparklingEffectSpriteDot,
     squareGroudtileDot,
+    squareGroudtileDotBefore,
+    squareGroudtileDotVer1,
+    squareGroudtileDotVer2,
+    squareGroudtileDotVer3,
+    squareGroudtileDotVer4,
+    squareGroudtileDotVer5,
   ];
 }
 
@@ -96,6 +131,10 @@ class $AssetsImagesPlantsGen {
   /// File path: assets/images/plants/flower_blossom_dot.png
   AssetGenImage get flowerBlossomDot =>
       const AssetGenImage('assets/images/plants/flower_blossom_dot.png');
+
+  /// File path: assets/images/plants/flower_blueberry_dot.png
+  AssetGenImage get flowerBlueberryDot =>
+      const AssetGenImage('assets/images/plants/flower_blueberry_dot.png');
 
   /// File path: assets/images/plants/flower_cactus_dot.png
   AssetGenImage get flowerCactusDot =>
@@ -137,6 +176,10 @@ class $AssetsImagesPlantsGen {
   AssetGenImage get sproutBlossomDot =>
       const AssetGenImage('assets/images/plants/sprout_blossom_dot.png');
 
+  /// File path: assets/images/plants/sprout_blueberry_dot.png
+  AssetGenImage get sproutBlueberryDot =>
+      const AssetGenImage('assets/images/plants/sprout_blueberry_dot.png');
+
   /// File path: assets/images/plants/sprout_cactus_dot.png
   AssetGenImage get sproutCactusDot =>
       const AssetGenImage('assets/images/plants/sprout_cactus_dot.png');
@@ -177,6 +220,10 @@ class $AssetsImagesPlantsGen {
   AssetGenImage get treeBlossomDot =>
       const AssetGenImage('assets/images/plants/tree_blossom_dot.png');
 
+  /// File path: assets/images/plants/tree_blueberry_dot.png
+  AssetGenImage get treeBlueberryDot =>
+      const AssetGenImage('assets/images/plants/tree_blueberry_dot.png');
+
   /// File path: assets/images/plants/tree_cactus_dot.png
   AssetGenImage get treeCactusDot =>
       const AssetGenImage('assets/images/plants/tree_cactus_dot.png');
@@ -213,6 +260,7 @@ class $AssetsImagesPlantsGen {
   List<AssetGenImage> get values => [
     flowerBambooDot,
     flowerBlossomDot,
+    flowerBlueberryDot,
     flowerCactusDot,
     flowerCoffeeDot,
     flowerFirDot,
@@ -223,6 +271,7 @@ class $AssetsImagesPlantsGen {
     flowerSnakePlantDot,
     sproutBambooDot,
     sproutBlossomDot,
+    sproutBlueberryDot,
     sproutCactusDot,
     sproutCoffeeDot,
     sproutFirDot,
@@ -233,6 +282,7 @@ class $AssetsImagesPlantsGen {
     sproutSnakePlantDot,
     treeBambooDot,
     treeBlossomDot,
+    treeBlueberryDot,
     treeCactusDot,
     treeCoffeeDot,
     treeFirDot,
@@ -247,12 +297,13 @@ class $AssetsImagesPlantsGen {
 class Assets {
   const Assets._();
 
+  static const String aEnv = '.env';
   static const SvgGenImage blueberry = SvgGenImage('assets/blueberry.svg');
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsTranslationsGen translations = $AssetsTranslationsGen();
 
   /// List of all assets
-  static List<SvgGenImage> get values => [blueberry];
+  static List<dynamic> get values => [aEnv, blueberry];
 }
 
 class AssetGenImage {

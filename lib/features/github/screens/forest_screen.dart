@@ -578,6 +578,8 @@ class _RepositoryCard extends StatelessWidget {
             return Assets.images.plants.sproutPineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.sproutSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.sproutBlueberryDot.path;
         }
 
       case TreeStage.bloom:
@@ -603,6 +605,8 @@ class _RepositoryCard extends StatelessWidget {
             return Assets.images.plants.flowerPineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.flowerSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.flowerBlueberryDot.path;
         }
 
       case TreeStage.tree:
@@ -628,6 +632,8 @@ class _RepositoryCard extends StatelessWidget {
             return Assets.images.plants.treePineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.treeSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.treeBlueberryDot.path;
         }
     }
   }

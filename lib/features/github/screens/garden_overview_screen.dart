@@ -77,356 +77,222 @@ class _GardenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: const Color(0xFF74C043),
       body: Stack(
         children: [
-          // 배경 그라디언트
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF0F172A), // 진한 남색
-                  Color(0xFF1E293B), // 중간 남색
-                ],
+          // [Layer 1] 하늘 배경 (구름 패턴 - 고정)
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Assets.images.etc.bgCloudSky.path),
+                  repeat: ImageRepeat.repeat, // 작은 구름 패턴 반복
+                ),
               ),
             ),
           ),
 
-          // 메인 컨텐츠
-          SafeArea(
-            child: Column(
-              children: [
-                // 헤더 (간결하게)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 6), // 15,12 → 8,6
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Your Forest — Overview',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14, // 15 → 14
-                          height: 1.4,
-                          letterSpacing: -0.03,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      const SizedBox(height: 2), // 4 → 2
-                      Text(
-                        '${repositories.length} repositories visualized',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10, // 11 → 10
-                          height: 1.1,
-                          color: Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
+          // [Layer 2] 땅 배경 (하늘 위에 얹기 - 고정)
+          Positioned(
+            top: 120, // 하늘이 보이도록 120px 내림
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Assets.images.etc.squareGroudtileDot.path),
+                  repeat: ImageRepeat.repeat, // 바둑판식 반복
+                  scale: 4.0, // 촘촘하게
                 ),
+              ),
+            ),
+          ),
 
-                // 정원 영역
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.zero,
+          // [Layer 3] 스크롤 콘텐츠 (울타리 + 식물)
+          Positioned.fill(
+            child: InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 3.0,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                children: [
+                  // 상단 하늘 영역만큼 여백 확보 (Layer 2의 top 값과 일치)
+                  const SizedBox(height: 120),
+
+                  // 상단 울타리 (Header) - 크기 확대
+                  Container(
+                    width: double.infinity,
+                    height: 120, // 높이 확대 (120px)
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: const [
+                      image: DecorationImage(
+                        image: AssetImage(Assets.images.etc.gardenBorderHedge.path),
+                        repeat: ImageRepeat.repeatX, // 가로 반복
+                        fit: BoxFit.cover, // 빈틈없이 채우기
+                      ),
+                      boxShadow: [
                         BoxShadow(
-                          color: Color(0x0D000000), // rgba(0, 0, 0, 0.05)
-                          offset: Offset(0, 4),
-                          blurRadius: 12,
-                        ),
-                        BoxShadow(
-                          color: Color(0x14000000), // rgba(0, 0, 0, 0.08)
-                          offset: Offset(0, 30),
-                          blurRadius: 80,
+                          color: Colors.black.withValues(alpha: 0.4),
+                          offset: const Offset(0, 4),
+                          blurRadius: 8,
                         ),
                       ],
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
-                      child: Stack(
-                        children: [
-                          // 단순한 배경 (진한 갈색 - 땅 느낌)
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF5D4E37), // 진한 갈색 (흙 느낌)
-                            ),
-                          ),
+                  ),
 
-                          // InteractiveViewer로 정원 트리들 감싸기
-                          InteractiveViewer(
-                            minScale: 0.5,
-                            maxScale: 4,
-                            boundaryMargin: const EdgeInsets.all(200),
-                            child: _NaturalGardenLayout(
-                              repositories: repositories,
-                            ),
-                          ),
+                  // 식물 리스트 (Wrap 사용, 여백 제거)
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.zero, // 패딩 제거
+                    alignment: Alignment.center,
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      alignment: WrapAlignment.center,
+                      children: List.generate(repositories.length, (index) {
+                        final repo = repositories[index];
+                        final createdAt = repo.repository.createdAt;
+                        final now = DateTime.now();
+                        final ageInYears = now.difference(createdAt).inDays / 365.0;
+                        
+                        return _GardenTree(
+                          repository: repo,
+                          size: 64.0,
+                          index: index,
+                          ageInYears: ageInYears,
+                          totalRepos: repositories.length,
+                        );
+                      }),
+                    ),
+                  ),
 
-                          // "Press anywhere" 힌트 (하단) - 터치 무시하도록 수정
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 20,
-                            child: IgnorePointer(
-                              child: Center(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x66000000),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    'Pinch to zoom • Drag to explore',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                  // 하단 울타리 (Footer) - 상단과 동일하게 설정
+                  Container(
+                    width: double.infinity,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(Assets.images.etc.gardenBorderHedge.path),
+                        repeat: ImageRepeat.repeatX,
+                        fit: BoxFit.cover, // 빈틈없이 채우기
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.4),
+                          offset: const Offset(0, -4),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
 
-                          // ForestScreen으로 이동하는 버튼 (우측 상단)
-                          Positioned(
-                            top: 16,
-                            right: 16,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ForestScreen(token: token),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF14B8A6),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFF14B8A6,
-                                      ).withValues(alpha: 0.3),
-                                      offset: const Offset(0, 2),
-                                      blurRadius: 8,
-                                    ),
-                                  ],
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.grid_view_rounded,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                    SizedBox(width: 6),
-                                    Text(
-                                      'Details',
-                                      style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                  // 하단 여백
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+            ),
+          ),
+
+          // UI 오버레이 (고정 헤더)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Your Forest — Overview',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        color: Color(0xFF0F172A),
+                        shadows: [
+                          Shadow(
+                            offset: Offset(0, 1),
+                            blurRadius: 2,
+                            color: Colors.white54,
                           ),
                         ],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${repositories.length} repositories visualized',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        color: Color(0xFF475569),
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+            ),
+          ),
 
-                // 하단 여백
-                const SizedBox(height: 0),
-              ],
+          // 상단 우측 버튼 (Details)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 16,
+            right: 16,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ForestScreen(token: token),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF14B8A6),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF14B8A6).withValues(alpha: 0.3),
+                      offset: const Offset(0, 2),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.grid_view_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Details',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-/// 격자형 정원 레이아웃 - 외곽부터 채워나가는 방식
-class _NaturalGardenLayout extends StatelessWidget {
-  const _NaturalGardenLayout({required this.repositories});
-
-  final List<RepositoryStatsModel> repositories;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        final height = constraints.maxHeight;
-
-        // 고정 크기 (더 크게)
-        const treeSize = 64.0; // 48 → 64
-        const spacing = 64.0; // 48 → 64
-
-        // 그리드 계산 - 패딩 고려
-        final cols = ((width - 100) / spacing).floor();
-        final rows = ((height - 100) / spacing).floor();
-
-        // 외곽부터 안쪽으로 채워나가는 순서
-        final positions = _calculateSpiralPositions(
-          repositories.length,
-          cols,
-          rows,
-          spacing,
-          width - 100,
-          height - 100,
-        );
-
-        return Stack(
-          children: List.generate(
-            math.min(repositories.length, positions.length),
-            (index) {
-              final repo = repositories[index];
-              final position = positions[index];
-
-              // 레포지토리 나이 계산 (년 단위)
-              final createdAt = repo.repository.createdAt;
-              final now = DateTime.now();
-              final ageInYears = now.difference(createdAt).inDays / 365.0;
-
-              return Positioned(
-                left: position.dx,
-                top: position.dy,
-                child: _GardenTree(
-                  repository: repo,
-                  size: treeSize,
-                  index: index,
-                  ageInYears: ageInYears,
-                  totalRepos: repositories.length,
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  /// 중심에서 바깥으로 나선형 순서로 위치 계산
-  List<Offset> _calculateSpiralPositions(
-    int count,
-    int cols,
-    int rows,
-    double spacing,
-    double width,
-    double height,
-  ) {
-    final positions = <Offset>[];
-
-    // 중앙 정렬을 위한 오프셋 (중심을 왼쪽으로 이동)
-    final offsetX =
-        (width - (cols * spacing)) / 2 + 50; // 왼쪽으로 조금만 이동 (50px 오른쪽)
-    final offsetY = (height - (rows * spacing)) / 2 + 50; // 패딩 고려
-
-    // 중심 좌표
-    final centerCol = cols ~/ 2;
-    final centerRow = rows ~/ 2;
-
-    // 중심부터 시작
-    positions.add(
-      Offset(
-        offsetX + centerCol * spacing + spacing / 2,
-        offsetY + centerRow * spacing + spacing / 2,
-      ),
-    );
-
-    if (count <= 1) return positions;
-
-    // 나선형으로 바깥으로 확장 (오른쪽 → 아래 → 왼쪽 → 위)
-    var x = centerCol;
-    var y = centerRow;
-    var steps = 1;
-
-    while (positions.length < count) {
-      // 오른쪽으로 steps번
-      for (var i = 0; i < steps && positions.length < count; i++) {
-        x++;
-        if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(
-            Offset(
-              offsetX + x * spacing + spacing / 2,
-              offsetY + y * spacing + spacing / 2,
-            ),
-          );
-        }
-      }
-
-      // 아래로 steps번
-      for (var i = 0; i < steps && positions.length < count; i++) {
-        y++;
-        if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(
-            Offset(
-              offsetX + x * spacing + spacing / 2,
-              offsetY + y * spacing + spacing / 2,
-            ),
-          );
-        }
-      }
-
-      steps++;
-
-      // 왼쪽으로 steps번
-      for (var i = 0; i < steps && positions.length < count; i++) {
-        x--;
-        if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(
-            Offset(
-              offsetX + x * spacing + spacing / 2,
-              offsetY + y * spacing + spacing / 2,
-            ),
-          );
-        }
-      }
-
-      // 위로 steps번
-      for (var i = 0; i < steps && positions.length < count; i++) {
-        y--;
-        if (x >= 0 && x < cols && y >= 0 && y < rows) {
-          positions.add(
-            Offset(
-              offsetX + x * spacing + spacing / 2,
-              offsetY + y * spacing + spacing / 2,
-            ),
-          );
-        }
-      }
-
-      steps++;
-    }
-
-    return positions;
   }
 }
 
@@ -499,11 +365,11 @@ class _GardenTreeState extends State<_GardenTree>
     final scale = activityTier.scaleMultiplier;
     final glowIntensity = activityTier.glowIntensity;
 
-    // 나이 기반 색상 조정 (0년 = 1.0, 10년+ = 0.5)
+    // 나이 기반 색상 조정
     final ageInYears = widget.ageInYears;
-    final ageFactor = 1.0 - (ageInYears / 10).clamp(0.0, 0.5); // 최대 50% 감소
-    final treeOpacity =
-        (0.3 + (activityTier.saturationMultiplier * 0.7)) * ageFactor;
+    final ageFactor = 1.0 - (ageInYears / 10).clamp(0.0, 0.5); 
+    
+    final treeOpacity = 1.0;
 
     return AnimatedBuilder(
       animation: _swayAnimation,
@@ -521,20 +387,15 @@ class _GardenTreeState extends State<_GardenTree>
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // 땅바닥 원형 (나이별 색상)
+          // 나무 그림자
           Positioned(
-            bottom: widget.size * 0.1,
-            child: Container(
-              width: widget.size * 1.5,
-              height: widget.size * 1.5,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    _getGroundColor(ageInYears).withValues(alpha: 0.6),
-                    _getGroundColor(ageInYears).withValues(alpha: 0.0),
-                  ],
-                ),
+            bottom: widget.size * 0.05,
+            child: Opacity(
+              opacity: 0.6,
+              child: Image.asset(
+                Assets.images.etc.plantShadow.path,
+                width: widget.size * 1.2,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -543,51 +404,88 @@ class _GardenTreeState extends State<_GardenTree>
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 나무 이미지 (글로우 효과 포함)
-              // 단계별 크기: 새싹 < 꽃 < 나무
-              Transform.scale(
-                scale: _getSizeMultiplier(stage),
-                child: Container(
-                  width: widget.size,
-                  height: widget.size * 1.2,
-                  decoration: glowIntensity > 0
-                      ? BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: _getGlowColor(
-                                stage,
-                                isCactus,
-                              ).withValues(alpha: glowIntensity * 0.6),
-                              blurRadius: 20 * glowIntensity,
-                              spreadRadius: 5 * glowIntensity,
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.matrix(
-                      _getAgeColorMatrix(ageFactor),
-                    ),
-                    child: Opacity(
-                      opacity: treeOpacity,
-                      child: Image.asset(
-                        imagePath,
-                        filterQuality: FilterQuality.none,
+              // 나무 이미지 + 이펙트
+              Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  // 나무 본체
+                  Transform.scale(
+                    scale: _getSizeMultiplier(stage),
+                    child: Container(
+                      width: widget.size,
+                      height: widget.size * 1.2,
+                      decoration: glowIntensity > 0
+                          ? BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _getGlowColor(
+                                    stage,
+                                    isCactus,
+                                  ).withValues(alpha: glowIntensity * 0.6),
+                                  blurRadius: 20 * glowIntensity,
+                                  spreadRadius: 5 * glowIntensity,
+                                ),
+                              ],
+                            )
+                          : null,
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.matrix(
+                          _getAgeColorMatrix(ageFactor),
+                        ),
+                        child: Opacity(
+                          opacity: treeOpacity,
+                          child: Image.asset(
+                            imagePath,
+                            filterQuality: FilterQuality.none,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+
+                  // 반짝이는 이펙트 (Warm)
+                  if (activityTier == ActivityTier.warm)
+                    Positioned(
+                      top: -widget.size * 0.1,
+                      right: -widget.size * 0.1,
+                      child: Image.asset(
+                        Assets.images.etc.sparklingEffectSpriteDot.path,
+                        width: widget.size * 0.4,
+                        height: widget.size * 0.4,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                  // 싱그러운 이펙트 (Fresh)
+                  if (activityTier == ActivityTier.fresh)
+                    Positioned(
+                      top: -widget.size * 0.2,
+                      right: -widget.size * 0.2,
+                      child: Image.asset(
+                        Assets.images.etc.freshEffectSpriteDot.path,
+                        width: widget.size * 0.5,
+                        height: widget.size * 0.5,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                  // 방치된 이펙트 (Dormant) - 일시 비활성화
+                  // if (activityTier == ActivityTier.dormant) ...
+                ],
               ),
+
               // 이름표 (그림자 + 텍스트)
               Container(
-                width: widget.size * 0.9,
-                height: widget.size * 0.2,
+                width: widget.size * 1.2,
+                height: widget.size * 0.25,
+                margin: const EdgeInsets.only(top: 4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color: Colors.black.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: Text(
                   repo.repository.name,
                   textAlign: TextAlign.center,
@@ -596,8 +494,8 @@ class _GardenTreeState extends State<_GardenTree>
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
-                    fontSize: 7,
-                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 9,
+                    color: Colors.white.withValues(alpha: 0.95),
                     height: 1,
                   ),
                 ),
@@ -637,6 +535,8 @@ class _GardenTreeState extends State<_GardenTree>
             return Assets.images.plants.sproutPineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.sproutSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.sproutBlueberryDot.path;
         }
       case TreeStage.bloom:
         switch (plantType) {
@@ -660,6 +560,8 @@ class _GardenTreeState extends State<_GardenTree>
             return Assets.images.plants.flowerPineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.flowerSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.flowerBlueberryDot.path;
         }
       case TreeStage.tree:
         switch (plantType) {
@@ -683,6 +585,8 @@ class _GardenTreeState extends State<_GardenTree>
             return Assets.images.plants.treePineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.treeSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.treeBlueberryDot.path;
         }
     }
   }
@@ -729,26 +633,5 @@ class _GardenTreeState extends State<_GardenTree>
       0, // B
       0, 0, 0, 1, 0, // A
     ];
-  }
-
-  /// 레포지토리 나이에 따른 땅바닥 색상
-  /// 0년 = 밝은 색, 5년+ = 어두운 색
-  Color _getGroundColor(double ageInYears) {
-    if (ageInYears < 1) {
-      // 1년 미만: 밝은 갈색/연두
-      return const Color(0xFF8B7355);
-    } else if (ageInYears < 2) {
-      // 1-2년: 중간 밝은 갈색
-      return const Color(0xFF7A6F5D);
-    } else if (ageInYears < 3) {
-      // 2-3년: 중간 갈색
-      return const Color(0xFF6B5D4F);
-    } else if (ageInYears < 5) {
-      // 3-5년: 어두운 갈색
-      return const Color(0xFF5D4E37);
-    } else {
-      // 5년 이상: 매우 어두운 갈색
-      return const Color(0xFF4A3C28);
-    }
   }
 }

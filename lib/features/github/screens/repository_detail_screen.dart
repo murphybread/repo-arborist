@@ -326,6 +326,8 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
             return Assets.images.plants.sproutPineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.sproutSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.sproutBlueberryDot.path;
         }
       case TreeStage.bloom:
         switch (plantType) {
@@ -349,6 +351,8 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
             return Assets.images.plants.flowerPineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.flowerSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.flowerBlueberryDot.path;
         }
       case TreeStage.tree:
         switch (plantType) {
@@ -372,6 +376,8 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
             return Assets.images.plants.treePineDot.path;
           case PlantType.snakePlant:
             return Assets.images.plants.treeSnakePlantDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.treeBlueberryDot.path;
         }
     }
   }

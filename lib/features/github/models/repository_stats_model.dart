@@ -189,6 +189,9 @@ enum PlantType {
   /// 🌵 선인장 가문 - Shell, Config, DevOps
   cactus,
 
+  /// 🫐 블루베리 가문 - Dart, Flutter
+  blueberry,
+
   /// ✂️ 소나무 가문 - Assembly, Embedded
   pine;
 
@@ -226,11 +229,13 @@ enum PlantType {
       return PlantType.fir;
     }
 
-    // 🌸 Blossom - Flutter, Swift, Mobile
-    if (lang == 'dart' ||
-        lang.contains('flutter') ||
-        lang == 'swift' ||
-        lang == 'kotlin') {
+    // 🫐 Blueberry - Dart, Flutter
+    if (lang == 'dart' || lang.contains('flutter')) {
+      return PlantType.blueberry;
+    }
+
+    // 🌸 Blossom - Swift, Mobile
+    if (lang == 'swift' || lang == 'kotlin') {
       return PlantType.blossom;
     }
 
@@ -298,6 +303,8 @@ enum PlantType {
         return 'maple';
       case PlantType.cactus:
         return 'cactus';
+      case PlantType.blueberry:
+        return 'blueberry';
       case PlantType.pine:
         return 'pine';
     }
@@ -324,6 +331,8 @@ enum PlantType {
         return const Color(0xFFF87171); // 단풍 빨강
       case PlantType.cactus:
         return const Color(0xFF86A17A); // 선인장 초록
+      case PlantType.blueberry:
+        return const Color(0xFF6366F1); // 블루베리 인디고
       case PlantType.pine:
         return const Color(0xFF14532D); // 소나무 진한 초록
     }
@@ -350,6 +359,8 @@ enum PlantType {
         return const Color(0xFFFB923C); // 단풍 주황
       case PlantType.cactus:
         return const Color(0xFFFDE047); // 선인장 노란 가시
+      case PlantType.blueberry:
+        return const Color(0xFFA5B4FC); // 블루베리 연보라
       case PlantType.pine:
         return const Color(0xFF166534); // 소나무 초록
     }
