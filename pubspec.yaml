@@ -2,7 +2,7 @@ name: repo_arborist
 description: "GitHub 저장소를 살아있는 숲으로 시각화하는 Flutter 앱"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.8.1
