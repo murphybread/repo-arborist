@@ -30,7 +30,7 @@ class GardenOverviewScreen extends ConsumerWidget {
     return reposAsync.when(
       data: (repos) {
         debugPrint('🟢 [GardenOverview] build - 데이터 수신: ${repos.length}개');
-        
+
         // created_at 기준으로 정렬 (오래된 것부터)
         final sortedRepos = List<RepositoryStatsModel>.from(repos)
           ..sort(
@@ -117,81 +117,86 @@ class _GardenView extends StatelessWidget {
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Column(
-                children: [
-                  // 상단 하늘 영역만큼 여백 확보 (Layer 2의 top 값과 일치)
-                  const SizedBox(height: 120),
+                  children: [
+                    // 상단 하늘 영역만큼 여백 확보 (Layer 2의 top 값과 일치)
+                    const SizedBox(height: 120),
 
-                  // 상단 울타리 (Header) - 크기 확대
-                  Container(
-                    width: double.infinity,
-                    height: 120, // 높이 확대 (120px)
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(Assets.images.etc.gardenBorderHedge.path),
-                        repeat: ImageRepeat.repeatX, // 가로 반복
-                        fit: BoxFit.cover, // 빈틈없이 채우기
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          offset: const Offset(0, 4),
-                          blurRadius: 8,
+                    // 상단 울타리 (Header) - 크기 확대
+                    Container(
+                      width: double.infinity,
+                      height: 120, // 높이 확대 (120px)
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                            Assets.images.etc.gardenBorderHedge.path,
+                          ),
+                          repeat: ImageRepeat.repeatX, // 가로 반복
+                          fit: BoxFit.cover, // 빈틈없이 채우기
                         ),
-                      ],
-                    ),
-                  ),
-
-                  // 식물 리스트 (Wrap 사용, 여백 제거)
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.zero, // 패딩 제거
-                    alignment: Alignment.center,
-                    child: Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      alignment: WrapAlignment.center,
-                      children: List.generate(repositories.length, (index) {
-                        final repo = repositories[index];
-                        final createdAt = repo.repository.createdAt;
-                        final now = DateTime.now();
-                        final ageInYears = now.difference(createdAt).inDays / 365.0;
-                        
-                        return _GardenTree(
-                          repository: repo,
-                          size: 64.0,
-                          index: index,
-                          ageInYears: ageInYears,
-                          totalRepos: repositories.length,
-                        );
-                      }),
-                    ),
-                  ),
-
-                  // 하단 울타리 (Footer) - 상단과 동일하게 설정
-                  Container(
-                    width: double.infinity,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(Assets.images.etc.gardenBorderHedge.path),
-                        repeat: ImageRepeat.repeatX,
-                        fit: BoxFit.cover, // 빈틈없이 채우기
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.4),
+                            offset: const Offset(0, 4),
+                            blurRadius: 8,
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          offset: const Offset(0, -4),
-                          blurRadius: 8,
-                        ),
-                      ],
                     ),
-                  ),
 
-                  // 하단 여백
-                  const SizedBox(height: 40),
-                ],
+                    // 식물 리스트 (Wrap 사용, 여백 제거)
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.zero, // 패딩 제거
+                      alignment: Alignment.center,
+                      child: Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        alignment: WrapAlignment.center,
+                        children: List.generate(repositories.length, (index) {
+                          final repo = repositories[index];
+                          final createdAt = repo.repository.createdAt;
+                          final now = DateTime.now();
+                          final ageInYears =
+                              now.difference(createdAt).inDays / 365.0;
+
+                          return _GardenTree(
+                            repository: repo,
+                            size: 64.0,
+                            index: index,
+                            ageInYears: ageInYears,
+                            totalRepos: repositories.length,
+                          );
+                        }),
+                      ),
+                    ),
+
+                    // 하단 울타리 (Footer) - 상단과 동일하게 설정
+                    Container(
+                      width: double.infinity,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                            Assets.images.etc.gardenBorderHedge.path,
+                          ),
+                          repeat: ImageRepeat.repeatX,
+                          fit: BoxFit.cover, // 빈틈없이 채우기
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.4),
+                            offset: const Offset(0, -4),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // 하단 여백
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
             ),
           ),
 
@@ -367,8 +372,8 @@ class _GardenTreeState extends State<_GardenTree>
 
     // 나이 기반 색상 조정
     final ageInYears = widget.ageInYears;
-    final ageFactor = 1.0 - (ageInYears / 10).clamp(0.0, 0.5); 
-    
+    final ageFactor = 1.0 - (ageInYears / 10).clamp(0.0, 0.5);
+
     final treeOpacity = 1.0;
 
     return AnimatedBuilder(
@@ -396,6 +401,20 @@ class _GardenTreeState extends State<_GardenTree>
                 child: Image.asset(
                   Assets.images.etc.plantShadow.path,
                   width: widget.size * 1.2,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+
+          // Shadow image only for sprout level
+          if (stage == TreeStage.sprout)
+            Positioned(
+              bottom: widget.size * 0.32,
+              child: Opacity(
+                opacity: 0.85,
+                child: Image.asset(
+                  Assets.images.etc.sproutShadow.path,
+                  width: widget.size * 0.85,
                   fit: BoxFit.contain,
                 ),
               ),

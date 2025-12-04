@@ -43,12 +43,8 @@ if __name__ == "__main__":
     
     # 처리할 파일 목록 (투명도가 필요한 파일만 지정)
     target_files = [
-        "plant_shadow.png",
-        "fresh_effect_sprite_dot.png",
-        "sparkling_effect_sprite_dot.png",
-        "plant_neglected_overlay_sprite.png",
-        "signpost_empty.png",
-        "garden_border_hedge.png"
+        "sprout_shadow.png",
+
     ]
     
     print(f"📂 대상 폴더: {target_dir}")

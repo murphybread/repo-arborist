@@ -40,6 +40,10 @@ class $AssetsTranslationsGen {
 class $AssetsImagesEtcGen {
   const $AssetsImagesEtcGen();
 
+  /// File path: assets/images/etc/b_16-bit_pixel_art_sea.png
+  AssetGenImage get b16BitPixelArtSea =>
+      const AssetGenImage('assets/images/etc/b_16-bit_pixel_art_sea.png');
+
   /// File path: assets/images/etc/bg_cloud_sky.png
   AssetGenImage get bgCloudSky =>
       const AssetGenImage('assets/images/etc/bg_cloud_sky.png');
@@ -73,6 +77,10 @@ class $AssetsImagesEtcGen {
   AssetGenImage get sparklingEffectSpriteDot =>
       const AssetGenImage('assets/images/etc/sparkling_effect_sprite_dot.png');
 
+  /// File path: assets/images/etc/sprout_shadow.png
+  AssetGenImage get sproutShadow =>
+      const AssetGenImage('assets/images/etc/sprout_shadow.png');
+
   /// File path: assets/images/etc/square_groudtile_dot.png
   AssetGenImage get squareGroudtileDot =>
       const AssetGenImage('assets/images/etc/square_groudtile_dot.png');
@@ -103,6 +111,7 @@ class $AssetsImagesEtcGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
+    b16BitPixelArtSea,
     bgCloudSky,
     bgSkyGradient,
     freshEffectSpriteDot,
@@ -111,6 +120,7 @@ class $AssetsImagesEtcGen {
     plantShadow,
     signpostEmpty,
     sparklingEffectSpriteDot,
+    sproutShadow,
     squareGroudtileDot,
     squareGroudtileDotBefore,
     squareGroudtileDotVer1,
