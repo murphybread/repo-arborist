@@ -406,12 +406,25 @@ class _GardenTreeState extends State<_GardenTree>
               ),
             ),
 
+          if (stage == TreeStage.bloom)
+            Positioned(
+              bottom: widget.size * 0.4,
+              child: Opacity(
+                opacity: 0.6,
+                child: Image.asset(
+                  Assets.images.etc.plantShadow.path,
+                  width: widget.size * 0.7,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+
           // Shadow image only for sprout level
           if (stage == TreeStage.sprout)
             Positioned(
               bottom: widget.size * 0.32,
               child: Opacity(
-                opacity: 0.85,
+                opacity: 0.95,
                 child: Image.asset(
                   Assets.images.etc.sproutShadow.path,
                   width: widget.size * 0.85,
