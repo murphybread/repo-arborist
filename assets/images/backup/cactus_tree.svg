@@ -1,0 +1,26 @@
+<svg width="169" height="140" viewBox="0 0 169 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- 큰 기둥형 선인장 -->
+<!-- 중앙 기둥 -->
+<rect x="77" y="60" width="15" height="48" rx="7.5" fill="#86A17A"/>
+<!-- 왼쪽 가지 -->
+<rect x="65" y="75" width="10" height="20" rx="5" fill="#86A17A"/>
+<rect x="65" y="75" width="15" height="10" rx="5" fill="#86A17A"/>
+<!-- 오른쪽 가지 -->
+<rect x="94" y="75" width="10" height="20" rx="5" fill="#86A17A"/>
+<rect x="89" y="75" width="15" height="10" rx="5" fill="#86A17A"/>
+<!-- 가시들 (중앙) -->
+<line x1="74" y1="65" x2="72" y2="65" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="74" y1="75" x2="72" y2="75" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="74" y1="85" x2="72" y2="85" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="74" y1="95" x2="72" y2="95" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="95" y1="65" x2="97" y2="65" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="95" y1="75" x2="97" y2="75" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="95" y1="85" x2="97" y2="85" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="95" y1="95" x2="97" y2="95" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<!-- 가시들 (왼쪽 가지) -->
+<line x1="62" y1="80" x2="60" y2="80" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="62" y1="88" x2="60" y2="88" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<!-- 가시들 (오른쪽 가지) -->
+<line x1="107" y1="80" x2="109" y2="80" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="107" y1="88" x2="109" y2="88" stroke="#5D6D52" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
