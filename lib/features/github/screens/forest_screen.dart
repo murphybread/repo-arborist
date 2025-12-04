@@ -454,7 +454,44 @@ class _RepositoryCard extends StatelessWidget {
                 ),
               ),
 
-              // Repository Info with clearer background
+              // Signpost with Repository Name
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  height: 60,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Signpost Image
+                      Image.asset(
+                        Assets.images.etc.signpostEmpty.path,
+                        fit: BoxFit.contain,
+                      ),
+                      // Repository Name on Signpost
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(
+                          repository.repository.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            height: 1.2,
+                            color: const Color(0xFF2C1810),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Repository Stats
               Container(
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -467,26 +504,12 @@ class _RepositoryCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Repository Name
-                    Text(
-                      repository.repository.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        height: 1.25,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-
                     // Stats
                     Text(
                       _getStatsText(),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w500,
@@ -505,198 +528,120 @@ class _RepositoryCard extends StatelessWidget {
     );
   }
 
-  /// 배경 그라디언트 가져오기
+  /// 배경 그라디언트 가져오기 (식물 종류 기반)
   LinearGradient _getBackgroundGradient() {
-    final stage = repository.treeStage;
+    final plantType = repository.plantType;
+    final primaryColor = plantType.primaryColor;
 
-    switch (stage) {
-      case TreeStage.sprout:
-        // 새싹 - 연한 회색/청록색
-        return LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF1E293B),
-            const Color(0xFF334155),
-          ],
-        );
-      case TreeStage.bloom:
-        // 꽃 - 색상별 미묘한 배경
-        final index = repository.variantIndex;
-        switch (index) {
-          case 0: // Yellow
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E293B),
-                const Color(0xFF3D2C1F),
-              ],
-            );
-          case 1: // Blue
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E293B),
-                const Color(0xFF1E3A5F),
-              ],
-            );
-          case 2: // Orange
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E293B),
-                const Color(0xFF3D2A1F),
-              ],
-            );
-          case 3: // Pink
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E293B),
-                const Color(0xFF3D1F2E),
-              ],
-            );
-          default:
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E293B),
-                const Color(0xFF334155),
-              ],
-            );
-        }
-      case TreeStage.tree:
-        // 나무 - 더 강한 색상
-        final index = repository.variantIndex;
-        if (index == 0) {
-          // Green tree
-          return LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1E293B),
-              const Color(0xFF1F3D2E),
-            ],
-          );
-        } else {
-          // Red tree
-          return LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1E293B),
-              const Color(0xFF3D1F2A),
-            ],
-          );
-        }
-    }
+    // 식물별 배경 그라디언트
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        const Color(0xFF1E293B),
+        Color.lerp(
+          const Color(0xFF1E293B),
+          primaryColor,
+          0.15,
+        )!,
+      ],
+    );
   }
 
-  /// 나무 이미지 경로 가져오기
+  /// 식물 이미지 경로 가져오기 (언어 기반)
   String _getTreeImagePath() {
     final stage = repository.treeStage;
-    final index = repository.variantIndex;
-    final isCactus = repository.isCactusMode;
+    final plantType = repository.plantType;
 
-    // 선인장 모드 (1년 이상 방치)
-    if (isCactus) {
-      switch (stage) {
-        case TreeStage.sprout:
-          return Assets.images.trees.cactusSprout.path;
-        case TreeStage.bloom:
-          return Assets.images.trees.cactusBloom.path;
-        case TreeStage.tree:
-          return Assets.images.trees.cactusTree.path;
-      }
-    }
-
-    // 일반 나무
+    // 단계별 이미지 경로
     switch (stage) {
       case TreeStage.sprout:
-        return Assets.images.trees.sproutDot.path;
+        // sprout_[plant]_dot.png
+        switch (plantType) {
+          case PlantType.bamboo:
+            return Assets.images.plants.sproutBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.sproutBlossomDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.sproutCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.sproutCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.sproutFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.sproutGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.sproutMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.sproutOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.sproutPineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.sproutSnakePlantDot.path;
+        }
+
       case TreeStage.bloom:
-        final bloomAssets = [
-          Assets.images.trees.bloomOrangeDot.path,
-          Assets.images.trees.bloomPurpleDot.path,
-        ];
-        return bloomAssets[index % bloomAssets.length];
+        // flower_[plant]_dot.png
+        switch (plantType) {
+          case PlantType.bamboo:
+            return Assets.images.plants.flowerBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.flowerBlossomDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.flowerCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.flowerCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.flowerFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.flowerGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.flowerMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.flowerOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.flowerPineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.flowerSnakePlantDot.path;
+        }
+
       case TreeStage.tree:
-        // 모든 tree 단계는 maple.png 사용
-        return Assets.images.trees.maple.path;
+        // tree_[plant]_dot.png
+        switch (plantType) {
+          case PlantType.bamboo:
+            return Assets.images.plants.treeBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.treeBlossomDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.treeCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.treeCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.treeFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.treeGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.treeMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.treeOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.treePineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.treeSnakePlantDot.path;
+        }
     }
   }
 
-  /// 테두리 색상 가져오기
+  /// 테두리 색상 가져오기 (식물 종류 기반)
   Color _getBorderColor() {
-    final stage = repository.treeStage;
-
-    switch (stage) {
-      case TreeStage.sprout:
-        return const Color(0xFF64748B); // 회색
-      case TreeStage.bloom:
-        final index = repository.variantIndex;
-        switch (index) {
-          case 0:
-            return const Color(0xFFFDE047); // Yellow
-          case 1:
-            return const Color(0xFF60A5FA); // Blue
-          case 2:
-            return const Color(0xFFFB923C); // Orange
-          case 3:
-            return const Color(0xFFF472B6); // Pink
-          default:
-            return const Color(0xFF64748B);
-        }
-      case TreeStage.tree:
-        final index = repository.variantIndex;
-        if (index == 0) {
-          return const Color(0xFF22C55E); // Green
-        } else {
-          return const Color(0xFFF43F5E); // Red
-        }
-    }
+    final plantType = repository.plantType;
+    return plantType.primaryColor;
   }
 
-  /// Glow 색상 가져오기
+  /// Glow 색상 가져오기 (식물 종류 기반)
   Color _getGlowColor() {
-    final stage = repository.treeStage;
-    final isCactus = repository.isCactusMode;
-
-    // 선인장이면 선인장 색상
-    if (isCactus) {
-      return const Color(0xFF86A17A); // 선인장 색상
-    }
-
-    switch (stage) {
-      case TreeStage.sprout:
-        return const Color(0xFF34D399); // 초록색 글로우
-      case TreeStage.bloom:
-        final index = repository.variantIndex;
-        switch (index) {
-          case 0:
-            return const Color(0xFFFDE047); // Yellow
-          case 1:
-            return const Color(0xFF60A5FA); // Blue
-          case 2:
-            return const Color(0xFFFB923C); // Orange
-          case 3:
-            return const Color(0xFFF472B6); // Pink
-          default:
-            return const Color(0xFF34D399); // 기본 초록
-        }
-      case TreeStage.tree:
-        final index = repository.variantIndex;
-        if (index == 0) {
-          return const Color(0xFF22C55E); // Green
-        } else {
-          return const Color(0xFFF43F5E); // Red
-        }
-    }
+    final plantType = repository.plantType;
+    return plantType.primaryColor;
   }
 
   /// 단계별 크기 배율 가져오기
