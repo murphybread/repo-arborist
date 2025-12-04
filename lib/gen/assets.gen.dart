@@ -17,12 +17,11 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// Directory path: assets/images/playground
-  $AssetsImagesPlaygroundGen get playground =>
-      const $AssetsImagesPlaygroundGen();
+  /// Directory path: assets/images/etc
+  $AssetsImagesEtcGen get etc => const $AssetsImagesEtcGen();
 
-  /// Directory path: assets/images/trees
-  $AssetsImagesTreesGen get trees => const $AssetsImagesTreesGen();
+  /// Directory path: assets/images/plants
+  $AssetsImagesPlantsGen get plants => const $AssetsImagesPlantsGen();
 }
 
 class $AssetsTranslationsGen {
@@ -38,123 +37,222 @@ class $AssetsTranslationsGen {
   List<String> get values => [en, ko];
 }
 
-class $AssetsImagesPlaygroundGen {
-  const $AssetsImagesPlaygroundGen();
+class $AssetsImagesEtcGen {
+  const $AssetsImagesEtcGen();
 
-  /// File path: assets/images/playground/tree_glow-56586a.png
-  AssetGenImage get treeGlow56586a =>
-      const AssetGenImage('assets/images/playground/tree_glow-56586a.png');
+  /// File path: assets/images/etc/bg_sky_gradient.png
+  AssetGenImage get bgSkyGradient =>
+      const AssetGenImage('assets/images/etc/bg_sky_gradient.png');
+
+  /// File path: assets/images/etc/fresh_effect_sprite_dot.png
+  AssetGenImage get freshEffectSpriteDot =>
+      const AssetGenImage('assets/images/etc/fresh_effect_sprite_dot.png');
+
+  /// File path: assets/images/etc/garden_border_hedge.png
+  AssetGenImage get gardenBorderHedge =>
+      const AssetGenImage('assets/images/etc/garden_border_hedge.png');
+
+  /// File path: assets/images/etc/plant_neglected_overlay_sprite.png
+  AssetGenImage get plantNeglectedOverlaySprite => const AssetGenImage(
+    'assets/images/etc/plant_neglected_overlay_sprite.png',
+  );
+
+  /// File path: assets/images/etc/plant_shadow.png
+  AssetGenImage get plantShadow =>
+      const AssetGenImage('assets/images/etc/plant_shadow.png');
+
+  /// File path: assets/images/etc/signpost_empty.png
+  AssetGenImage get signpostEmpty =>
+      const AssetGenImage('assets/images/etc/signpost_empty.png');
+
+  /// File path: assets/images/etc/sparkling_effect_sprite_dot.png
+  AssetGenImage get sparklingEffectSpriteDot =>
+      const AssetGenImage('assets/images/etc/sparkling_effect_sprite_dot.png');
+
+  /// File path: assets/images/etc/square_groudtile_dot.png
+  AssetGenImage get squareGroudtileDot =>
+      const AssetGenImage('assets/images/etc/square_groudtile_dot.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [treeGlow56586a];
+  List<AssetGenImage> get values => [
+    bgSkyGradient,
+    freshEffectSpriteDot,
+    gardenBorderHedge,
+    plantNeglectedOverlaySprite,
+    plantShadow,
+    signpostEmpty,
+    sparklingEffectSpriteDot,
+    squareGroudtileDot,
+  ];
 }
 
-class $AssetsImagesTreesGen {
-  const $AssetsImagesTreesGen();
+class $AssetsImagesPlantsGen {
+  const $AssetsImagesPlantsGen();
 
-  /// File path: assets/images/trees/bloom_blue.svg
-  SvgGenImage get bloomBlue =>
-      const SvgGenImage('assets/images/trees/bloom_blue.svg');
+  /// File path: assets/images/plants/flower_bamboo_dot.png
+  AssetGenImage get flowerBambooDot =>
+      const AssetGenImage('assets/images/plants/flower_bamboo_dot.png');
 
-  /// File path: assets/images/trees/bloom_orange.svg
-  SvgGenImage get bloomOrange =>
-      const SvgGenImage('assets/images/trees/bloom_orange.svg');
+  /// File path: assets/images/plants/flower_blossom_dot.png
+  AssetGenImage get flowerBlossomDot =>
+      const AssetGenImage('assets/images/plants/flower_blossom_dot.png');
 
-  /// File path: assets/images/trees/bloom_orange_dot.png
-  AssetGenImage get bloomOrangeDot =>
-      const AssetGenImage('assets/images/trees/bloom_orange_dot.png');
+  /// File path: assets/images/plants/flower_cactus_dot.png
+  AssetGenImage get flowerCactusDot =>
+      const AssetGenImage('assets/images/plants/flower_cactus_dot.png');
 
-  /// File path: assets/images/trees/bloom_pink.svg
-  SvgGenImage get bloomPink =>
-      const SvgGenImage('assets/images/trees/bloom_pink.svg');
+  /// File path: assets/images/plants/flower_coffee_dot.png
+  AssetGenImage get flowerCoffeeDot =>
+      const AssetGenImage('assets/images/plants/flower_coffee_dot.png');
 
-  /// File path: assets/images/trees/bloom_purple.svg
-  SvgGenImage get bloomPurple =>
-      const SvgGenImage('assets/images/trees/bloom_purple.svg');
+  /// File path: assets/images/plants/flower_fir_dot.png
+  AssetGenImage get flowerFirDot =>
+      const AssetGenImage('assets/images/plants/flower_fir_dot.png');
 
-  /// File path: assets/images/trees/bloom_purple_dot.png
-  AssetGenImage get bloomPurpleDot =>
-      const AssetGenImage('assets/images/trees/bloom_purple_dot.png');
+  /// File path: assets/images/plants/flower_ginkgo_dot.png
+  AssetGenImage get flowerGinkgoDot =>
+      const AssetGenImage('assets/images/plants/flower_ginkgo_dot.png');
 
-  /// File path: assets/images/trees/bloom_yellow.svg
-  SvgGenImage get bloomYellow =>
-      const SvgGenImage('assets/images/trees/bloom_yellow.svg');
+  /// File path: assets/images/plants/flower_maple_dot.png
+  AssetGenImage get flowerMapleDot =>
+      const AssetGenImage('assets/images/plants/flower_maple_dot.png');
 
-  /// File path: assets/images/trees/cactus_bloom.svg
-  SvgGenImage get cactusBloom =>
-      const SvgGenImage('assets/images/trees/cactus_bloom.svg');
+  /// File path: assets/images/plants/flower_oak_dot.png
+  AssetGenImage get flowerOakDot =>
+      const AssetGenImage('assets/images/plants/flower_oak_dot.png');
 
-  /// File path: assets/images/trees/cactus_sprout.svg
-  SvgGenImage get cactusSprout =>
-      const SvgGenImage('assets/images/trees/cactus_sprout.svg');
+  /// File path: assets/images/plants/flower_pine_dot.png
+  AssetGenImage get flowerPineDot =>
+      const AssetGenImage('assets/images/plants/flower_pine_dot.png');
 
-  /// File path: assets/images/trees/cactus_tree.svg
-  SvgGenImage get cactusTree =>
-      const SvgGenImage('assets/images/trees/cactus_tree.svg');
+  /// File path: assets/images/plants/flower_snake_plant_dot.png
+  AssetGenImage get flowerSnakePlantDot =>
+      const AssetGenImage('assets/images/plants/flower_snake_plant_dot.png');
 
-  /// File path: assets/images/trees/cherry blossom.png
-  AssetGenImage get cherryBlossom =>
-      const AssetGenImage('assets/images/trees/cherry blossom.png');
+  /// File path: assets/images/plants/sprout_bamboo_dot.png
+  AssetGenImage get sproutBambooDot =>
+      const AssetGenImage('assets/images/plants/sprout_bamboo_dot.png');
 
-  /// File path: assets/images/trees/clean_background.py
-  String get cleanBackground => 'assets/images/trees/clean_background.py';
+  /// File path: assets/images/plants/sprout_blossom_dot.png
+  AssetGenImage get sproutBlossomDot =>
+      const AssetGenImage('assets/images/plants/sprout_blossom_dot.png');
 
-  /// File path: assets/images/trees/generate_tree_dot.png
-  AssetGenImage get generateTreeDot =>
-      const AssetGenImage('assets/images/trees/generate_tree_dot.png');
+  /// File path: assets/images/plants/sprout_cactus_dot.png
+  AssetGenImage get sproutCactusDot =>
+      const AssetGenImage('assets/images/plants/sprout_cactus_dot.png');
 
-  /// File path: assets/images/trees/maple.png
-  AssetGenImage get maple =>
-      const AssetGenImage('assets/images/trees/maple.png');
+  /// File path: assets/images/plants/sprout_coffee_dot.png
+  AssetGenImage get sproutCoffeeDot =>
+      const AssetGenImage('assets/images/plants/sprout_coffee_dot.png');
 
-  /// File path: assets/images/trees/sprout.svg
-  SvgGenImage get sprout => const SvgGenImage('assets/images/trees/sprout.svg');
+  /// File path: assets/images/plants/sprout_fir_dot.png
+  AssetGenImage get sproutFirDot =>
+      const AssetGenImage('assets/images/plants/sprout_fir_dot.png');
 
-  /// File path: assets/images/trees/sprout_dot.png
-  AssetGenImage get sproutDot =>
-      const AssetGenImage('assets/images/trees/sprout_dot.png');
+  /// File path: assets/images/plants/sprout_ginkgo_dot.png
+  AssetGenImage get sproutGinkgoDot =>
+      const AssetGenImage('assets/images/plants/sprout_ginkgo_dot.png');
 
-  /// File path: assets/images/trees/tree_green.svg
-  SvgGenImage get treeGreen =>
-      const SvgGenImage('assets/images/trees/tree_green.svg');
+  /// File path: assets/images/plants/sprout_maple_dot.png
+  AssetGenImage get sproutMapleDot =>
+      const AssetGenImage('assets/images/plants/sprout_maple_dot.png');
 
-  /// File path: assets/images/trees/tree_red.svg
-  SvgGenImage get treeRed =>
-      const SvgGenImage('assets/images/trees/tree_red.svg');
+  /// File path: assets/images/plants/sprout_oak_dot.png
+  AssetGenImage get sproutOakDot =>
+      const AssetGenImage('assets/images/plants/sprout_oak_dot.png');
+
+  /// File path: assets/images/plants/sprout_pine_dot.png
+  AssetGenImage get sproutPineDot =>
+      const AssetGenImage('assets/images/plants/sprout_pine_dot.png');
+
+  /// File path: assets/images/plants/sprout_snake_plant_dot.png
+  AssetGenImage get sproutSnakePlantDot =>
+      const AssetGenImage('assets/images/plants/sprout_snake_plant_dot.png');
+
+  /// File path: assets/images/plants/tree_bamboo_dot.png
+  AssetGenImage get treeBambooDot =>
+      const AssetGenImage('assets/images/plants/tree_bamboo_dot.png');
+
+  /// File path: assets/images/plants/tree_blossom_dot.png
+  AssetGenImage get treeBlossomDot =>
+      const AssetGenImage('assets/images/plants/tree_blossom_dot.png');
+
+  /// File path: assets/images/plants/tree_cactus_dot.png
+  AssetGenImage get treeCactusDot =>
+      const AssetGenImage('assets/images/plants/tree_cactus_dot.png');
+
+  /// File path: assets/images/plants/tree_coffee_dot.png
+  AssetGenImage get treeCoffeeDot =>
+      const AssetGenImage('assets/images/plants/tree_coffee_dot.png');
+
+  /// File path: assets/images/plants/tree_fir_dot.png
+  AssetGenImage get treeFirDot =>
+      const AssetGenImage('assets/images/plants/tree_fir_dot.png');
+
+  /// File path: assets/images/plants/tree_ginkgo_dot.png
+  AssetGenImage get treeGinkgoDot =>
+      const AssetGenImage('assets/images/plants/tree_ginkgo_dot.png');
+
+  /// File path: assets/images/plants/tree_maple_dot.png
+  AssetGenImage get treeMapleDot =>
+      const AssetGenImage('assets/images/plants/tree_maple_dot.png');
+
+  /// File path: assets/images/plants/tree_oak_dot.png
+  AssetGenImage get treeOakDot =>
+      const AssetGenImage('assets/images/plants/tree_oak_dot.png');
+
+  /// File path: assets/images/plants/tree_pine_dot.png
+  AssetGenImage get treePineDot =>
+      const AssetGenImage('assets/images/plants/tree_pine_dot.png');
+
+  /// File path: assets/images/plants/tree_snake_plant_dot.png
+  AssetGenImage get treeSnakePlantDot =>
+      const AssetGenImage('assets/images/plants/tree_snake_plant_dot.png');
 
   /// List of all assets
-  List<dynamic> get values => [
-    bloomBlue,
-    bloomOrange,
-    bloomOrangeDot,
-    bloomPink,
-    bloomPurple,
-    bloomPurpleDot,
-    bloomYellow,
-    cactusBloom,
-    cactusSprout,
-    cactusTree,
-    cherryBlossom,
-    cleanBackground,
-    generateTreeDot,
-    maple,
-    sprout,
-    sproutDot,
-    treeGreen,
-    treeRed,
+  List<AssetGenImage> get values => [
+    flowerBambooDot,
+    flowerBlossomDot,
+    flowerCactusDot,
+    flowerCoffeeDot,
+    flowerFirDot,
+    flowerGinkgoDot,
+    flowerMapleDot,
+    flowerOakDot,
+    flowerPineDot,
+    flowerSnakePlantDot,
+    sproutBambooDot,
+    sproutBlossomDot,
+    sproutCactusDot,
+    sproutCoffeeDot,
+    sproutFirDot,
+    sproutGinkgoDot,
+    sproutMapleDot,
+    sproutOakDot,
+    sproutPineDot,
+    sproutSnakePlantDot,
+    treeBambooDot,
+    treeBlossomDot,
+    treeCactusDot,
+    treeCoffeeDot,
+    treeFirDot,
+    treeGinkgoDot,
+    treeMapleDot,
+    treeOakDot,
+    treePineDot,
+    treeSnakePlantDot,
   ];
 }
 
 class Assets {
   const Assets._();
 
-  static const String aEnv = '.env';
   static const SvgGenImage blueberry = SvgGenImage('assets/blueberry.svg');
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsTranslationsGen translations = $AssetsTranslationsGen();
 
   /// List of all assets
-  static List<dynamic> get values => [aEnv, blueberry];
+  static List<SvgGenImage> get values => [blueberry];
 }
 
 class AssetGenImage {
