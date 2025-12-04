@@ -110,22 +110,53 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
     debugPrint('   - token: ${widget.token != null ? "있음" : "없음"}');
     debugPrint('   - username: ${widget.username}');
 
+    // 비동기 작업이므로 await 사용
     ref
         .read(forestProvider.notifier)
         .loadRepositoryStats(
           token: widget.token,
           username: widget.username,
-        );
+          forceRefresh: true,
+        )
+        .then((_) {
+          debugPrint('🟢 [ForestLoading] loadRepositoryStats 성공');
+          if (mounted) {
+            _navigateToGarden();
+          }
+        })
+        .catchError((Object error, StackTrace stackTrace) {
+          debugPrint('🔴 [ForestLoading] loadRepositoryStats 에러: $error');
+          debugPrint('Stack trace: $stackTrace');
+        });
 
-    debugPrint('🟢 [ForestLoading] loadRepositoryStats 호출 완료');
-
-    // 60초 타임아웃 설정
-    Future.delayed(const Duration(seconds: 60), () {
+    // 120초 타임아웃 설정 (60초 → 120초로 증가)
+    Future.delayed(const Duration(seconds: 120), () {
       if (mounted && !_hasNavigated) {
+        debugPrint('⏱️ [ForestLoading] 타임아웃 발생 (120초)');
         setState(() {
           _hasTimedOut = true;
         });
       }
+    });
+  }
+
+  void _navigateToGarden() {
+    if (_hasNavigated) return;
+    _hasNavigated = true;
+
+    // 2초 대기 후 네비게이션
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (!mounted) return;
+      if (!context.mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => GardenOverviewScreen(
+            token: widget.token,
+            username: widget.username,
+          ),
+        ),
+      );
     });
   }
 
@@ -150,36 +181,6 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
 
     // forestProvider 상태 감지
     final forestState = ref.watch(forestProvider);
-
-    ref.listen<AsyncValue<List<RepositoryStatsModel>>>(
-      forestProvider,
-      (previous, next) {
-        next.whenData((repos) {
-          if (!_hasNavigated && repos.isNotEmpty) {
-            _hasNavigated = true;
-            // 2초 대기 후 네비게이션
-            Future.delayed(const Duration(milliseconds: 2000), () {
-              // async gap 후 context 유효성 검사
-              if (!mounted) {
-                return;
-              }
-              if (!context.mounted) {
-                return;
-              }
-
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => GardenOverviewScreen(
-                    token: widget.token,
-                    username: widget.username,
-                  ),
-                ),
-              );
-            });
-          }
-        });
-      },
-    );
 
     // 타임아웃 또는 에러 발생 시 에러 화면 표시
     if (_hasTimedOut || forestState.hasError) {

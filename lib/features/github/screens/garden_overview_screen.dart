@@ -24,10 +24,13 @@ class GardenOverviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('🟢 [GardenOverview] build 호출됨');
     final reposAsync = ref.watch(forestProvider);
 
     return reposAsync.when(
       data: (repos) {
+        debugPrint('🟢 [GardenOverview] build - 데이터 수신: ${repos.length}개');
+        
         // created_at 기준으로 정렬 (오래된 것부터)
         final sortedRepos = List<RepositoryStatsModel>.from(repos)
           ..sort(
@@ -40,14 +43,21 @@ class GardenOverviewScreen extends ConsumerWidget {
           username: username,
         );
       },
-      loading: () => const Scaffold(
-        backgroundColor: Color(0xFFF8FAFC),
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
-        backgroundColor: Color(0xFFF8FAFC),
-        body: Center(child: Text('Error: $error')),
-      ),
+      loading: () {
+        debugPrint('🟢 [GardenOverview] loading 상태');
+        return const Scaffold(
+          backgroundColor: Color(0xFFF8FAFC),
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
+      error: (error, stack) {
+        debugPrint('🔴 [GardenOverview] Error 발생: $error');
+        debugPrint('Stack trace: $stack');
+        return Scaffold(
+          backgroundColor: Color(0xFFF8FAFC),
+          body: Center(child: Text('Error: $error')),
+        );
+      },
     );
   }
 }

@@ -351,6 +351,8 @@ class GitHubRepository {
       throw Exception('Either token or username must be provided');
     }
 
+    debugPrint('[GitHub API] 가져온 레포지토리 목록: ${repositories.length}개');
+
     // 병렬로 모든 레포의 통계 가져오기
     // token이 null이면 public API로 조회 (rate limit 주의)
     final statsFutures = repositories.map((repo) {
