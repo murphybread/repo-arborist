@@ -387,18 +387,19 @@ class _GardenTreeState extends State<_GardenTree>
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // 나무 그림자
-          Positioned(
-            bottom: widget.size * 0.05,
-            child: Opacity(
-              opacity: 0.6,
-              child: Image.asset(
-                Assets.images.etc.plantShadow.path,
-                width: widget.size * 1.2,
-                fit: BoxFit.contain,
+          // Shadow image only for tree level
+          if (stage == TreeStage.tree)
+            Positioned(
+              bottom: widget.size * 0.05,
+              child: Opacity(
+                opacity: 0.6,
+                child: Image.asset(
+                  Assets.images.etc.plantShadow.path,
+                  width: widget.size * 1.2,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
 
           // 나무와 라벨
           Column(

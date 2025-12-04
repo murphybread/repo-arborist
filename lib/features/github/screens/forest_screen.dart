@@ -408,20 +408,23 @@ class _RepositoryCard extends StatelessWidget {
               // Tree Image with better background
               Expanded(
                 child: Container(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.center,
-                      radius: 0.8,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.05),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
+                  decoration: repository.treeStage == TreeStage.tree
+                      ? BoxDecoration(
+                          gradient: RadialGradient(
+                            center: Alignment.center,
+                            radius: 0.8,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.05),
+                              Colors.transparent,
+                            ],
+                          ),
+                        )
+                      : null,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(24, 34, 24, 26),
                     child: Container(
-                      decoration: glowIntensity > 0
+                      decoration: glowIntensity > 0 &&
+                              repository.treeStage == TreeStage.tree
                           ? BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
