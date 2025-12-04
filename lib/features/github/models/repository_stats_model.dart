@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:repo_arborist/features/github/models/github_repository_model.dart';
 
 /// Repository 통계 정보를 포함한 모델
@@ -10,6 +11,12 @@ class RepositoryStatsModel {
     this.lastCommitDate,
     this.lastMergedPRDate,
   });
+
+  /// 커밋당 점수
+  static const commitScore = 1;
+
+  /// PR당 점수
+  static const prScore = 3;
 
   /// JSON에서 모델로 변환
   factory RepositoryStatsModel.fromJson(Map<String, dynamic> json) {
@@ -56,8 +63,9 @@ class RepositoryStatsModel {
 
   /// 프로젝트 규모 점수 계산
   ///
-  /// score = total_commits + (total_merged_prs * 5)
-  int get projectSizeScore => totalCommits + (totalMergedPRs * 5);
+  /// score = (total_commits * commitScore) + (total_merged_prs * prScore)
+  int get projectSizeScore =>
+      (totalCommits * commitScore) + (totalMergedPRs * prScore);
 
   /// 나무 단계 결정
   ///
@@ -129,8 +137,223 @@ class RepositoryStatsModel {
     }
   }
 
-  /// 선인장 모드 여부 (1년 이상 방치)
-  bool get isCactusMode => daysSinceLastActivity >= 365;
+  /// 방치 모드 여부 (6개월 이상)
+  bool get isNeglected => daysSinceLastActivity >= 180;
+
+  /// 심각한 방치 모드 여부 (1년 이상)
+  bool get isSeverelyNeglected => daysSinceLastActivity >= 365;
+
+  /// 저장소 언어에 따른 식물 종류 반환
+  PlantType get plantType {
+    // 언어가 없는 경우 참나무 (General)
+    final language = repository.language?.toLowerCase();
+    if (language == null || language.isEmpty) {
+      return PlantType.oak;
+    }
+
+    // 언어별 매핑
+    return PlantType.fromLanguage(language);
+  }
+
+  /// 선인장 모드 여부 (하위 호환성, deprecated)
+  @Deprecated('Use isNeglected or isSeverelyNeglected instead')
+  bool get isCactusMode => isSeverelyNeglected;
+}
+
+/// 식물 종류 (10대 가문)
+enum PlantType {
+  /// ☕ 커피 가문 - Java, Kotlin, JVM
+  coffee,
+
+  /// 🌻 은행 가문 - JavaScript, TypeScript, Web
+  ginkgo,
+
+  /// 🐍 뱀식물 가문 - Python, AI, Data
+  snakePlant,
+
+  /// 🌲 전나무 가문 - C, C++, Rust, System
+  fir,
+
+  /// 🌸 벚꽃 가문 - Flutter, Swift, Mobile
+  blossom,
+
+  /// 🎋 대나무 가문 - Go, Node.js
+  bamboo,
+
+  /// 🌳 참나무 가문 - C#, General, Others
+  oak,
+
+  /// 🍁 단풍 가문 - Ruby, HTML
+  maple,
+
+  /// 🌵 선인장 가문 - Shell, Config, DevOps
+  cactus,
+
+  /// ✂️ 소나무 가문 - Assembly, Embedded
+  pine;
+
+  /// 언어 이름으로 식물 타입 결정
+  static PlantType fromLanguage(String language) {
+    final lang = language.toLowerCase();
+
+    // ☕ Coffee - Java, Kotlin, JVM
+    if (lang == 'java' ||
+        lang == 'kotlin' ||
+        lang == 'scala' ||
+        lang.contains('jvm')) {
+      return PlantType.coffee;
+    }
+
+    // 🌻 Ginkgo - JavaScript, TypeScript, Web
+    if (lang.contains('javascript') ||
+        lang.contains('typescript') ||
+        lang == 'js' ||
+        lang == 'ts') {
+      return PlantType.ginkgo;
+    }
+
+    // 🐍 Snake Plant - Python, AI, Data
+    if (lang.contains('python') || lang == 'py' || lang == 'jupyter notebook') {
+      return PlantType.snakePlant;
+    }
+
+    // 🌲 Fir - C, C++, Rust, System
+    if (lang == 'c' ||
+        lang == 'c++' ||
+        lang == 'cpp' ||
+        lang == 'rust' ||
+        lang.contains('objective')) {
+      return PlantType.fir;
+    }
+
+    // 🌸 Blossom - Flutter, Swift, Mobile
+    if (lang == 'dart' ||
+        lang.contains('flutter') ||
+        lang == 'swift' ||
+        lang == 'kotlin') {
+      return PlantType.blossom;
+    }
+
+    // 🎋 Bamboo - Go, Node.js
+    if (lang == 'go' || lang == 'golang' || lang.contains('node')) {
+      return PlantType.bamboo;
+    }
+
+    // 🌳 Oak - C#, General, Others
+    if (lang == 'c#' || lang == 'csharp' || lang == 'php' || lang == 'perl') {
+      return PlantType.oak;
+    }
+
+    // 🍁 Maple - Ruby, HTML
+    if (lang == 'ruby' ||
+        lang == 'html' ||
+        lang == 'css' ||
+        lang == 'scss' ||
+        lang == 'sass') {
+      return PlantType.maple;
+    }
+
+    // 🌵 Cactus - Shell, Config, DevOps
+    if (lang.contains('shell') ||
+        lang == 'bash' ||
+        lang == 'sh' ||
+        lang == 'dockerfile' ||
+        lang == 'makefile' ||
+        lang == 'yaml' ||
+        lang == 'json') {
+      return PlantType.cactus;
+    }
+
+    // ✂️ Pine - Assembly, Embedded
+    if (lang.contains('assembly') ||
+        lang == 'asm' ||
+        lang.contains('embedded') ||
+        lang == 'verilog' ||
+        lang == 'vhdl') {
+      return PlantType.pine;
+    }
+
+    // 기타 언어는 참나무 (General)
+    return PlantType.oak;
+  }
+
+  /// 식물 이름 (파일명 prefix)
+  String get fileName {
+    switch (this) {
+      case PlantType.coffee:
+        return 'coffee';
+      case PlantType.ginkgo:
+        return 'ginkgo';
+      case PlantType.snakePlant:
+        return 'snake_plant';
+      case PlantType.fir:
+        return 'fir';
+      case PlantType.blossom:
+        return 'blossom';
+      case PlantType.bamboo:
+        return 'bamboo';
+      case PlantType.oak:
+        return 'oak';
+      case PlantType.maple:
+        return 'maple';
+      case PlantType.cactus:
+        return 'cactus';
+      case PlantType.pine:
+        return 'pine';
+    }
+  }
+
+  /// 가문별 대표 색상 (테두리, 글로우)
+  Color get primaryColor {
+    switch (this) {
+      case PlantType.coffee:
+        return const Color(0xFF8B4513); // 커피 브라운
+      case PlantType.ginkgo:
+        return const Color(0xFFFDE047); // 은행 노란색 (JS 로고)
+      case PlantType.snakePlant:
+        return const Color(0xFF84CC16); // 뱀식물 라임 그린
+      case PlantType.fir:
+        return const Color(0xFF065F46); // 전나무 짙은 초록
+      case PlantType.blossom:
+        return const Color(0xFFF472B6); // 벚꽃 핑크
+      case PlantType.bamboo:
+        return const Color(0xFF86EFAC); // 대나무 연두
+      case PlantType.oak:
+        return const Color(0xFF78716C); // 참나무 갈색
+      case PlantType.maple:
+        return const Color(0xFFF87171); // 단풍 빨강
+      case PlantType.cactus:
+        return const Color(0xFF86A17A); // 선인장 초록
+      case PlantType.pine:
+        return const Color(0xFF14532D); // 소나무 진한 초록
+    }
+  }
+
+  /// 가문별 보조 색상 (그라데이션)
+  Color get secondaryColor {
+    switch (this) {
+      case PlantType.coffee:
+        return const Color(0xFF22C55E); // 커피 잎 초록
+      case PlantType.ginkgo:
+        return const Color(0xFFFBBF24); // 은행 골드
+      case PlantType.snakePlant:
+        return const Color(0xFFFDE047); // 뱀식물 노란 테두리
+      case PlantType.fir:
+        return const Color(0xFF064E3B); // 전나무 어두운 초록
+      case PlantType.blossom:
+        return const Color(0xFFFBCFE8); // 벚꽃 연분홍
+      case PlantType.bamboo:
+        return const Color(0xFF4ADE80); // 대나무 밝은 초록
+      case PlantType.oak:
+        return const Color(0xFF22C55E); // 참나무 잎 초록
+      case PlantType.maple:
+        return const Color(0xFFFB923C); // 단풍 주황
+      case PlantType.cactus:
+        return const Color(0xFFFDE047); // 선인장 노란 가시
+      case PlantType.pine:
+        return const Color(0xFF166534); // 소나무 초록
+    }
+  }
 }
 
 /// 나무 성장 단계
