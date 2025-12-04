@@ -4,6 +4,7 @@ import 'package:repo_arborist/features/github/models/commit_model.dart';
 import 'package:repo_arborist/features/github/models/pull_request_model.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/repositories/github_repository.dart';
+import 'package:repo_arborist/gen/assets.gen.dart';
 
 /// Repository detail view screen.
 class RepositoryDetailScreen extends StatefulWidget {
@@ -167,9 +168,10 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                                     .activityTier
                                     .saturationMultiplier *
                                 0.7),
-                        child: SvgPicture.asset(
+                        child: Image.asset(
                           _getTreeImagePath(stage, variantIndex),
                           fit: BoxFit.contain,
+                          filterQuality: FilterQuality.none,
                         ),
                       ),
                     ),
@@ -296,72 +298,87 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
     );
   }
 
-  /// 트리 이미지 경로 가져오기
+  /// 트리 이미지 경로 가져오기 (언어 기반)
   String _getTreeImagePath(TreeStage stage, int variantIndex) {
-    final isCactus = widget.repository.isCactusMode;
+    final plantType = widget.repository.plantType;
 
-    // 선인장 모드 (1년 이상 방치)
-    if (isCactus) {
-      switch (stage) {
-        case TreeStage.sprout:
-          return 'assets/images/trees/cactus_sprout.svg';
-        case TreeStage.bloom:
-          return 'assets/images/trees/cactus_bloom.svg';
-        case TreeStage.tree:
-          return 'assets/images/trees/cactus_tree.svg';
-      }
-    }
-
-    // 일반 나무
+    // 성장 단계별 이미지 반환
     switch (stage) {
       case TreeStage.sprout:
-        return 'assets/images/trees/sprout_dot.png';
+        switch (plantType) {
+          case PlantType.bamboo:
+            return Assets.images.plants.sproutBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.sproutBlossomDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.sproutCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.sproutCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.sproutFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.sproutGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.sproutMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.sproutOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.sproutPineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.sproutSnakePlantDot.path;
+        }
       case TreeStage.bloom:
-        const bloomVariants = [
-          'assets/images/trees/bloom_orange_dot.png',
-          'assets/images/trees/bloom_purple_dot.png',
-        ];
-        return bloomVariants[variantIndex % bloomVariants.length];
+        switch (plantType) {
+          case PlantType.bamboo:
+            return Assets.images.plants.flowerBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.flowerBlossomDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.flowerCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.flowerCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.flowerFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.flowerGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.flowerMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.flowerOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.flowerPineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.flowerSnakePlantDot.path;
+        }
       case TreeStage.tree:
-        // tree_green, tree_red는 _dot 버전이 없으므로 maple.png 사용
-        return 'assets/images/trees/maple.png';
+        switch (plantType) {
+          case PlantType.bamboo:
+            return Assets.images.plants.treeBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.treeBlossomDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.treeCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.treeCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.treeFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.treeGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.treeMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.treeOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.treePineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.treeSnakePlantDot.path;
+        }
     }
   }
 
-  /// Glow 색상 가져오기
+  /// Glow 색상 가져오기 (식물 종류 기반)
   Color _getGlowColor() {
-    final stage = widget.repository.treeStage;
-    final variantIndex = widget.repository.variantIndex;
-    final isCactus = widget.repository.isCactusMode;
-
-    // 선인장이면 선인장 색상
-    if (isCactus) {
-      return const Color(0xFF86A17A); // 선인장 색상
-    }
-
-    switch (stage) {
-      case TreeStage.sprout:
-        return const Color(0xFF34D399); // 초록색 글로우
-      case TreeStage.bloom:
-        switch (variantIndex) {
-          case 0:
-            return const Color(0xFFFDE047); // Yellow
-          case 1:
-            return const Color(0xFF60A5FA); // Blue
-          case 2:
-            return const Color(0xFFFB923C); // Orange
-          case 3:
-            return const Color(0xFFF472B6); // Pink
-          default:
-            return const Color(0xFF34D399); // 기본 초록
-        }
-      case TreeStage.tree:
-        if (variantIndex == 0) {
-          return const Color(0xFF4ADE80); // Green
-        } else {
-          return const Color(0xFFF43F5E); // Red
-        }
-    }
+    return widget.repository.plantType.primaryColor;
   }
 
   /// 단계별 크기 배율 가져오기

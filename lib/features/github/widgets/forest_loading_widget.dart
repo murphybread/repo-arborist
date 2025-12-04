@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/screens/garden_overview_screen.dart';
+import 'package:repo_arborist/gen/assets.gen.dart';
 
 /// Forest 생성 중 로딩 위젯
 class ForestLoadingWidget extends ConsumerStatefulWidget {
@@ -327,7 +328,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                                 width: 87,
                                 height: 100,
                                 child: Image.asset(
-                                  'assets/images/trees/sprout_dot.png',
+                                  Assets.images.plants.sproutBambooDot.path,
                                   fit: BoxFit.contain,
                                   filterQuality: FilterQuality.none,
                                 ),
@@ -342,7 +343,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                                 width: 80,
                                 height: 80,
                                 child: Image.asset(
-                                  'assets/images/trees/bloom_orange_dot.png',
+                                  Assets.images.plants.flowerBlossomDot.path,
                                   fit: BoxFit.contain,
                                   filterQuality: FilterQuality.none,
                                 ),
@@ -357,7 +358,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                                 width: 87,
                                 height: 100,
                                 child: Image.asset(
-                                  'assets/images/trees/maple.png',
+                                  Assets.images.plants.treeOakDot.path,
                                   fit: BoxFit.contain,
                                 ),
                               ),
