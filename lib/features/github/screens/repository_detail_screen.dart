@@ -4,7 +4,6 @@ import 'package:repo_arborist/features/github/models/commit_model.dart';
 import 'package:repo_arborist/features/github/models/pull_request_model.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/repositories/github_repository.dart';
-import 'package:repo_arborist/gen/assets.gen.dart';
 
 /// Repository detail view screen.
 class RepositoryDetailScreen extends StatefulWidget {
@@ -298,88 +297,9 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
     );
   }
 
-  /// 트리 이미지 경로 가져오기 (언어 기반)
+  /// Get tree image path based on language-specific plant type
   String _getTreeImagePath(TreeStage stage, int variantIndex) {
-    final plantType = widget.repository.plantType;
-
-    // 성장 단계별 이미지 반환
-    switch (stage) {
-      case TreeStage.sprout:
-        switch (plantType) {
-          case PlantType.bamboo:
-            return Assets.images.plants.sproutBambooDot.path;
-          case PlantType.blossom:
-            return Assets.images.plants.sproutBlossomDot.path;
-          case PlantType.cactus:
-            return Assets.images.plants.sproutCactusDot.path;
-          case PlantType.coffee:
-            return Assets.images.plants.sproutCoffeeDot.path;
-          case PlantType.fir:
-            return Assets.images.plants.sproutFirDot.path;
-          case PlantType.ginkgo:
-            return Assets.images.plants.sproutGinkgoDot.path;
-          case PlantType.maple:
-            return Assets.images.plants.sproutMapleDot.path;
-          case PlantType.oak:
-            return Assets.images.plants.sproutOakDot.path;
-          case PlantType.pine:
-            return Assets.images.plants.sproutPineDot.path;
-          case PlantType.snakePlant:
-            return Assets.images.plants.sproutSnakePlantDot.path;
-          case PlantType.blueberry:
-            return Assets.images.plants.sproutBlueberryDot.path;
-        }
-      case TreeStage.bloom:
-        switch (plantType) {
-          case PlantType.bamboo:
-            return Assets.images.plants.flowerBambooDot.path;
-          case PlantType.blossom:
-            return Assets.images.plants.flowerBlossomDot.path;
-          case PlantType.cactus:
-            return Assets.images.plants.flowerCactusDot.path;
-          case PlantType.coffee:
-            return Assets.images.plants.flowerCoffeeDot.path;
-          case PlantType.fir:
-            return Assets.images.plants.flowerFirDot.path;
-          case PlantType.ginkgo:
-            return Assets.images.plants.flowerGinkgoDot.path;
-          case PlantType.maple:
-            return Assets.images.plants.flowerMapleDot.path;
-          case PlantType.oak:
-            return Assets.images.plants.flowerOakDot.path;
-          case PlantType.pine:
-            return Assets.images.plants.flowerPineDot.path;
-          case PlantType.snakePlant:
-            return Assets.images.plants.flowerSnakePlantDot.path;
-          case PlantType.blueberry:
-            return Assets.images.plants.flowerBlueberryDot.path;
-        }
-      case TreeStage.tree:
-        switch (plantType) {
-          case PlantType.bamboo:
-            return Assets.images.plants.treeBambooDot.path;
-          case PlantType.blossom:
-            return Assets.images.plants.treeBlossomDot.path;
-          case PlantType.cactus:
-            return Assets.images.plants.treeCactusDot.path;
-          case PlantType.coffee:
-            return Assets.images.plants.treeCoffeeDot.path;
-          case PlantType.fir:
-            return Assets.images.plants.treeFirDot.path;
-          case PlantType.ginkgo:
-            return Assets.images.plants.treeGinkgoDot.path;
-          case PlantType.maple:
-            return Assets.images.plants.treeMapleDot.path;
-          case PlantType.oak:
-            return Assets.images.plants.treeOakDot.path;
-          case PlantType.pine:
-            return Assets.images.plants.treePineDot.path;
-          case PlantType.snakePlant:
-            return Assets.images.plants.treeSnakePlantDot.path;
-          case PlantType.blueberry:
-            return Assets.images.plants.treeBlueberryDot.path;
-        }
-    }
+    return widget.repository.plantType.getImagePath(stage);
   }
 
   /// Glow 색상 가져오기 (식물 종류 기반)

@@ -42,13 +42,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
         persistenceEnabled: false,
       );
 
-      if (kDebugMode) {
-        debugPrint('[FirestoreCacheService] 초기화 완료 (오프라인 지속성: 비활성화)');
-      }
+      debugPrint('[FirestoreCacheService] 초기화 완료 (오프라인 지속성: 비활성화)');
     } on Exception catch (e) {
-      if (kDebugMode) {
-        debugPrint('[FirestoreCacheService] 초기화 실패: $e');
-      }
+      debugPrint('[FirestoreCacheService] 초기화 실패: $e');
       rethrow;
     }
   }
@@ -104,15 +100,13 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
       // 'value' 필드에 실제 데이터가 저장되어 있음
       return data['value'] as Map<String, dynamic>?;
     } on Exception catch (e) {
-      if (kDebugMode) {
-        final errorMessage = e.toString();
-        if (errorMessage.contains('unavailable') ||
-            errorMessage.contains('offline') ||
-            errorMessage.contains('timeout')) {
-          debugPrint('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 읽기 건너뜀');
-        } else {
-          debugPrint('[FirestoreCacheService] get 실패 ($key): $e');
-        }
+      final errorMessage = e.toString();
+      if (errorMessage.contains('unavailable') ||
+          errorMessage.contains('offline') ||
+          errorMessage.contains('timeout')) {
+        debugPrint('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 읽기 건너뜀');
+      } else {
+        debugPrint('[FirestoreCacheService] get 실패 ($key): $e');
       }
       return null;
     }
@@ -155,15 +149,13 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
 
       debugPrint('[FirestoreCacheService] 캐시 저장: $key (TTL: $ttl)');
     } on Exception catch (e) {
-      if (kDebugMode) {
-        final errorMessage = e.toString();
-        if (errorMessage.contains('unavailable') ||
-            errorMessage.contains('offline') ||
-            errorMessage.contains('timeout')) {
-          debugPrint('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 저장 건너뜀');
-        } else {
-          debugPrint('[FirestoreCacheService] set 실패 ($key): $e');
-        }
+      final errorMessage = e.toString();
+      if (errorMessage.contains('unavailable') ||
+          errorMessage.contains('offline') ||
+          errorMessage.contains('timeout')) {
+        debugPrint('[FirestoreCacheService] ⚠️ 오프라인/타임아웃 - 캐시 저장 건너뜀');
+      } else {
+        debugPrint('[FirestoreCacheService] set 실패 ($key): $e');
       }
       // 오프라인이어도 예외를 던지지 않음 (앱 계속 동작)
     }
@@ -240,14 +232,12 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
       final now = DateTime.now();
       return now.isAfter(expiresAt.toDate());
     } on Exception catch (e) {
-      if (kDebugMode) {
-        final errorMessage = e.toString();
-        if (errorMessage.contains('unavailable') ||
-            errorMessage.contains('offline')) {
-          debugPrint('[FirestoreCacheService] ⚠️ 오프라인 상태 - 캐시를 만료된 것으로 처리');
-        } else {
-          debugPrint('[FirestoreCacheService] isExpired 실패 ($key): $e');
-        }
+      final errorMessage = e.toString();
+      if (errorMessage.contains('unavailable') ||
+          errorMessage.contains('offline')) {
+        debugPrint('[FirestoreCacheService] ⚠️ 오프라인 상태 - 캐시를 만료된 것으로 처리');
+      } else {
+        debugPrint('[FirestoreCacheService] isExpired 실패 ($key): $e');
       }
       return true;
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:repo_arborist/features/github/models/github_repository_model.dart';
+import 'package:repo_arborist/gen/assets.gen.dart';
 
 /// Repository 통계 정보를 포함한 모델
 class RepositoryStatsModel {
@@ -363,6 +364,87 @@ enum PlantType {
         return const Color(0xFFA5B4FC); // 블루베리 연보라
       case PlantType.pine:
         return const Color(0xFF166534); // 소나무 초록
+    }
+  }
+
+  /// Get image asset path for specific growth stage using flutter_gen
+  String getImagePath(TreeStage stage) {
+    switch (stage) {
+      case TreeStage.sprout:
+        switch (this) {
+          case PlantType.bamboo:
+            return Assets.images.plants.sproutBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.sproutBlossomDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.sproutBlueberryDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.sproutCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.sproutCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.sproutFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.sproutGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.sproutMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.sproutOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.sproutPineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.sproutSnakePlantDot.path;
+        }
+      case TreeStage.bloom:
+        switch (this) {
+          case PlantType.bamboo:
+            return Assets.images.plants.flowerBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.flowerBlossomDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.flowerBlueberryDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.flowerCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.flowerCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.flowerFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.flowerGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.flowerMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.flowerOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.flowerPineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.flowerSnakePlantDot.path;
+        }
+      case TreeStage.tree:
+        switch (this) {
+          case PlantType.bamboo:
+            return Assets.images.plants.treeBambooDot.path;
+          case PlantType.blossom:
+            return Assets.images.plants.treeBlossomDot.path;
+          case PlantType.blueberry:
+            return Assets.images.plants.treeBlueberryDot.path;
+          case PlantType.cactus:
+            return Assets.images.plants.treeCactusDot.path;
+          case PlantType.coffee:
+            return Assets.images.plants.treeCoffeeDot.path;
+          case PlantType.fir:
+            return Assets.images.plants.treeFirDot.path;
+          case PlantType.ginkgo:
+            return Assets.images.plants.treeGinkgoDot.path;
+          case PlantType.maple:
+            return Assets.images.plants.treeMapleDot.path;
+          case PlantType.oak:
+            return Assets.images.plants.treeOakDot.path;
+          case PlantType.pine:
+            return Assets.images.plants.treePineDot.path;
+          case PlantType.snakePlant:
+            return Assets.images.plants.treeSnakePlantDot.path;
+        }
     }
   }
 }
