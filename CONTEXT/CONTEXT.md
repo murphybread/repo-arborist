@@ -283,4 +283,76 @@ ImageMagick이 없는 경우:
 **관련 이슈**: PNG 투명 배경 처리 (체크무늬 격자 제거)
 **해결 방법**: Python PIL/Numpy로 밝기 기반 배경 제거 (threshold=180)
 
-kDebugMode는 사용하지말기 debugPrint사용.
+CURRENT ASSET USING STATE;
+
+## Asset Usage Summary
+
+### 1. Plant Images (assets/images/plants/)
+
+All plant images are used dynamically through repository_stats_model.dart:370-449 via `PlantType.getImagePath()` method.
+
+**Used in:**
+
+- forest_screen.dart:562 - Forest view (grid layout)
+- garden_overview_screen.dart:549 - Garden overview (wrap layout)
+- forest_loading_widget.dart:332,347,362 - Loading animation examples
+
+**Plant Types (11 types x 3 stages = 33 images):**
+
+- **Sprout Stage:** bamboo, blossom, blueberry, cactus, coffee, fir, ginkgo, maple, oak, pine, snake_plant
+- **Bloom Stage:** bamboo, blossom, blueberry, cactus, coffee, fir, ginkgo, maple, oak, pine, snake_plant
+- **Tree Stage:** bamboo, blossom, blueberry, cactus, coffee, fir, ginkgo, maple, oak, pine, snake_plant
+
+### 2. Background & Environment (assets/images/etc/)
+
+| Asset                        | Usage                              | Location                            |
+| ---------------------------- | ---------------------------------- | ----------------------------------- |
+| **bg_cloud_sky.png**         | Sky background pattern (repeating) | garden_overview_screen.dart:88      |
+| **square_groudtile_dot.png** | Ground tile pattern (repeating)    | garden_overview_screen.dart:104     |
+| **garden_border_hedge.png**  | Top and bottom garden borders      | garden_overview_screen.dart:131,180 |
+
+### 3. Effects & Decorations (assets/images/etc/)
+
+| Asset                               | Usage                                     | Location                            |
+| ----------------------------------- | ----------------------------------------- | ----------------------------------- |
+| **plant_shadow.png**                | Shadow for tree & bloom levels            | garden_overview_screen.dart:407,420 |
+| **sprout_shadow.png**               | Shadow for sprout level                   | garden_overview_screen.dart:434     |
+| **sparkling_effect_sprite_dot.png** | Sparkling effect for "Warm" activity tier | garden_overview_screen.dart:491     |
+| **fresh_effect_sprite_dot.png**     | Fresh effect for "Fresh" activity tier    | garden_overview_screen.dart:504     |
+| **signpost_empty.png**              | Repository name signpost                  | forest_screen.dart:477              |
+
+### 4. Unused Assets
+
+**Not currently used in code:**
+
+- assets/images/etc/b_16-bit_pixel_art_sea.png
+- assets/images/etc/bg_sky_gradient.png
+- assets/images/etc/plant_neglected_overlay_sprite.png
+- assets/images/etc/sprout_shadow_ver.png
+- assets/images/etc/square_groudtile_dot_before.png
+- assets/images/etc/square_groudtile_dot_ver1-5.png (5 variants)
+- All files in assets/images/backup/ folder
+
+### 5. Other Assets
+
+| Asset                    | Type        | Usage                                                                             |
+| ------------------------ | ----------- | --------------------------------------------------------------------------------- |
+| **blueberry.svg**        | SVG icon    | Generated in assets.gen.dart (available but not currently used in active screens) |
+| **translations/en.json** | Translation | App localization                                                                  |
+| **translations/ko.json** | Translation | App localization                                                                  |
+
+## Summary by Screen
+
+**GardenOverviewScreen:**
+
+- 8 assets (backgrounds, borders, shadows, effects)
+- 33 plant images (via PlantType.getImagePath)
+
+**ForestScreen:**
+
+- 1 asset (signpost)
+- 33 plant images (via PlantType.getImagePath)
+
+**ForestLoadingWidget:**
+
+- 3 plant images (hardcoded examples for loading animation)

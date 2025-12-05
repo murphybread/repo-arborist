@@ -1,3 +1,5 @@
+- Focus strictly on the modified sections rather than outputting the entire file unless necessary. Omit unchanged imports, standard boilerplate, and irrelevant logic blocks by replacing them with concise placeholders like ... (unchanged imports) ... or ... (existing logic)... to keep the response clean, while including just enough surrounding lines around the modified code to provide context so the exact location of the change is unambiguous.
+- After you've modified the file, please let me know which file and which line you modified.
 - Normally, use Bash. CMD is the second priority. Only use PowerShell when explicitly requested, because PowerShell often causes encoding errors.
 - Maintain a professional tone without emojis in any part of the response. Write all code comments in English Not Korean, adhering to a 'Public Repository' standard. This means comments must be objective and understandable solely based on the file structure and logic, without referencing the current conversation or user context. Keep comments simple.
 
