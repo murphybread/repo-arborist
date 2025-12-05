@@ -13,11 +13,15 @@ class ForestScreen extends ConsumerWidget {
   /// ForestScreen 생성자
   const ForestScreen({
     this.token,
+    this.username,
     super.key,
   });
 
   /// GitHub Personal Access Token (optional)
   final String? token;
+
+  /// GitHub username (optional)
+  final String? username;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +41,7 @@ class ForestScreen extends ConsumerWidget {
         ),
         child: SafeArea(
           child: forestState.when(
-            data: (repos) => _buildForestView(context, repos),
+            data: (repos) => _buildForestView(context, repos, username),
             loading: () => const Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
@@ -87,6 +91,7 @@ class ForestScreen extends ConsumerWidget {
   Widget _buildForestView(
     BuildContext context,
     List<RepositoryStatsModel> repos,
+    String? username,
   ) {
     if (repos.isEmpty) {
       return Center(
@@ -157,18 +162,21 @@ class ForestScreen extends ConsumerWidget {
                   size: 24,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Your Forest',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 22,
-                    height: 1.25,
-                    letterSpacing: -0.5,
-                    color: Colors.white,
+                Flexible(
+                  child: Text(
+                    username != null ? '$username\'s Forest' : 'Your Forest',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22,
+                      height: 1.25,
+                      letterSpacing: -0.5,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 // Logout 버튼
                 Consumer(
                   builder: (context, ref, child) {
@@ -371,7 +379,6 @@ class _RepositoryCard extends StatelessWidget {
     final scale = activityTier.scaleMultiplier;
     final glowIntensity = activityTier.glowIntensity;
     final opacity = 0.3 + (activityTier.saturationMultiplier * 0.7);
-    final borderColor = _getBorderColor();
 
     return GestureDetector(
       onTap: () {
@@ -386,146 +393,173 @@ class _RepositoryCard extends StatelessWidget {
       },
       child: Transform.scale(
         scale: scale,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: bgGradient,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: borderColor,
-              width: 2,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1A000000),
-                offset: Offset(0, 2),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Tree Image with better background
-              Expanded(
+        child: Stack(
+          children: [
+            // Background Container
+            Positioned.fill(
+              // Frame border is ~10% of image (100px out of 1024px)
+              // Add margin to prevent frame from covering content
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
                 child: Container(
-                  decoration: repository.treeStage == TreeStage.tree
-                      ? BoxDecoration(
-                          gradient: RadialGradient(
-                            center: Alignment.center,
-                            radius: 0.8,
-                            colors: [
-                              Colors.white.withValues(alpha: 0.05),
-                              Colors.transparent,
-                            ],
-                          ),
-                        )
-                      : null,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 34, 24, 26),
+                  decoration: BoxDecoration(
+                    gradient: bgGradient,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x1A000000),
+                        offset: Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                  // Tree Image with better background
+                  Expanded(
                     child: Container(
-                      decoration: glowIntensity > 0 &&
-                              repository.treeStage == TreeStage.tree
+                      decoration: repository.treeStage == TreeStage.tree
                           ? BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: glowColor.withValues(
-                                    alpha: glowIntensity * 0.8,
-                                  ),
-                                  blurRadius: 50 * glowIntensity,
-                                  spreadRadius: 10 * glowIntensity,
-                                ),
-                              ],
+                              gradient: RadialGradient(
+                                center: Alignment.center,
+                                radius: 0.8,
+                                colors: [
+                                  Colors.white.withValues(alpha: 0.05),
+                                  Colors.transparent,
+                                ],
+                              ),
                             )
                           : null,
-                      child: Transform.scale(
-                        scale: _getSizeMultiplier(),
-                        child: Opacity(
-                          opacity: opacity,
-                          child: treeImagePath.endsWith('.png')
-                              ? Image.asset(
-                                  treeImagePath,
-                                  fit: BoxFit.contain,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 17, 12, 13),
+                        child: Container(
+                          decoration:
+                              glowIntensity > 0 &&
+                                  repository.treeStage == TreeStage.tree
+                              ? BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: glowColor.withValues(
+                                        alpha: glowIntensity * 0.8,
+                                      ),
+                                      blurRadius: 50 * glowIntensity,
+                                      spreadRadius: 10 * glowIntensity,
+                                    ),
+                                  ],
                                 )
-                              : SvgPicture.asset(
-                                  treeImagePath,
-                                  fit: BoxFit.contain,
-                                ),
+                              : null,
+                          child: Transform.scale(
+                            scale: _getSizeMultiplier(),
+                            child: Opacity(
+                              opacity: opacity,
+                              child: treeImagePath.endsWith('.png')
+                                  ? Image.asset(
+                                      treeImagePath,
+                                      fit: BoxFit.contain,
+                                    )
+                                  : SvgPicture.asset(
+                                      treeImagePath,
+                                      fit: BoxFit.contain,
+                                    ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
 
-              // Signpost with Repository Name
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SizedBox(
-                  height: 60,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Signpost Image
-                      Image.asset(
-                        Assets.images.etc.signpostEmpty.path,
-                        fit: BoxFit.contain,
+                  // Signpost with Repository Name
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SizedBox(
+                      height: 60,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Signpost Image
+                          Image.asset(
+                            Assets.images.etc.signpostEmpty.path,
+                            fit: BoxFit.contain,
+                          ),
+                          // Repository Name on Signpost
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Text(
+                              repository.repository.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                height: 1.2,
+                                color: const Color(0xFF2C1810),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      // Repository Name on Signpost
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Text(
-                          repository.repository.name,
-                          maxLines: 1,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Repository Stats
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Stats
+                        Text(
+                          _getStatsText(),
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            height: 1.2,
-                            color: const Color(0xFF2C1810),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11,
+                            height: 1.4,
+                            color: const Color(0xFFCBD5E1),
                           ),
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
                     ],
                   ),
                 ),
               ),
+            ),
 
-              const SizedBox(height: 8),
-
-              // Repository Stats
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
+            // Frame Overlay with 9-slice scaling
+            Positioned.fill(
+              child: Image.asset(
+                Assets.images.etc.uiFrameOakDetailed.path,
+                fit: BoxFit.fill,
+                // Nine-slice scaling: corners stay fixed, edges and center stretch
+                // Image is 1024x1024, assuming ~100px border thickness
+                // Adjust these values if frame looks stretched/squished
+                centerSlice: const Rect.fromLTRB(
+                  100, // left edge of stretchable area
+                  100, // top edge of stretchable area
+                  924, // right edge of stretchable area (1024 - 100)
+                  924, // bottom edge of stretchable area (1024 - 100)
                 ),
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Stats
-                    Text(
-                      _getStatsText(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 11,
-                        height: 1.4,
-                        color: const Color(0xFFCBD5E1),
-                      ),
-                    ),
-                  ],
-                ),
+                filterQuality: FilterQuality.none, // Preserve pixel art quality
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -556,12 +590,6 @@ class _RepositoryCard extends StatelessWidget {
     return repository.plantType.getImagePath(repository.treeStage);
   }
 
-  /// 테두리 색상 가져오기 (식물 종류 기반)
-  Color _getBorderColor() {
-    final plantType = repository.plantType;
-    return plantType.primaryColor;
-  }
-
   /// Glow 색상 가져오기 (식물 종류 기반)
   Color _getGlowColor() {
     final plantType = repository.plantType;
@@ -573,11 +601,11 @@ class _RepositoryCard extends StatelessWidget {
     final stage = repository.treeStage;
     switch (stage) {
       case TreeStage.sprout:
-        return 0.9; // 새싹: 기본보다 약간 작게
+        return 1.1; // 새싹: 기본보다 약간 작게
       case TreeStage.bloom:
-        return 1; // 꽃: 기본 크기
+        return 1.3; // 꽃: 기본 크기
       case TreeStage.tree:
-        return 1.2; // 나무: 꽃보다 20% 크게
+        return 1.5; // 나무: 꽃보다 20% 크게
     }
   }
 

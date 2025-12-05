@@ -129,7 +129,7 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                         widget.repository.activityTier.scaleMultiplier *
                         _getSizeMultiplier(stage),
                     child: Container(
-                      height: 240,
+                      height: 440,
                       decoration:
                           widget.repository.activityTier.glowIntensity > 0
                           ? BoxDecoration(
