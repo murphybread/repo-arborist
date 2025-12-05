@@ -103,6 +103,8 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
   bool _hasStartedLoading = false;
   bool _hasNavigated = false;
   bool _hasTimedOut = false;
+  bool _hasError = false;
+  String _errorMessage = '';
 
   /// Repository 통계 로드 시작
   void _startLoadingAndNavigation() {
@@ -120,18 +122,26 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
         )
         .then((_) {
           debugPrint('🟢 [ForestLoading] loadRepositoryStats 성공');
-          if (mounted) {
+          if (mounted && !_hasError) {
             _navigateToGarden();
           }
         })
         .catchError((Object error, StackTrace stackTrace) {
           debugPrint('🔴 [ForestLoading] loadRepositoryStats 에러: $error');
           debugPrint('Stack trace: $stackTrace');
+
+          // Error occurred, show error screen instead of navigating
+          if (mounted) {
+            setState(() {
+              _hasError = true;
+              _errorMessage = error.toString();
+            });
+          }
         });
 
     // 120초 타임아웃 설정 (60초 → 120초로 증가)
     Future.delayed(const Duration(seconds: 120), () {
-      if (mounted && !_hasNavigated) {
+      if (mounted && !_hasNavigated && !_hasError) {
         debugPrint('⏱️ [ForestLoading] 타임아웃 발생 (120초)');
         setState(() {
           _hasTimedOut = true;
@@ -183,7 +193,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
     final forestState = ref.watch(forestProvider);
 
     // 타임아웃 또는 에러 발생 시 에러 화면 표시
-    if (_hasTimedOut || forestState.hasError) {
+    if (_hasTimedOut || _hasError || forestState.hasError) {
       return Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
         body: SafeArea(
@@ -212,7 +222,9 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                   Text(
                     _hasTimedOut
                         ? 'Request timed out. Please check your connection and try again.'
-                        : 'Failed to load repositories: ${forestState.error}',
+                        : _hasError
+                            ? 'Failed to load repositories: $_errorMessage'
+                            : 'Failed to load repositories: ${forestState.error}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'Inter',

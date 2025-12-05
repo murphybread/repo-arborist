@@ -54,8 +54,63 @@ class GardenOverviewScreen extends ConsumerWidget {
         debugPrint('🔴 [GardenOverview] Error 발생: $error');
         debugPrint('Stack trace: $stack');
         return Scaffold(
-          backgroundColor: Color(0xFFF8FAFC),
-          body: Center(child: Text('Error: $error')),
+          backgroundColor: const Color(0xFFF8FAFC),
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Color(0xFFEF4444),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Failed to Load Garden',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 24,
+                        color: Color(0xFF1E293B),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Error: $error',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF14B8A6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Back to Login'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
@@ -210,10 +265,12 @@ class _GardenView extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: Column(
                   children: [
-                    const Text(
-                      'Your Forest — Overview',
+                    Text(
+                      username != null
+                          ? '$username\'s Forest — Overview'
+                          : 'Your Forest — Overview',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
@@ -252,7 +309,10 @@ class _GardenView extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ForestScreen(token: token),
+                    builder: (context) => ForestScreen(
+                      token: token,
+                      username: username,
+                    ),
                   ),
                 );
               },
