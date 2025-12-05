@@ -40,6 +40,11 @@ class $AssetsTranslationsGen {
 class $AssetsImagesEtcGen {
   const $AssetsImagesEtcGen();
 
+  /// File path: assets/images/etc/Gemini_Generated_Image_e319oke319oke319.png
+  AssetGenImage get geminiGeneratedImageE319oke319oke319 => const AssetGenImage(
+    'assets/images/etc/Gemini_Generated_Image_e319oke319oke319.png',
+  );
+
   /// File path: assets/images/etc/b_16-bit_pixel_art_sea.png
   AssetGenImage get b16BitPixelArtSea =>
       const AssetGenImage('assets/images/etc/b_16-bit_pixel_art_sea.png');
@@ -81,6 +86,10 @@ class $AssetsImagesEtcGen {
   AssetGenImage get sproutShadow =>
       const AssetGenImage('assets/images/etc/sprout_shadow.png');
 
+  /// File path: assets/images/etc/sprout_shadow_ver.png
+  AssetGenImage get sproutShadowVer =>
+      const AssetGenImage('assets/images/etc/sprout_shadow_ver.png');
+
   /// File path: assets/images/etc/square_groudtile_dot.png
   AssetGenImage get squareGroudtileDot =>
       const AssetGenImage('assets/images/etc/square_groudtile_dot.png');
@@ -109,8 +118,13 @@ class $AssetsImagesEtcGen {
   AssetGenImage get squareGroudtileDotVer5 =>
       const AssetGenImage('assets/images/etc/square_groudtile_dot_ver5.png');
 
+  /// File path: assets/images/etc/ui_frame_oak_detailed.png
+  AssetGenImage get uiFrameOakDetailed =>
+      const AssetGenImage('assets/images/etc/ui_frame_oak_detailed.png');
+
   /// List of all assets
   List<AssetGenImage> get values => [
+    geminiGeneratedImageE319oke319oke319,
     b16BitPixelArtSea,
     bgCloudSky,
     bgSkyGradient,
@@ -121,6 +135,7 @@ class $AssetsImagesEtcGen {
     signpostEmpty,
     sparklingEffectSpriteDot,
     sproutShadow,
+    sproutShadowVer,
     squareGroudtileDot,
     squareGroudtileDotBefore,
     squareGroudtileDotVer1,
@@ -128,6 +143,7 @@ class $AssetsImagesEtcGen {
     squareGroudtileDotVer3,
     squareGroudtileDotVer4,
     squareGroudtileDotVer5,
+    uiFrameOakDetailed,
   ];
 }
 

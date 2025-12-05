@@ -43,7 +43,7 @@ if __name__ == "__main__":
     
     # 처리할 파일 목록 (투명도가 필요한 파일만 지정)
     target_files = [
-        "sprout_shadow.png",
+        "ui_frame_oak_detailed.png",
 
     ]
     
