@@ -318,16 +318,15 @@ class ForestScreen extends ConsumerWidget {
           ),
         ),
 
-        // Repository Grid
+        // Repository List (Single Column)
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.8,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
+                crossAxisCount: 1,
+                childAspectRatio: 1.0, // More vertical space for plants
+                mainAxisSpacing: 20,
               ),
               itemCount: repos.length,
               itemBuilder: (context, index) {
@@ -397,10 +396,10 @@ class _RepositoryCard extends StatelessWidget {
           children: [
             // Background Container
             Positioned.fill(
-              // Frame border is ~10% of image (100px out of 1024px)
-              // Add margin to prevent frame from covering content
+              // Frame border thickness requires adequate padding
+              // to prevent frame from covering content
               child: Padding(
-                padding: const EdgeInsets.all(6.0),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: bgGradient,
@@ -413,150 +412,102 @@ class _RepositoryCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                  // Tree Image with better background
-                  Expanded(
-                    child: Container(
-                      decoration: repository.treeStage == TreeStage.tree
-                          ? BoxDecoration(
-                              gradient: RadialGradient(
-                                center: Alignment.center,
-                                radius: 0.8,
-                                colors: [
-                                  Colors.white.withValues(alpha: 0.05),
-                                  Colors.transparent,
+                  // Tree Image - Takes full space
+                  child: Container(
+                    decoration: repository.treeStage == TreeStage.tree
+                        ? BoxDecoration(
+                            gradient: RadialGradient(
+                              center: Alignment.center,
+                              radius: 0.8,
+                              colors: [
+                                Colors.white.withValues(alpha: 0.05),
+                                Colors.transparent,
+                              ],
+                            ),
+                          )
+                        : null,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Container(
+                        decoration:
+                            glowIntensity > 0 &&
+                                repository.treeStage == TreeStage.tree
+                            ? BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: glowColor.withValues(
+                                      alpha: glowIntensity * 0.8,
+                                    ),
+                                    blurRadius: 50 * glowIntensity,
+                                    spreadRadius: 10 * glowIntensity,
+                                  ),
                                 ],
-                              ),
-                            )
-                          : null,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 17, 12, 13),
-                        child: Container(
-                          decoration:
-                              glowIntensity > 0 &&
-                                  repository.treeStage == TreeStage.tree
-                              ? BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: glowColor.withValues(
-                                        alpha: glowIntensity * 0.8,
-                                      ),
-                                      blurRadius: 50 * glowIntensity,
-                                      spreadRadius: 10 * glowIntensity,
-                                    ),
-                                  ],
-                                )
-                              : null,
-                          child: Transform.scale(
-                            scale: _getSizeMultiplier(),
-                            child: Opacity(
-                              opacity: opacity,
-                              child: treeImagePath.endsWith('.png')
-                                  ? Image.asset(
-                                      treeImagePath,
-                                      fit: BoxFit.contain,
-                                    )
-                                  : SvgPicture.asset(
-                                      treeImagePath,
-                                      fit: BoxFit.contain,
-                                    ),
-                            ),
+                              )
+                            : null,
+                        child: Transform.scale(
+                          scale: _getSizeMultiplier(),
+                          child: Opacity(
+                            opacity: opacity,
+                            child: treeImagePath.endsWith('.png')
+                                ? Image.asset(
+                                    treeImagePath,
+                                    fit: BoxFit.contain,
+                                  )
+                                : SvgPicture.asset(
+                                    treeImagePath,
+                                    fit: BoxFit.contain,
+                                  ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-
-                  // Signpost with Repository Name
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: SizedBox(
-                      height: 60,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // Signpost Image
-                          Image.asset(
-                            Assets.images.etc.signpostEmpty.path,
-                            fit: BoxFit.contain,
-                          ),
-                          // Repository Name on Signpost
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Text(
-                              repository.repository.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                                height: 1.2,
-                                color: const Color(0xFF2C1810),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Repository Stats
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Stats
-                        Text(
-                          _getStatsText(),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11,
-                            height: 1.4,
-                            color: const Color(0xFFCBD5E1),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                    ],
                   ),
                 ),
               ),
             ),
 
-            // Frame Overlay with 9-slice scaling
+            // Frame Overlay
             Positioned.fill(
-              child: Image.asset(
-                Assets.images.etc.uiFrameOakDetailed.path,
-                fit: BoxFit.fill,
-                // Nine-slice scaling: corners stay fixed, edges and center stretch
-                // Image is 1024x1024, assuming ~100px border thickness
-                // Adjust these values if frame looks stretched/squished
-                centerSlice: const Rect.fromLTRB(
-                  100, // left edge of stretchable area
-                  100, // top edge of stretchable area
-                  924, // right edge of stretchable area (1024 - 100)
-                  924, // bottom edge of stretchable area (1024 - 100)
+              child: Transform.scale(
+                scale: 0.95,
+                child: Image.asset(
+                  Assets.images.etc.uiFrameOakDetailed.path,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.none, // Preserve pixel art quality
                 ),
-                filterQuality: FilterQuality.none, // Preserve pixel art quality
+              ),
+            ),
+
+            // Repository Name - Positioned above frame
+            Positioned(
+              left: 14,
+              right: 14,
+              bottom: 22,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                child: Text(
+                  repository.repository.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    height: 1.2,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -601,32 +552,11 @@ class _RepositoryCard extends StatelessWidget {
     final stage = repository.treeStage;
     switch (stage) {
       case TreeStage.sprout:
-        return 1.1; // 새싹: 기본보다 약간 작게
+        return 0.9; // 새싹: 기본보다 약간 작게
       case TreeStage.bloom:
-        return 1.3; // 꽃: 기본 크기
+        return 0.8; // 꽃: 기본 크기
       case TreeStage.tree:
-        return 1.5; // 나무: 꽃보다 20% 크게
+        return 0.65; // 나무: 꽃보다 20% 크게
     }
-  }
-
-  /// 통계 텍스트 가져오기
-  String _getStatsText() {
-    final commits = repository.totalCommits;
-    final prs = repository.totalMergedPRs;
-    final score = repository.projectSizeScore;
-
-    if (commits == 0 && prs == 0) {
-      return 'New repository\nScore: $score';
-    }
-
-    final parts = <String>[];
-    if (commits > 0) {
-      parts.add('$commits commits');
-    }
-    if (prs > 0) {
-      parts.add('$prs PRs');
-    }
-
-    return '${parts.join(' • ')}\nScore: $score';
   }
 }

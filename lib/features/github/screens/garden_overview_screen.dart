@@ -91,7 +91,9 @@ class GardenOverviewScreen extends ConsumerWidget {
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF14B8A6),
@@ -611,9 +613,9 @@ class _GardenTreeState extends State<_GardenTree>
       case TreeStage.sprout:
         return 0.9; // 새싹: 기본보다 약간 작게
       case TreeStage.bloom:
-        return 1; // 꽃: 기본 크기
+        return 1.3; // 꽃: 기본 크기
       case TreeStage.tree:
-        return 1.2; // 나무: 꽃보다 20% 크게
+        return 1.8; // 나무: 꽃보다 20% 크게
     }
   }
 

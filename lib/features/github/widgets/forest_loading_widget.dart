@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
@@ -37,9 +39,54 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
   late Animation<double> _progressValue;
   late Animation<double> _floatAnimation;
 
+  // Random plant images
+  late String _sproutImage;
+  late String _flowerImage;
+  late String _treeImage;
+
   @override
   void initState() {
     super.initState();
+
+    // Randomly select plant images
+    final random = math.Random();
+    final sproutImages = [
+      Assets.images.plants.sproutBambooDot.path,
+      Assets.images.plants.sproutBlossomDot.path,
+      Assets.images.plants.sproutBlueberryDot.path,
+      Assets.images.plants.sproutCoffeeDot.path,
+      Assets.images.plants.sproutFirDot.path,
+      Assets.images.plants.sproutGinkgoDot.path,
+      Assets.images.plants.sproutMapleDot.path,
+      Assets.images.plants.sproutOakDot.path,
+      Assets.images.plants.sproutPineDot.path,
+    ];
+    final flowerImages = [
+      Assets.images.plants.flowerBambooDot.path,
+      Assets.images.plants.flowerBlossomDot.path,
+      Assets.images.plants.flowerBlueberryDot.path,
+      Assets.images.plants.flowerCoffeeDot.path,
+      Assets.images.plants.flowerFirDot.path,
+      Assets.images.plants.flowerGinkgoDot.path,
+      Assets.images.plants.flowerMapleDot.path,
+      Assets.images.plants.flowerOakDot.path,
+      Assets.images.plants.flowerPineDot.path,
+    ];
+    final treeImages = [
+      Assets.images.plants.treeBambooDot.path,
+      Assets.images.plants.treeBlossomDot.path,
+      Assets.images.plants.treeBlueberryDot.path,
+      Assets.images.plants.treeCoffeeDot.path,
+      Assets.images.plants.treeFirDot.path,
+      Assets.images.plants.treeGinkgoDot.path,
+      Assets.images.plants.treeMapleDot.path,
+      Assets.images.plants.treeOakDot.path,
+      Assets.images.plants.treePineDot.path,
+    ];
+
+    _sproutImage = sproutImages[random.nextInt(sproutImages.length)];
+    _flowerImage = flowerImages[random.nextInt(flowerImages.length)];
+    _treeImage = treeImages[random.nextInt(treeImages.length)];
 
     // 나무 성장 애니메이션 (Stagger)
     _treeController = AnimationController(
@@ -294,7 +341,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                         fontSize: 32,
                         height: 1.25,
                         letterSpacing: -0.8,
-                        color: const Color(0xFF1E293B),
+                        color: const Color(0xFF0F172A),
                       ),
                     ),
                   ),
@@ -317,7 +364,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                         fontWeight: FontWeight.w400,
                         fontSize: 16,
                         height: 1.5,
-                        color: const Color(0xFF64748B),
+                        color: const Color(0xFF475569),
                       ),
                     ),
                   ),
@@ -334,14 +381,14 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Tree 1 - Sprout
+                            // Tree 1 - Sprout (Random)
                             ScaleTransition(
                               scale: _tree1Scale,
                               child: SizedBox(
                                 width: 87,
                                 height: 100,
                                 child: Image.asset(
-                                  Assets.images.plants.sproutBambooDot.path,
+                                  _sproutImage,
                                   fit: BoxFit.contain,
                                   filterQuality: FilterQuality.none,
                                 ),
@@ -349,14 +396,14 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                             ),
                             const SizedBox(width: 16),
 
-                            // Tree 2 - Bloom
+                            // Tree 2 - Bloom (Random)
                             ScaleTransition(
                               scale: _tree2Scale,
                               child: SizedBox(
                                 width: 80,
                                 height: 80,
                                 child: Image.asset(
-                                  Assets.images.plants.flowerBlossomDot.path,
+                                  _flowerImage,
                                   fit: BoxFit.contain,
                                   filterQuality: FilterQuality.none,
                                 ),
@@ -364,15 +411,16 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                             ),
                             const SizedBox(width: 16),
 
-                            // Tree 3 - Tree
+                            // Tree 3 - Tree (Random)
                             ScaleTransition(
                               scale: _tree3Scale,
                               child: SizedBox(
                                 width: 87,
                                 height: 100,
                                 child: Image.asset(
-                                  Assets.images.plants.treeOakDot.path,
+                                  _treeImage,
                                   fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.none,
                                 ),
                               ),
                             ),
@@ -399,7 +447,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                             fontWeight: FontWeight.w400,
                             fontSize: 14,
                             height: 1.5,
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF475569),
                           ),
                         ),
                       ),
@@ -462,7 +510,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         height: 1.5,
-                        color: const Color(0xFF94A3B8),
+                        color: const Color(0xFF64748B),
                       ),
                     ),
                   ),
