@@ -38,7 +38,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
+    # DO NOT include .env in production builds (security risk)
+    # - .env
     - assets/
     - assets/images/
     - assets/translations/

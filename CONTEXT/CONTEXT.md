@@ -1,6 +1,270 @@
 # CONTEXT.md
 
-프로젝트 개발 중 발생한 이슈와 해결 방법을 기록합니다.
+This document contains comprehensive project information, including architecture, features, technical decisions, and issue resolutions.
+
+---
+
+## Project Overview
+
+**Project Name:** Repo Arborist (blueberry_template)
+**Description:** A Flutter application that visualizes GitHub repositories as living trees in a personal forest
+**Concept:** Transform repository statistics (commits, PRs, activity) into interactive pixel-art trees with 11 plant types, 3 growth stages, and 4 activity tiers
+
+**Key Features:**
+- Dual authentication (GitHub Token / Public Username)
+- Repository visualization as pixel-art plants
+- Activity-based visual effects (glow, saturation, animations)
+- Interactive garden view with parallax scrolling
+- Repository detail screens with commit/PR timeline
+
+---
+
+## Project Structure
+
+```
+blueberry_template/
+├── lib/
+│   ├── core/                    # Global controllers, themes, services, widgets
+│   │   ├── controllers/         # ThemeController
+│   │   ├── services/            # CacheService, LocalCacheService, FirestoreCacheService
+│   │   ├── theme/              # AppTheme, AppColors
+│   │   └── widgets/            # Reusable UI components
+│   ├── features/               # Feature-based modules
+│   │   ├── github/             # Main feature: GitHub repository visualization
+│   │   │   ├── controllers/    # GitHubAuthController, ForestController
+│   │   │   ├── models/         # GithubUserModel, RepositoryStatsModel, PlantType
+│   │   │   ├── repositories/   # GitHubRepository, GitHubUserRepository
+│   │   │   ├── screens/        # Login, Forest, Garden, Detail screens
+│   │   │   └── widgets/        # ForestLoadingWidget, etc.
+│   │   ├── todo/               # Sample feature for reference
+│   │   └── playground/         # UI component testing area
+│   ├── gen/                    # Auto-generated code (flutter_gen)
+│   ├── firebase_options.dart   # Firebase configuration
+│   ├── setup.dart              # App initialization (Firebase, Hive, Firestore)
+│   └── main.dart               # App entry point
+├── assets/
+│   ├── images/
+│   │   ├── plants/             # 33 plant images (11 types × 3 stages)
+│   │   └── etc/                # Backgrounds, effects, decorations
+│   └── translations/           # ko.json, en.json
+├── docs/                       # Project documentation
+├── CONTEXT/                    # This file
+└── pubspec.yaml               # Dependencies and configuration
+```
+
+---
+
+## Architecture & Technical Stack
+
+### State Management: Riverpod
+
+**Key Controllers:**
+- [ThemeController](../lib/core/controllers/theme_controller.dart) - Theme toggle (Light/Dark)
+- [GitHubAuthController](../lib/features/github/controllers/github_auth_controller.dart) - Authentication state
+- [ForestController](../lib/features/github/controllers/forest_controller.dart) - Repository statistics
+
+**Pattern:** AsyncNotifierProvider with `AsyncValue.guard()` for error handling
+
+### Backend & Caching
+
+**Firebase Integration:**
+- Firebase Core, Crashlytics (enabled)
+- Firestore caching (optional, 10-second timeout)
+- Fallback to Hive local cache
+
+**Caching Strategy:**
+- Primary: Hive local storage (key-value)
+- Secondary: Firestore (optional remote cache)
+- Cache duration: 24 hours for repository stats
+- See [LocalCacheService](../lib/core/services/local_cache_service.dart:1), [FirestoreCacheService](../lib/core/services/firestore_cache_service.dart:1)
+
+### Navigation Flow
+
+```
+GithubLoginScreen (initial)
+    ↓ (on login)
+ForestLoadingWidget (transition)
+    ↓ (data loaded)
+GardenOverviewScreen (main view - interactive garden with parallax)
+    ↔ ForestScreen (grid view - framed repositories)
+        ↓ (tap repository)
+    RepositoryDetailScreen (stats, commits, PRs)
+```
+
+**Implementation:** Direct `MaterialPageRoute` navigation (no named routes)
+
+---
+
+## Key Features & Screens
+
+### 1. GitHub Authentication ([GithubLoginScreen](../lib/features/github/screens/github_login_screen.dart:1))
+
+**Two Auth Modes:**
+- **Public Username:** View public repositories only (60 API calls/hour)
+- **GitHub Token:** Access private repos + higher rate limit (5,000 calls/hour)
+
+**Implementation:** [GitHubAuthController](../lib/features/github/controllers/github_auth_controller.dart:1)
+
+### 2. Repository Visualization
+
+**Plant Type System (11 families):**
+- Mapped by programming language (see [PlantType enum](../lib/features/github/models/repository_stats_model.dart:370))
+- Coffee (Java), Ginkgo (JavaScript), Snake Plant (Python), Fir (C/C++), Blossom (Swift), Bamboo (Go), Oak (C#/General), Maple (Ruby/HTML), Cactus (Shell/DevOps), Blueberry (Dart), Pine (Assembly)
+- Each type has unique color palette and image path
+
+**Growth Stages (3 levels):**
+- **Sprout:** projectSizeScore < 50
+- **Bloom:** 50 ≤ score < 150 (4 variants)
+- **Tree:** score ≥ 150 (2 variants)
+- Score calculation: `(commits × 1) + (PRs × 3)`
+
+**Activity Tiers (4 levels):**
+- **Fresh:** ≤7 days (saturation 1.0, glow 0.8, scale 1.05)
+- **Warm:** 8-30 days (saturation 1.0, glow 0.3)
+- **Cooling:** 31-180 days (saturation 0.7, no glow)
+- **Dormant:** ≥181 days (saturation 0.5, scale 0.95)
+
+**See:** [RepositoryStatsModel](../lib/features/github/models/repository_stats_model.dart:1) for full logic
+
+### 3. Garden Overview ([GardenOverviewScreen](../lib/features/github/screens/garden_overview_screen.dart:1))
+
+**Visual Features:**
+- Parallax background (sky + ground tiles)
+- Swaying tree animations
+- InteractiveViewer (zoom/pan)
+- Activity-based glow effects
+- Hedge borders (pixel art aesthetic)
+
+**Used Assets:**
+- bg_cloud_sky.png (repeating sky)
+- square_groudtile_dot.png (repeating ground)
+- garden_border_hedge.png (top/bottom borders)
+- plant_shadow.png, sprout_shadow.png
+- sparkling_effect_sprite_dot.png (Warm tier)
+- fresh_effect_sprite_dot.png (Fresh tier)
+
+### 4. Forest Screen ([ForestScreen](../lib/features/github/screens/forest_screen.dart:1))
+
+**Layout:**
+- Single-column grid view
+- Custom oak frame overlay per repository
+- signpost_empty.png for repository names
+- Logout functionality
+
+### 5. Repository Detail ([RepositoryDetailScreen](../lib/features/github/screens/repository_detail_screen.dart:1))
+
+**Information Displayed:**
+- Repository statistics (commits, PRs, language)
+- Recent commits timeline
+- Recent merged PRs
+- Top contributors
+- Tree visualization with activity glow
+
+---
+
+## Core Models & Services
+
+### Models
+
+**[RepositoryStatsModel](../lib/features/github/models/repository_stats_model.dart:1)** (Most Complex)
+- Aggregates repository data for visualization
+- Computed properties: `projectSizeScore`, `treeStage`, `activityTier`, `plantType`, `variantIndex`
+- Contains all visualization logic
+
+**[GithubUserModel](../lib/features/github/models/github_user_model.dart:1)**
+- User authentication data
+
+**[GithubRepositoryModel](../lib/features/github/models/github_repository_model.dart:1)**
+- Basic repository metadata
+
+**[CommitModel](../lib/features/github/models/commit_model.dart:1)**, **[PullRequestModel](../lib/features/github/models/pull_request_model.dart:1)**
+- Activity timeline data
+
+### Services & Repositories
+
+**[GitHubRepository](../lib/features/github/repositories/github_repository.dart:1)** (Core API Layer)
+- Base URL: `https://api.github.com`
+- Timeout: 30 seconds
+- Cache duration: 24 hours
+- Key methods: `getUserRepositories()`, `getRepositoryStats()`, `getAllRepositoryStats()`, `getRecentCommits()`, `getRecentMergedPRs()`
+- Caching strategy: Try cache first (5s timeout) → fallback to API → save to cache
+
+**[CacheService](../lib/core/services/cache_service.dart:1)** (Interface)
+- Abstract interface for caching implementations
+- Methods: get, set, delete, clear, getJson, setJson
+
+**[LocalCacheService](../lib/core/services/local_cache_service.dart:1)** (Hive Implementation)
+- Singleton pattern
+- Boxes: cache_box (data), cache_meta_box (TTL metadata)
+
+**[FirestoreCacheService](../lib/core/services/firestore_cache_service.dart:1)** (Firestore Implementation)
+- Collection: cache_data
+- 10-second timeout for offline handling
+
+---
+
+## Asset Management
+
+**Asset Generation:** flutter_gen for type-safe access
+**Generated Code:** [lib/gen/assets.gen.dart](../lib/gen/assets.gen.dart:1)
+**Usage:** `Assets.images.plants.treeBlueberryDot.path`
+
+**Plant Asset Naming Convention:**
+```
+{stage}_{plantType}_dot.png
+Examples: sprout_blueberry_dot.png, flower_coffee_dot.png, tree_ginkgo_dot.png
+```
+
+**Image Formats:**
+- PNG for pixel art (all plant and UI images)
+- SVG for backup/legacy assets
+
+**Flutter Rendering Settings:**
+```dart
+Image.asset(
+  Assets.images.plants.sproutBlueberryDot.path,
+  filterQuality: FilterQuality.none,  // Sharp pixel art rendering
+)
+```
+
+---
+
+## Configuration & Environment
+
+**Flutter Version:** Managed by FVM (3.35.6)
+**Material Design:** Material 3 enabled
+**Localization:** easy_localization (Korean default, English fallback)
+**Environment Variables:** .env file (GitHub token, etc.)
+
+**Theme:**
+- Light/Dark mode support (default: Dark)
+- Custom AppColors ThemeExtension
+- Teal accent color (#14B8A6)
+
+**Code Quality:**
+- pedantic_mono lint rules
+- English-only comments (Public Repository standard)
+- debugPrint() preferred over conditional print()
+
+---
+
+## Dependencies Summary
+
+**Core:**
+- flutter_riverpod: State management
+- google_fonts: Typography
+- easy_localization: i18n (ko/en)
+
+**Firebase:**
+- firebase_core, firebase_crashlytics, cloud_firestore
+
+**Networking & Caching:**
+- http: GitHub API client
+- hive, hive_flutter: Local storage
+
+**Assets:**
+- flutter_svg: SVG rendering
+- flutter_gen_runner: Asset code generation
 
 ---
 

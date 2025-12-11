@@ -32,6 +32,16 @@ class GitHubRepository {
 
   final CacheService<Map<String, dynamic>> _cacheService;
 
+  /// Safely get GitHub token from .env (returns null if not initialized)
+  String? _getEnvToken() {
+    try {
+      return kDebugMode ? dotenv.env['GITHUB_TOKEN'] : null;
+    } catch (e) {
+      debugPrint('[GitHubRepository] .env not initialized: $e');
+      return null;
+    }
+  }
+
   /// API 요청 헤더 생성 (token이 있으면 포함, 없으면 public API 사용)
   Map<String, String> _getHeaders({String? token}) {
     final headers = {
@@ -105,8 +115,9 @@ class GitHubRepository {
     required String username,
     String? token,
   }) async {
-    // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    // Production: Do not use fallback token for security reasons
+    // Development: Load from .env for testing only
+    final effectiveToken = token ?? _getEnvToken();
 
     debugPrint(
       '🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}',
@@ -145,8 +156,8 @@ class GitHubRepository {
     required String owner,
     required String repo,
   }) async {
-    // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    // Production: Do not use fallback token for security reasons
+    final effectiveToken = token ?? _getEnvToken();
 
     // /commits API를 사용해서 커밋 수 가져오기
     // per_page=1로 설정하고 Link 헤더에서 마지막 페이지 번호를 확인합니다
@@ -213,7 +224,7 @@ class GitHubRepository {
     required String repo,
   }) async {
     // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    final effectiveToken = token ?? _getEnvToken();
 
     final url = Uri.parse(
       '$_baseUrl/search/issues?q=repo:$owner/$repo+type:pr+is:merged&per_page=1',
@@ -288,13 +299,13 @@ class GitHubRepository {
     bool forceRefresh = false,
   }) async {
     // .env에서 토큰 가져오기 (token 파라미터가 없을 때만)
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    final effectiveToken = token ?? _getEnvToken();
 
     debugPrint('═══════════════════════════════════════');
     debugPrint('🔑 [GitHub API] 토큰 체크');
     debugPrint('   - 파라미터 token: ${token != null ? "있음" : "없음"}');
     debugPrint(
-      '   - .env GITHUB_TOKEN: ${dotenv.env['GITHUB_TOKEN'] != null ? "있음" : "없음"}',
+      '   - .env GITHUB_TOKEN: ${_getEnvToken() != null ? "있음 (Debug only)" : "없음"}',
     );
     debugPrint(
       '   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}',
@@ -399,7 +410,7 @@ class GitHubRepository {
     int limit = 3,
   }) async {
     // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    final effectiveToken = token ?? _getEnvToken();
 
     final url = Uri.parse(
       '$_baseUrl/repos/$owner/$repo/commits?per_page=$limit',
@@ -435,7 +446,7 @@ class GitHubRepository {
     int limit = 3,
   }) async {
     // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    final effectiveToken = token ?? _getEnvToken();
 
     final url = Uri.parse(
       '$_baseUrl/repos/$owner/$repo/pulls?state=closed&sort=updated&direction=desc&per_page=$limit',
@@ -473,7 +484,7 @@ class GitHubRepository {
     int limit = 30,
   }) async {
     // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? dotenv.env['GITHUB_TOKEN'];
+    final effectiveToken = token ?? _getEnvToken();
 
     // limit는 최대 100으로 제한
     final perPage = limit > 100 ? 100 : limit;
