@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/screens/forest_screen.dart';
+import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
 
 /// 정원 오버뷰 화면 - 모든 레포지토리를 자연스럽게 배치
@@ -91,9 +92,12 @@ class GardenOverviewScreen extends ConsumerWidget {
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).popUntil((route) => route.isFirst);
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const GithubLoginScreen(),
+                          ),
+                          (route) => false,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF14B8A6),
