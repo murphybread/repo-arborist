@@ -12,7 +12,7 @@ final forestProvider =
 class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {
   // ✅ 로컬 Hive 캐시 사용 중 (Firestore 초기화 에러 회피)
   // Firestore로 변경하려면: GitHubRepository(useFirestore: true)
-  final _repository = GitHubRepository(useFirestore: false);
+  final _repository = GitHubRepository(useFirestore: true);
 
   @override
   Future<List<RepositoryStatsModel>> build() async {

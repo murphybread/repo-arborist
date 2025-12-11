@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -318,14 +319,14 @@ class GitHubRepository {
     // 캐시 확인 (forceRefresh가 false일 때만)
     if (!forceRefresh) {
       try {
-        // 5초 타임아웃 - Firestore가 응답 안 하면 빠르게 API로 전환
+        // 3초 타임아웃 - Firestore가 응답 안 하면 빠르게 API로 전환
         final cachedStats = await _cacheService
             .getJsonList<RepositoryStatsModel>(
               cacheKey,
               fromJson: RepositoryStatsModel.fromJson,
             )
             .timeout(
-              const Duration(seconds: 5),
+              const Duration(seconds: 3),
               onTimeout: () {
                 debugPrint('[Cache] ⏱️ 캐시 읽기 타임아웃 - API 호출로 전환');
                 return null;
@@ -372,27 +373,30 @@ class GitHubRepository {
 
     final stats = await Future.wait(statsFutures);
 
-    // 캐시에 저장
-    debugPrint('[Cache] 🔵 캐시 저장 시작...');
+    // 캐시에 저장 (비동기, Fire-and-forget)
+    debugPrint('[Cache] 🔵 캐시 저장 시작 (백그라운드)...');
     debugPrint('   - cacheKey: $cacheKey');
     debugPrint('   - stats.length: ${stats.length}');
     debugPrint('   - ttl: $_cacheDuration');
     debugPrint('   - cache service: ${_cacheService.runtimeType}');
 
-    try {
-      await _cacheService.setJsonList<RepositoryStatsModel>(
-        cacheKey,
-        stats,
-        ttl: _cacheDuration,
-        toJson: (stat) => stat.toJson(),
-      );
-
-      debugPrint('[Cache] ✅ ${stats.length}개 레포 통계를 캐시에 저장 완료');
-    } on Exception catch (e, stack) {
-      debugPrint('[Cache] ❌ 캐시 저장 실패: $e');
-      debugPrint('Stack trace: $stack');
-      // 캐시 저장 실패해도 데이터는 반환
-    }
+    // 캐시 저장을 기다리지 않고 바로 데이터 반환 (사용자 경험 개선)
+    unawaited(
+      _cacheService
+          .setJsonList<RepositoryStatsModel>(
+            cacheKey,
+            stats,
+            ttl: _cacheDuration,
+            toJson: (stat) => stat.toJson(),
+          )
+          .then((_) {
+            debugPrint('[Cache] ✅ ${stats.length}개 레포 통계를 캐시에 저장 완료');
+          })
+          .catchError((Object e, StackTrace stack) {
+            debugPrint('[Cache] ❌ 캐시 저장 실패: $e');
+            debugPrint('Stack trace: $stack');
+          }),
+    );
 
     return stats;
   }
@@ -445,30 +449,42 @@ class GitHubRepository {
     required String repo,
     int limit = 3,
   }) async {
-    // .env에서 토큰 자동 로드
-    final effectiveToken = token ?? _getEnvToken();
+    try {
+      // .env에서 토큰 자동 로드
+      final effectiveToken = token ?? _getEnvToken();
 
-    final url = Uri.parse(
-      '$_baseUrl/repos/$owner/$repo/pulls?state=closed&sort=updated&direction=desc&per_page=$limit',
-    );
-    final response = await http
-        .get(
-          url,
-          headers: _getHeaders(token: effectiveToken),
-        )
-        .timeout(_timeout);
+      final url = Uri.parse(
+        '$_baseUrl/repos/$owner/$repo/pulls?state=closed&sort=updated&direction=desc&per_page=$limit',
+      );
+      final response = await http
+          .get(
+            url,
+            headers: _getHeaders(token: effectiveToken),
+          )
+          .timeout(_timeout);
 
-    if (response.statusCode != 200) {
-      // 에러 발생 시 빈 리스트 반환
+      if (response.statusCode != 200) {
+        // 에러 발생 시 빈 리스트 반환
+        return [];
+      }
+
+      final data = jsonDecode(response.body) as List<dynamic>;
+      // merged_at이 null이 아닌 것만 필터링 (실제로 머지된 PR만)
+      return data
+          .map(
+            (json) => PullRequestModel.fromJson(json as Map<String, dynamic>),
+          )
+          .where((pr) => pr.mergedAt != null)
+          .toList();
+    } on TimeoutException catch (_) {
+      // 타임아웃 발생 시 빈 리스트 반환
+      debugPrint('[GitHub API] Timeout for $owner/$repo PRs, returning empty list');
+      return [];
+    } on Exception catch (e) {
+      // 기타 예외 발생 시 빈 리스트 반환
+      debugPrint('[GitHub API] Error fetching PRs for $owner/$repo: $e, returning empty list');
       return [];
     }
-
-    final data = jsonDecode(response.body) as List<dynamic>;
-    // merged_at이 null이 아닌 것만 필터링 (실제로 머지된 PR만)
-    return data
-        .map((json) => PullRequestModel.fromJson(json as Map<String, dynamic>))
-        .where((pr) => pr.mergedAt != null)
-        .toList();
   }
 
   /// Repository의 컨트리뷰터 목록 가져오기
