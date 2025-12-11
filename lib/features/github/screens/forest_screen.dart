@@ -483,14 +483,7 @@ class _RepositoryCard extends StatelessWidget {
               left: 14,
               right: 14,
               bottom: 22,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
+              child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 10,

@@ -87,7 +87,7 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // 헤더 - 레포지토리 이름
-              Container(
+              Padding(
                 padding: const EdgeInsets.fromLTRB(16, 15, 16, 8),
                 child: Row(
                   children: [

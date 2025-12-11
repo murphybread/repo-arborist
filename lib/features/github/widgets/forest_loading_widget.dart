@@ -206,14 +206,18 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
       if (!mounted) return;
       if (!context.mounted) return;
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => GardenOverviewScreen(
-            token: widget.token,
-            username: widget.username,
+      try {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => GardenOverviewScreen(
+              token: widget.token,
+              username: widget.username,
+            ),
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        debugPrint('⚠️ [ForestLoading] Navigation failed: $e');
+      }
     });
   }
 
