@@ -190,13 +190,7 @@ class _GardenView extends StatelessWidget {
                           repeat: ImageRepeat.repeatX, // 가로 반복
                           fit: BoxFit.cover, // 빈틈없이 채우기
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            offset: const Offset(0, 4),
-                            blurRadius: 8,
-                          ),
-                        ],
+                        boxShadow: null,
                       ),
                     ),
 
@@ -239,13 +233,6 @@ class _GardenView extends StatelessWidget {
                           repeat: ImageRepeat.repeatX,
                           fit: BoxFit.cover, // 빈틈없이 채우기
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            offset: const Offset(0, -4),
-                            blurRadius: 8,
-                          ),
-                        ],
                       ),
                     ),
 
