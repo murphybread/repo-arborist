@@ -165,7 +165,7 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
         .loadRepositoryStats(
           token: widget.token,
           username: widget.username,
-          forceRefresh: true,
+          forceRefresh: false,
         )
         .then((_) {
           debugPrint('🟢 [ForestLoading] loadRepositoryStats 성공');
@@ -274,8 +274,8 @@ class _ForestLoadingWidgetState extends ConsumerState<ForestLoadingWidget>
                     _hasTimedOut
                         ? 'Request timed out. Please check your connection and try again.'
                         : _hasError
-                            ? 'Failed to load repositories: $_errorMessage'
-                            : 'Failed to load repositories: ${forestState.error}',
+                        ? 'Failed to load repositories: $_errorMessage'
+                        : 'Failed to load repositories: ${forestState.error}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'Inter',
