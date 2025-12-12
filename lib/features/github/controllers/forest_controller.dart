@@ -10,9 +10,12 @@ final forestProvider =
 
 /// Forest Controller - Repository 통계를 관리
 class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {
-  // ✅ 로컬 Hive 캐시 사용 중 (Firestore 초기화 에러 회피)
-  // Firestore로 변경하려면: GitHubRepository(useFirestore: true)
+  // ✅ Firestore 캐시 사용 (초기화 실패 시 자동으로 비활성화)
+  // 로컬 캐시로 변경하려면: GitHubRepository()
   final _repository = GitHubRepository(useFirestore: true);
+
+  /// Last time the data was updated
+  DateTime? lastUpdateTime;
 
   @override
   Future<List<RepositoryStatsModel>> build() async {
@@ -29,12 +32,17 @@ class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {
     bool forceRefresh = false,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() {
-      return _repository.getAllRepositoryStats(
+    state = await AsyncValue.guard(() async {
+      final result = await _repository.getAllRepositoryStats(
         token: token,
         username: username,
         forceRefresh: forceRefresh,
       );
+
+      // Update timestamp on successful load
+      lastUpdateTime = DateTime.now();
+
+      return result;
     });
   }
 

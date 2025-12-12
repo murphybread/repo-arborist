@@ -255,13 +255,11 @@ class _GardenView extends StatelessWidget {
             right: 0,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                padding: const EdgeInsets.fromLTRB(0, 60, 0, 0),
                 child: Column(
                   children: [
                     Text(
-                      username != null
-                          ? '$username\'s Forest — Overview'
-                          : 'Your Forest — Overview',
+                      _getGardenTitle(repositories, username),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: 'Inter',
@@ -288,13 +286,74 @@ class _GardenView extends StatelessWidget {
                         color: Color(0xFF475569),
                       ),
                     ),
+                    const SizedBox(height: 2),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final controller = ref.read(forestProvider.notifier);
+                        final lastUpdate = controller.lastUpdateTime;
+
+                        if (lastUpdate == null) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return Text(
+                          'Updated ${_getTimeAgo(lastUpdate)}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 10,
+                            color: Color(0xFF94A3B8),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
             ),
           ),
 
-          // 상단 우측 버튼 (Details)
+          // Top left button (Refresh)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 16,
+            left: 16,
+            child: Consumer(
+              builder: (context, ref, child) {
+                return GestureDetector(
+                  onTap: () async {
+                    await ref
+                        .read(forestProvider.notifier)
+                        .refresh(
+                          token: token,
+                          username: username,
+                        );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF64748B),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF64748B).withValues(alpha: 0.3),
+                          offset: const Offset(0, 2),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.refresh_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // Top right button (Details)
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
             right: 16,
@@ -640,5 +699,43 @@ class _GardenTreeState extends State<_GardenTree>
       0, // B
       0, 0, 0, 1, 0, // A
     ];
+  }
+}
+
+/// Get garden title with owner name from repositories
+String _getGardenTitle(
+  List<RepositoryStatsModel> repositories,
+  String? username,
+) {
+  if (repositories.isEmpty) {
+    return 'Garden Overview';
+  }
+
+  // Extract owner name from first repository's fullName (format: "owner/repo")
+  final fullName = repositories.first.repository.fullName;
+  final ownerName = fullName.split('/').first;
+
+  return '$ownerName\'s Garden — Overview';
+}
+
+/// Get human-readable time difference
+String _getTimeAgo(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inSeconds < 60) {
+    return 'just now';
+  } else if (difference.inMinutes < 60) {
+    final minutes = difference.inMinutes;
+    return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
+  } else if (difference.inHours < 24) {
+    final hours = difference.inHours;
+    return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
+  } else if (difference.inDays < 30) {
+    final days = difference.inDays;
+    return '$days ${days == 1 ? 'day' : 'days'} ago';
+  } else {
+    final months = (difference.inDays / 30).floor();
+    return '$months ${months == 1 ? 'month' : 'months'} ago';
   }
 }
