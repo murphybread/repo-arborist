@@ -91,6 +91,6 @@ test_*.dart
 # For Google IDE Antigravity
 .agent/
 
-# Image backups and utilities
+# Image backups
 image_backups/
 image_backups.lnk

@@ -103,6 +103,26 @@
     "logout_confirm": "로그아웃 하시겠습니까?"
   },
 
+  "contact": {
+    "title": "문의하기",
+    "name_label": "이름",
+    "name_hint": "이름을 입력하세요",
+    "content_label": "문의 내용",
+    "content_hint": "문의하실 내용을 입력하세요",
+    "type_label": "문의 유형 (선택)",
+    "type_bug": "버그 수정",
+    "type_feature": "기능 추가",
+    "type_uiux": "UI/UX",
+    "type_other": "기타",
+    "submit_button": "제출",
+    "submitting": "제출 중...",
+    "success_title": "제출 완료",
+    "success_message": "문의가 성공적으로 접수되었습니다.\n빠른 시일 내에 확인하겠습니다.",
+    "error_empty_name": "이름을 입력해주세요",
+    "error_empty_content": "문의 내용을 입력해주세요",
+    "error_submit_failed": "제출에 실패했습니다. 다시 시도해주세요."
+  },
+
   "onboarding": {
     "skip": "건너뛰기",
     "next": "다음",

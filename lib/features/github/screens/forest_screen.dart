@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:repo_arborist/features/contact/screens/contact_screen.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
 import 'package:repo_arborist/features/github/controllers/github_auth_controller.dart';
+import 'package:repo_arborist/features/github/controllers/github_pat_controller.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/features/github/screens/repository_detail_screen.dart';
@@ -486,6 +488,60 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 ),
               ],
             ),
+          ),
+        ),
+
+        // Contact button below header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final patState = ref.watch(githubPATProvider);
+              final patOwner = patState.username ?? 'unknown';
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ContactScreen(
+                        patOwner: patOwner,
+                        repositoryOwner: username ?? 'unknown',
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0x5014B8A6),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.mail_outline,
+                        color: Color(0xFF14B8A6),
+                        size: 18,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Contact Us',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: Color(0xFF14B8A6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
 

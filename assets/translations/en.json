@@ -103,6 +103,26 @@
     "logout_confirm": "Are you sure you want to logout?"
   },
 
+  "contact": {
+    "title": "Contact Us",
+    "name_label": "Name",
+    "name_hint": "Enter your name",
+    "content_label": "Message",
+    "content_hint": "Enter your message",
+    "type_label": "Type (Optional)",
+    "type_bug": "Bug Fix",
+    "type_feature": "Feature Request",
+    "type_uiux": "UI/UX",
+    "type_other": "Other",
+    "submit_button": "Submit",
+    "submitting": "Submitting...",
+    "success_title": "Submitted",
+    "success_message": "Your message has been submitted successfully.\nWe'll review it soon.",
+    "error_empty_name": "Please enter your name",
+    "error_empty_content": "Please enter your message",
+    "error_submit_failed": "Failed to submit. Please try again."
+  },
+
   "onboarding": {
     "skip": "Skip",
     "next": "Next",
