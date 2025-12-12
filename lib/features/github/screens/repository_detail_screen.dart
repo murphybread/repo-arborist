@@ -5,6 +5,45 @@ import 'package:repo_arborist/features/github/models/pull_request_model.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/repositories/github_repository.dart';
 
+/// Sort options for repository activity display.
+enum ActivitySortType {
+  /// Sort by most recent commit date.
+  recentCommits,
+
+  /// Sort by most recent PR merge date.
+  recentPRs,
+
+  /// Sort by total activity size (commits + PRs).
+  activitySize,
+}
+
+/// Extension to provide display labels for sort types.
+extension ActivitySortTypeExtension on ActivitySortType {
+  /// Display label for UI.
+  String get label {
+    switch (this) {
+      case ActivitySortType.recentCommits:
+        return 'Recent Commits';
+      case ActivitySortType.recentPRs:
+        return 'Recent PRs';
+      case ActivitySortType.activitySize:
+        return 'Activity Size';
+    }
+  }
+
+  /// Icon for UI.
+  IconData get icon {
+    switch (this) {
+      case ActivitySortType.recentCommits:
+        return Icons.commit;
+      case ActivitySortType.recentPRs:
+        return Icons.merge;
+      case ActivitySortType.activitySize:
+        return Icons.trending_up;
+    }
+  }
+}
+
 /// Repository detail view screen.
 class RepositoryDetailScreen extends StatefulWidget {
   /// Creates a repository detail screen.
@@ -28,6 +67,7 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
   List<CommitModel>? _recentCommits;
   List<PullRequestModel>? _recentPRs;
   var _isLoading = true;
+  var _sortType = ActivitySortType.recentCommits;
 
   @override
   void initState() {
@@ -112,6 +152,69 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                           color: Color(0xFFFFFFFF),
                         ),
                       ),
+                    ),
+                    // 정렬 버튼
+                    PopupMenuButton<ActivitySortType>(
+                      icon: const Icon(
+                        Icons.sort,
+                        color: Color(0xFF14B8A6),
+                        size: 24,
+                      ),
+                      tooltip: 'Sort activity',
+                      color: const Color(0xFF1E293B),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: const BorderSide(
+                          color: Color(0x1AFFFFFF),
+                        ),
+                      ),
+                      offset: const Offset(0, 40),
+                      onSelected: (ActivitySortType value) {
+                        setState(() {
+                          _sortType = value;
+                        });
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return ActivitySortType.values.map((sortType) {
+                          final isSelected = _sortType == sortType;
+                          return PopupMenuItem<ActivitySortType>(
+                            value: sortType,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  sortType.icon,
+                                  size: 18,
+                                  color: isSelected
+                                      ? const Color(0xFF14B8A6)
+                                      : const Color(0xFF94A3B8),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  sortType.label,
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    color: isSelected
+                                        ? const Color(0xFF14B8A6)
+                                        : const Color(0xFFFFFFFF),
+                                  ),
+                                ),
+                                if (isSelected) ...[
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.check,
+                                    size: 18,
+                                    color: Color(0xFF14B8A6),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        }).toList();
+                      },
                     ),
                   ],
                 ),
@@ -236,54 +339,7 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                           ),
                         ),
                       )
-                    else ...[
-                      // 최근 커밋
-                      if (_recentCommits != null &&
-                          _recentCommits!.isNotEmpty) ...[
-                        _SectionHeader(
-                          icon: Icons.commit,
-                          title: 'Recent Commits',
-                          count: _recentCommits!.length,
-                        ),
-                        const SizedBox(height: 12),
-                        ..._recentCommits!.map(
-                          (commit) => _CommitItem(commit: commit),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-
-                      // 최근 PR
-                      if (_recentPRs != null && _recentPRs!.isNotEmpty) ...[
-                        _SectionHeader(
-                          icon: Icons.merge,
-                          title: 'Recent Merged PRs',
-                          count: _recentPRs!.length,
-                        ),
-                        const SizedBox(height: 12),
-                        ..._recentPRs!.map((pr) => _PRItem(pr: pr)),
-                      ],
-
-                      // 데이터가 없는 경우
-                      if ((_recentCommits == null || _recentCommits!.isEmpty) &&
-                          (_recentPRs == null || _recentPRs!.isEmpty))
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E293B),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'No recent activity found',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                color: Color(0xFF94A3B8),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
+                    else ..._buildSortedActivityContent(),
                   ],
                 ),
               ),
@@ -318,6 +374,203 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
         return 1.2; // 나무: 꽃보다 20% 크게
     }
   }
+
+  /// Build activity content based on selected sort type.
+  List<Widget> _buildSortedActivityContent() {
+    final hasCommits = _recentCommits != null && _recentCommits!.isNotEmpty;
+    final hasPRs = _recentPRs != null && _recentPRs!.isNotEmpty;
+
+    // No data case
+    if (!hasCommits && !hasPRs) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Text(
+              'No recent activity found',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+
+    switch (_sortType) {
+      case ActivitySortType.recentCommits:
+        return _buildCommitsOnlyView();
+      case ActivitySortType.recentPRs:
+        return _buildPRsOnlyView();
+      case ActivitySortType.activitySize:
+        return _buildCombinedView();
+    }
+  }
+
+  /// Build view showing only commits.
+  List<Widget> _buildCommitsOnlyView() {
+    final widgets = <Widget>[];
+
+    if (_recentCommits != null && _recentCommits!.isNotEmpty) {
+      widgets.addAll([
+        _SectionHeader(
+          icon: Icons.commit,
+          title: 'Recent Commits',
+          count: _recentCommits!.length,
+        ),
+        const SizedBox(height: 12),
+        ..._recentCommits!.map((commit) => _CommitItem(commit: commit)),
+      ]);
+    } else {
+      widgets.add(
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Text(
+              'No recent commits found',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return widgets;
+  }
+
+  /// Build view showing only PRs.
+  List<Widget> _buildPRsOnlyView() {
+    final widgets = <Widget>[];
+
+    if (_recentPRs != null && _recentPRs!.isNotEmpty) {
+      widgets.addAll([
+        _SectionHeader(
+          icon: Icons.merge,
+          title: 'Recent Merged PRs',
+          count: _recentPRs!.length,
+        ),
+        const SizedBox(height: 12),
+        ..._recentPRs!.map((pr) => _PRItem(pr: pr)),
+      ]);
+    } else {
+      widgets.add(
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Text(
+              'No recent PRs found',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return widgets;
+  }
+
+  /// Build view combining both commits and PRs sorted by time.
+  List<Widget> _buildCombinedView() {
+    final widgets = <Widget>[];
+    final commits = _recentCommits ?? [];
+    final prs = _recentPRs ?? [];
+
+    // Create combined list with type information
+    final activities = <_Activity>[];
+
+    for (final commit in commits) {
+      activities.add(_Activity(date: commit.date, type: _ActivityType.commit, data: commit));
+    }
+
+    for (final pr in prs) {
+      if (pr.mergedAt != null) {
+        activities.add(_Activity(date: pr.mergedAt!, type: _ActivityType.pr, data: pr));
+      }
+    }
+
+    // Sort by date descending (most recent first)
+    activities.sort((a, b) => b.date.compareTo(a.date));
+
+    if (activities.isEmpty) {
+      widgets.add(
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Text(
+              'No recent activity found',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ),
+        ),
+      );
+      return widgets;
+    }
+
+    widgets.addAll([
+      _SectionHeader(
+        icon: Icons.trending_up,
+        title: 'All Recent Activity',
+        count: activities.length,
+      ),
+      const SizedBox(height: 12),
+    ]);
+
+    for (final activity in activities) {
+      if (activity.type == _ActivityType.commit) {
+        widgets.add(_CommitItem(commit: activity.data as CommitModel));
+      } else {
+        widgets.add(_PRItem(pr: activity.data as PullRequestModel));
+      }
+    }
+
+    return widgets;
+  }
+}
+
+/// Activity type for combined sorting.
+enum _ActivityType { commit, pr }
+
+/// Activity wrapper for combined sorting.
+class _Activity {
+  _Activity({
+    required this.date,
+    required this.type,
+    required this.data,
+  });
+
+  final DateTime date;
+  final _ActivityType type;
+  final Object data;
 }
 
 /// 통계 카드 위젯

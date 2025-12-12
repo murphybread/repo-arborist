@@ -8,8 +8,47 @@ import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/features/github/screens/repository_detail_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
 
+/// Sort options for repository list.
+enum RepositorySortType {
+  /// Sort by most recent commit date.
+  recentCommits,
+
+  /// Sort by most recent PR merge date.
+  recentPRs,
+
+  /// Sort by total activity size (commits + PRs score).
+  activitySize,
+}
+
+/// Extension to provide display labels for repository sort types.
+extension RepositorySortTypeExtension on RepositorySortType {
+  /// Display label for UI.
+  String get label {
+    switch (this) {
+      case RepositorySortType.recentCommits:
+        return 'Recent Commits';
+      case RepositorySortType.recentPRs:
+        return 'Recent PRs';
+      case RepositorySortType.activitySize:
+        return 'Activity Size';
+    }
+  }
+
+  /// Icon for UI.
+  IconData get icon {
+    switch (this) {
+      case RepositorySortType.recentCommits:
+        return Icons.commit;
+      case RepositorySortType.recentPRs:
+        return Icons.merge;
+      case RepositorySortType.activitySize:
+        return Icons.trending_up;
+    }
+  }
+}
+
 /// GitHub Repository Forest 화면
-class ForestScreen extends ConsumerWidget {
+class ForestScreen extends ConsumerStatefulWidget {
   /// ForestScreen 생성자
   const ForestScreen({
     this.token,
@@ -24,7 +63,14 @@ class ForestScreen extends ConsumerWidget {
   final String? username;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ForestScreen> createState() => _ForestScreenState();
+}
+
+class _ForestScreenState extends ConsumerState<ForestScreen> {
+  var _sortType = RepositorySortType.activitySize;
+
+  @override
+  Widget build(BuildContext context) {
     final forestState = ref.watch(forestProvider);
 
     return Scaffold(
@@ -41,7 +87,10 @@ class ForestScreen extends ConsumerWidget {
         ),
         child: SafeArea(
           child: forestState.when(
-            data: (repos) => _buildForestView(context, repos, username),
+            data: (repos) {
+              final sortedRepos = _sortRepositories(repos);
+              return _buildForestView(context, sortedRepos, widget.username);
+            },
             loading: () => const Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
@@ -61,7 +110,7 @@ class ForestScreen extends ConsumerWidget {
                       color: Colors.red,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Error loading repositories',
                       style: TextStyle(
                         color: Colors.white,
@@ -73,8 +122,8 @@ class ForestScreen extends ConsumerWidget {
                     Text(
                       error.toString(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: const Color(0xFF94A3B8),
+                      style: const TextStyle(
+                        color: Color(0xFF94A3B8),
                         fontSize: 14,
                       ),
                     ),
@@ -86,6 +135,44 @@ class ForestScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Sort repositories based on selected sort type.
+  List<RepositoryStatsModel> _sortRepositories(
+    List<RepositoryStatsModel> repos,
+  ) {
+    final sortedRepos = List<RepositoryStatsModel>.from(repos);
+
+    switch (_sortType) {
+      case RepositorySortType.recentCommits:
+        sortedRepos.sort((a, b) {
+          final aDate = a.lastCommitDate;
+          final bDate = b.lastCommitDate;
+
+          if (aDate == null && bDate == null) return 0;
+          if (aDate == null) return 1;
+          if (bDate == null) return -1;
+
+          return bDate.compareTo(aDate); // Descending (newest first)
+        });
+      case RepositorySortType.recentPRs:
+        sortedRepos.sort((a, b) {
+          final aDate = a.lastMergedPRDate;
+          final bDate = b.lastMergedPRDate;
+
+          if (aDate == null && bDate == null) return 0;
+          if (aDate == null) return 1;
+          if (bDate == null) return -1;
+
+          return bDate.compareTo(aDate); // Descending (newest first)
+        });
+      case RepositorySortType.activitySize:
+        sortedRepos.sort((a, b) {
+          return b.projectSizeScore.compareTo(a.projectSizeScore); // Descending
+        });
+    }
+
+    return sortedRepos;
   }
 
   Widget _buildForestView(
@@ -201,6 +288,70 @@ class ForestScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(width: 8),
+                // Sort button
+                PopupMenuButton<RepositorySortType>(
+                  icon: const Icon(
+                    Icons.sort,
+                    color: Color(0xFF14B8A6),
+                    size: 20,
+                  ),
+                  tooltip: 'Sort repositories',
+                  color: const Color(0xFF1E293B),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(
+                      color: Color(0x1AFFFFFF),
+                    ),
+                  ),
+                  offset: const Offset(0, 40),
+                  onSelected: (RepositorySortType value) {
+                    setState(() {
+                      _sortType = value;
+                    });
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return RepositorySortType.values.map((sortType) {
+                      final isSelected = _sortType == sortType;
+                      return PopupMenuItem<RepositorySortType>(
+                        value: sortType,
+                        child: Row(
+                          children: [
+                            Icon(
+                              sortType.icon,
+                              size: 16,
+                              color: isSelected
+                                  ? const Color(0xFF14B8A6)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              sortType.label,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                                color: isSelected
+                                    ? const Color(0xFF14B8A6)
+                                    : const Color(0xFFFFFFFF),
+                              ),
+                            ),
+                            if (isSelected) ...[
+                              const Spacer(),
+                              const Icon(
+                                Icons.check,
+                                size: 16,
+                                color: Color(0xFF14B8A6),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    }).toList();
+                  },
                 ),
                 const SizedBox(width: 8),
                 // Logout 버튼
@@ -371,7 +522,7 @@ class ForestScreen extends ConsumerWidget {
                   },
                   child: _RepositoryCard(
                     repository: repos[index],
-                    token: token,
+                    token: widget.token,
                   ),
                 );
               },
