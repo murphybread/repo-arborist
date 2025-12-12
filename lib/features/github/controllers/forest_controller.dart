@@ -10,8 +10,8 @@ final forestProvider =
 
 /// Forest Controller - Repository 통계를 관리
 class ForestController extends AsyncNotifier<List<RepositoryStatsModel>> {
-  // ✅ Firestore 캐시 사용 (초기화 실패 시 자동으로 비활성화)
-  // 로컬 캐시로 변경하려면: GitHubRepository()
+  // ✅ 로컬 Hive 캐시 사용 중 (Firestore 초기화 에러 회피)
+  // Firestore로 변경하려면: GitHubRepository(useFirestore: true)
   final _repository = GitHubRepository(useFirestore: true);
 
   /// Last time the data was updated
