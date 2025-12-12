@@ -21,6 +21,9 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   /// Firestore 인스턴스 (Database ID: githubjson)
   FirebaseFirestore? _firestore;
 
+  /// 초기화 실패 여부
+  bool _initializationFailed = false;
+
   /// 캐시 컬렉션 이름
   static const String _collectionName = 'cache';
 
@@ -28,6 +31,10 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   Future<void> init() async {
     if (_firestore != null) {
       return; // 이미 초기화됨
+    }
+
+    if (_initializationFailed) {
+      return; // 이전에 초기화 실패했으면 재시도하지 않음
     }
 
     try {
@@ -44,8 +51,10 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
 
       debugPrint('[FirestoreCacheService] 초기화 완료 (오프라인 지속성: 비활성화)');
     } on Exception catch (e) {
-      debugPrint('[FirestoreCacheService] 초기화 실패: $e');
-      rethrow;
+      debugPrint('[FirestoreCacheService] ⚠️ 초기화 실패 (캐시 비활성화됨): $e');
+      _initializationFailed = true;
+      _firestore = null;
+      // 초기화 실패해도 예외를 던지지 않음 - 캐시 없이 계속 동작
     }
   }
 
@@ -59,6 +68,11 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   @override
   Future<Map<String, dynamic>?> get(String key) async {
     await _ensureInitialized();
+
+    // 초기화 실패 시 null 반환
+    if (_firestore == null) {
+      return null;
+    }
 
     try {
       // 10초 타임아웃 설정
@@ -120,6 +134,12 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   }) async {
     await _ensureInitialized();
 
+    // 초기화 실패 시 조기 반환 (캐시 없이 계속 동작)
+    if (_firestore == null) {
+      debugPrint('[FirestoreCacheService] ⚠️ Firestore 비활성화 - set 건너뜀');
+      return;
+    }
+
     try {
       final data = <String, dynamic>{
         'value': value,
@@ -165,6 +185,11 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   Future<void> delete(String key) async {
     await _ensureInitialized();
 
+    // 초기화 실패 시 조기 반환
+    if (_firestore == null) {
+      return;
+    }
+
     try {
       await _firestore!.collection(_collectionName).doc(key).delete();
 
@@ -177,6 +202,11 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   @override
   Future<void> clear() async {
     await _ensureInitialized();
+
+    // 초기화 실패 시 조기 반환
+    if (_firestore == null) {
+      return;
+    }
 
     try {
       final batch = _firestore!.batch();
@@ -197,6 +227,11 @@ class FirestoreCacheService implements CacheService<Map<String, dynamic>> {
   @override
   Future<bool> isExpired(String key) async {
     await _ensureInitialized();
+
+    // 초기화 실패 시 만료된 것으로 처리
+    if (_firestore == null) {
+      return true;
+    }
 
     try {
       // 10초 타임아웃 설정
