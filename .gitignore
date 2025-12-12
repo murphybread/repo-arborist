@@ -86,3 +86,11 @@ devtools_options.yaml
 *.log
 nul
 test_*.dart
+
+
+# For Google IDE Antigravity
+.agent/
+
+# Image backups and utilities
+image_backups/
+image_backups.lnk
