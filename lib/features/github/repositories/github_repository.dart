@@ -78,10 +78,13 @@ class GitHubRepository {
   /// 사용자의 모든 Repository 가져오기
   ///
   /// [token] GitHub Personal Access Token
+  /// [limit] 최대 레포지토리 개수 (null이면 제한 없음)
   Future<List<GithubRepositoryModel>> getUserRepositories({
     required String token,
+    int? limit,
   }) async {
-    final url = Uri.parse('$_baseUrl/user/repos?per_page=100');
+    final perPage = limit != null && limit < 100 ? limit : 100;
+    final url = Uri.parse('$_baseUrl/user/repos?per_page=$perPage');
     final response = await http
         .get(
           url,
@@ -112,9 +115,11 @@ class GitHubRepository {
   ///
   /// [username] GitHub username
   /// [token] GitHub Personal Access Token (선택 사항, 있으면 5,000회/시간 제한 적용)
+  /// [limit] 최대 레포지토리 개수 (null이면 제한 없음)
   Future<List<GithubRepositoryModel>> getPublicRepositoriesByUsername({
     required String username,
     String? token,
+    int? limit,
   }) async {
     // Production: Do not use fallback token for security reasons
     // Development: Load from .env for testing only
@@ -124,7 +129,8 @@ class GitHubRepository {
       '🟡 [getPublicRepos] 토큰: ${effectiveToken != null ? "사용 (${effectiveToken.substring(0, 10)}...)" : "미사용"}',
     );
 
-    final url = Uri.parse('$_baseUrl/users/$username/repos?per_page=100');
+    final perPage = limit != null && limit < 100 ? limit : 100;
+    final url = Uri.parse('$_baseUrl/users/$username/repos?per_page=$perPage');
     final response = await http
         .get(
           url,
@@ -302,6 +308,9 @@ class GitHubRepository {
     // .env에서 토큰 가져오기 (token 파라미터가 없을 때만)
     final effectiveToken = token ?? _getEnvToken();
 
+    // Rate limit 결정: PAT 없으면 20개 제한, 있으면 제한 없음
+    final limit = effectiveToken == null ? 20 : null;
+
     debugPrint('═══════════════════════════════════════');
     debugPrint('🔑 [GitHub API] 토큰 체크');
     debugPrint('   - 파라미터 token: ${token != null ? "있음" : "없음"}');
@@ -311,10 +320,31 @@ class GitHubRepository {
     debugPrint(
       '   - 최종 사용 토큰: ${effectiveToken != null ? '사용 (${effectiveToken.substring(0, 10)}...)' : '미사용'}',
     );
+    debugPrint('   - 레포 개수 제한: ${limit ?? "무제한 (최대 1000개)"}');
     debugPrint('═══════════════════════════════════════');
 
-    // 캐시 키 생성
-    final cacheKey = 'github_stats_${username ?? 'user'}';
+    // username이 없고 token만 있으면 /user API로 username 가져오기
+    var effectiveUsername = username;
+    if (effectiveUsername == null && effectiveToken != null) {
+      try {
+        final userUrl = Uri.parse('$_baseUrl/user');
+        final userResponse = await http.get(
+          userUrl,
+          headers: _getHeaders(token: effectiveToken),
+        ).timeout(_timeout);
+
+        if (userResponse.statusCode == 200) {
+          final userData = json.decode(userResponse.body) as Map<String, dynamic>;
+          effectiveUsername = userData['login'] as String?;
+          debugPrint('[GitHub API] 현재 사용자 username: $effectiveUsername');
+        }
+      } on Exception catch (e) {
+        debugPrint('[GitHub API] username 가져오기 실패: $e');
+      }
+    }
+
+    // 캐시 키 생성 (username이 여전히 null이면 'anonymous' 사용)
+    final cacheKey = 'github_stats_${effectiveUsername ?? 'anonymous'}';
 
     // 캐시 확인 (forceRefresh가 false일 때만)
     if (!forceRefresh) {
@@ -351,14 +381,18 @@ class GitHubRepository {
     final List<GithubRepositoryModel> repositories;
     if (username != null) {
       // username이 있으면 해당 사용자의 public repos 조회
-      // token이 있으면 5,000회/시간, 없으면 60회/시간
+      // token이 있으면 5,000회/시간, 없으면 60회/시간 (최대 20개)
       repositories = await getPublicRepositoriesByUsername(
         username: username,
         token: effectiveToken,
+        limit: limit,
       );
     } else if (effectiveToken != null) {
       // username이 없고 token만 있으면 내 repos 조회
-      repositories = await getUserRepositories(token: effectiveToken);
+      repositories = await getUserRepositories(
+        token: effectiveToken,
+        limit: limit,
+      );
     } else {
       throw Exception('Either token or username must be provided');
     }
