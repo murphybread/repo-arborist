@@ -67,7 +67,7 @@ class ForestScreen extends ConsumerStatefulWidget {
 }
 
 class _ForestScreenState extends ConsumerState<ForestScreen> {
-  var _sortType = RepositorySortType.activitySize;
+  RepositorySortType _sortType = RepositorySortType.recentCommits;
 
   @override
   Widget build(BuildContext context) {
@@ -243,12 +243,6 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.park_outlined,
-                  color: const Color(0xFF14B8A6),
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -628,9 +622,7 @@ class _RepositoryCard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Container(
-                        decoration:
-                            glowIntensity > 0 &&
-                                repository.treeStage == TreeStage.tree
+                        decoration: glowIntensity > 0
                             ? BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
@@ -672,7 +664,8 @@ class _RepositoryCard extends StatelessWidget {
                 child: Image.asset(
                   Assets.images.etc.uiFrameOakDetailed.path,
                   fit: BoxFit.fill,
-                  filterQuality: FilterQuality.none, // Preserve pixel art quality
+                  filterQuality:
+                      FilterQuality.none, // Preserve pixel art quality
                 ),
               ),
             ),
