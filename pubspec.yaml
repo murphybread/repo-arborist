@@ -48,6 +48,7 @@ flutter:
     - assets/translations/
     - assets/images/plants/
     - assets/images/etc/
+    - assets/images/encyclopedia/
 flutter_gen:
   output: lib/gen/
   line_length: 80

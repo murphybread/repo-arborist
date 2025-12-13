@@ -17,6 +17,10 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// Directory path: assets/images/encyclopedia
+  $AssetsImagesEncyclopediaGen get encyclopedia =>
+      const $AssetsImagesEncyclopediaGen();
+
   /// Directory path: assets/images/etc
   $AssetsImagesEtcGen get etc => const $AssetsImagesEtcGen();
 
@@ -35,6 +39,25 @@ class $AssetsTranslationsGen {
 
   /// List of all assets
   List<String> get values => [en, ko];
+}
+
+class $AssetsImagesEncyclopediaGen {
+  const $AssetsImagesEncyclopediaGen();
+
+  /// File path: assets/images/encyclopedia/plant_book_icon.png
+  AssetGenImage get plantBookIcon =>
+      const AssetGenImage('assets/images/encyclopedia/plant_book_icon.png');
+
+  /// File path: assets/images/encyclopedia/plant_card_bg.png
+  AssetGenImage get plantCardBg =>
+      const AssetGenImage('assets/images/encyclopedia/plant_card_bg.png');
+
+  /// File path: assets/images/encyclopedia/ui_slot_vine.png
+  AssetGenImage get uiSlotVine =>
+      const AssetGenImage('assets/images/encyclopedia/ui_slot_vine.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [plantBookIcon, plantCardBg, uiSlotVine];
 }
 
 class $AssetsImagesEtcGen {
@@ -323,13 +346,12 @@ class $AssetsImagesPlantsGen {
 class Assets {
   const Assets._();
 
-  static const String aEnv = '.env';
   static const SvgGenImage blueberry = SvgGenImage('assets/blueberry.svg');
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsTranslationsGen translations = $AssetsTranslationsGen();
 
   /// List of all assets
-  static List<dynamic> get values => [aEnv, blueberry];
+  static List<SvgGenImage> get values => [blueberry];
 }
 
 class AssetGenImage {

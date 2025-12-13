@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:repo_arborist/features/encyclopedia/screens/encyclopedia_grid_screen.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/screens/forest_screen.dart';
@@ -314,42 +315,75 @@ class _GardenView extends StatelessWidget {
             ),
           ),
 
-          // Top left button (Refresh)
+          // Top left buttons (Refresh & Encyclopedia)
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
             left: 16,
-            child: Consumer(
-              builder: (context, ref, child) {
-                return GestureDetector(
-                  onTap: () async {
-                    await ref
-                        .read(forestProvider.notifier)
-                        .refresh(
-                          token: token,
-                          username: username,
-                        );
+            child: Column(
+              children: [
+                Consumer(
+                  builder: (context, ref, child) {
+                    return GestureDetector(
+                      onTap: () async {
+                        await ref
+                            .read(forestProvider.notifier)
+                            .refresh(
+                              token: token,
+                              username: username,
+                            );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF64748B),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF64748B).withValues(alpha: 0.3),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.refresh_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const EncyclopediaGridScreen(),
+                      ),
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF64748B),
+                      color: const Color(0xFF8B7355),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF64748B).withValues(alpha: 0.3),
+                          color: const Color(0xFF8B7355).withValues(alpha: 0.3),
                           offset: const Offset(0, 2),
                           blurRadius: 8,
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.refresh_rounded,
-                      color: Colors.white,
-                      size: 18,
+                    child: Image.asset(
+                      Assets.images.encyclopedia.plantBookIcon.path,
+                      width: 18,
+                      height: 18,
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
 
