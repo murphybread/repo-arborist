@@ -70,13 +70,13 @@ class RepositoryStatsModel {
 
   /// 나무 단계 결정
   ///
-  /// - score < 50: Sprout (새싹)
-  /// - 50 <= score < 150: Bloom (꽃)
-  /// - 150 <= score: Tree (나무)
+  /// - score < 100: Sprout (새싹)
+  /// - 100 <= score < 300: Bloom (꽃)
+  /// - 300 <= score: Tree (나무)
   TreeStage get treeStage {
-    if (projectSizeScore < 50) {
+    if (projectSizeScore < 100) {
       return TreeStage.sprout;
-    } else if (projectSizeScore < 150) {
+    } else if (projectSizeScore < 300) {
       return TreeStage.bloom;
     } else {
       return TreeStage.tree;
@@ -451,13 +451,13 @@ enum PlantType {
 
 /// 나무 성장 단계
 enum TreeStage {
-  /// 새싹 (score < 50)
+  /// 새싹 (score < 100)
   sprout(variantCount: 1),
 
-  /// 꽃 (50 <= score < 150)
+  /// 꽃 (100 <= score < 300)
   bloom(variantCount: 4),
 
-  /// 나무 (150 <= score)
+  /// 나무 (300 <= score)
   tree(variantCount: 2);
 
   const TreeStage({required this.variantCount});
