@@ -54,8 +54,15 @@
 
 - [x] **개인정보 처리방침 (Privacy Policy)** <!-- id: 6 -->
 
+  - **상태**: ✅ **완료** (Firebase Hosting으로 배포 완료)
   - **이유**: 구글 플레이 스토어는 앱이 사용자 정보를 어떻게 다루는지 설명하는 페이지를 필수로 요구합니다. 없으면 앱이 삭제될 수 있어요.
-  - **방법**: 무료 개인정보 처리방침 생성 사이트들을 활용해서 내용을 만들고, 간단한 블로그나 노션 페이지에 올린 뒤 그 주소(URL)를 준비해두세요.
+  - **Privacy Policy URL**: `https://chickentone-a0f5c.web.app/privacy.html`
+  - **Firebase Console**: `https://console.firebase.google.com/project/chickentone-a0f5c/overview`
+  - **Contact Email**: `repoarborist@gmail.com`
+  - **관리 방법**:
+    - 수정: `public/privacy.html` 파일 수정 후 `firebase deploy --only hosting`
+    - 삭제/롤백: Firebase Console → Hosting → 배포 기록에서 가능
+    - 비용: **무료** (트래픽 360MB/day까지)
 
 - [x] **문의하기 기능 (Contact Support)** <!-- id: 7 -->
 
