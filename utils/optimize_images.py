@@ -88,11 +88,17 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 Examples:
-  python optimize_images.py                          # Use defaults
-  python optimize_images.py --quality 70             # Lower quality for more compression
-  python optimize_images.py --max-size 800           # Smaller max dimension
-  python optimize_images.py --min-size 1048576       # Only process files > 1MB
+  python optimize_images.py                # Use defaults (all assets)
+  python optimize_images.py -t encyclopedia  # Optimize assets/encyclopedia only
+  python optimize_images.py -t images/etc    # Optimize assets/images/etc only
+  python optimize_images.py --quality 70   # Lower quality for more compression
         '''
+    )
+    parser.add_argument(
+        '-t', '--target',
+        type=str,
+        default=None,
+        help='Folder name under assets/ (e.g., "encyclopedia" -> assets/encyclopedia)'
     )
     parser.add_argument(
         '--max-size',
@@ -118,7 +124,18 @@ def main():
     args = parse_args()
 
     root_dir = os.getcwd()
-    target_dir = os.path.join(root_dir, 'assets')
+
+    # Auto-prefix with 'assets/' if target is specified
+    if args.target:
+        target_path = os.path.join('assets/images', args.target)
+    else:
+        target_path = 'assets/images'
+
+    target_dir = os.path.join(root_dir, target_path)
+
+    if not os.path.exists(target_dir):
+        print(f"Error: Target directory '{target_dir}' does not exist")
+        sys.exit(1)
 
     print("=" * 60)
     print("  IMAGE OPTIMIZER")
