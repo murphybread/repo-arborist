@@ -82,10 +82,12 @@ devtools_options.yaml
 
 .vscode/
 
-# Test scripts and logs
+# Logs
 *.log
 nul
-test_*.dart
+
+# Manual test scripts
+scripts/test_*.dart
 
 
 # For Google IDE Antigravity
