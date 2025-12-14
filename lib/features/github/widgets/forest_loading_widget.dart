@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
-import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/screens/garden_overview_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
 

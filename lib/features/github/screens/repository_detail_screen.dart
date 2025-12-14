@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:repo_arborist/features/encyclopedia/screens/encyclopedia_grid_screen.dart';
 import 'package:repo_arborist/features/github/models/commit_model.dart';
 import 'package:repo_arborist/features/github/models/pull_request_model.dart';
