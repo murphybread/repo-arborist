@@ -44,6 +44,10 @@ jobs:
           cd android
           ./gradlew wrapper
 
+      # Firebase google-services.json 생성
+      - name: Create google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+
       # Android APK 빌드
       - name: Android 빌드
         run: flutter build apk
