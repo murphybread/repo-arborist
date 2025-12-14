@@ -61,14 +61,9 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            // Enables code shrinking, obfuscation, and optimization
-            isMinifyEnabled = true
-            // Enables resource shrinking
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            // Temporarily disabled for initial build
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

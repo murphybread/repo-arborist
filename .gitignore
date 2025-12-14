@@ -94,3 +94,6 @@ test_*.dart
 # Image backups
 image_backups/
 image_backups.lnk
+
+
+.firebase/
