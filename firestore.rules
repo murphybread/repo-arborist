@@ -3,20 +3,34 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Cache collection rules
-    // Used for caching GitHub API responses (public data only)
     match /cache/{document=**} {
-      // Allow read access to everyone (cache is public)
       allow read: if true;
-
-      // Allow write access to everyone (cache data is non-sensitive)
-      allow write: if true;
-
-      // Auto-delete expired cache entries (optional, but recommended)
-      // Note: This requires Firebase Extensions or manual cleanup
+      allow create, update: if request.resource.data.keys().hasAll(['value', 'createdAt'])
+                            && request.resource.data.value is map;
+      allow delete: if resource.data.expiresAt != null
+                    && request.time > resource.data.expiresAt;
     }
 
-    // Deny all other collections by default
+    // Contact messages with PAT owner and repository owner
+    match /contact_messages/{document=**} {
+      allow create: if request.resource.data.keys().hasAll(['patOwner', 'repositoryOwner', 'name', 'content', 'timestamp'])
+                    && request.resource.data.patOwner is string
+                    && request.resource.data.repositoryOwner is string
+                    && request.resource.data.name is string
+                    && request.resource.data.content is string
+                    && request.resource.data.timestamp is string
+                    && request.resource.data.patOwner.size() > 0
+                    && request.resource.data.patOwner.size() < 40
+                    && request.resource.data.repositoryOwner.size() > 0
+                    && request.resource.data.repositoryOwner.size() < 40
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() < 50
+                    && request.resource.data.content.size() > 0
+                    && request.resource.data.content.size() < 1000;
+
+      allow read, update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
