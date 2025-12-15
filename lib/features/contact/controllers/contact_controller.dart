@@ -7,8 +7,8 @@ import 'package:repo_arborist/features/contact/models/contact_message_model.dart
 /// Provider for contact controller
 final contactControllerProvider =
     AsyncNotifierProvider<ContactController, void>(
-  ContactController.new,
-);
+      ContactController.new,
+    );
 
 /// Contact controller to handle message submission
 class ContactController extends AsyncNotifier<void> {
@@ -43,9 +43,7 @@ class ContactController extends AsyncNotifier<void> {
         databaseId: 'githubjson',
       );
 
-      await firestore
-          .collection('contact_messages')
-          .add(message.toJson());
+      await firestore.collection('contact_messages').add(message.toJson());
 
       debugPrint('Contact message submitted: ${message.name}');
     });

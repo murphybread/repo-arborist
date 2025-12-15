@@ -159,7 +159,8 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const EncyclopediaGridScreen(),
+                            builder: (context) =>
+                                const EncyclopediaGridScreen(),
                           ),
                         );
                       },
@@ -366,7 +367,8 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                           ),
                         ),
                       )
-                    else ..._buildSortedActivityContent(),
+                    else
+                      ..._buildSortedActivityContent(),
                   ],
                 ),
               ),
@@ -528,12 +530,16 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
     final activities = <_Activity>[];
 
     for (final commit in commits) {
-      activities.add(_Activity(date: commit.date, type: _ActivityType.commit, data: commit));
+      activities.add(
+        _Activity(date: commit.date, type: _ActivityType.commit, data: commit),
+      );
     }
 
     for (final pr in prs) {
       if (pr.mergedAt != null) {
-        activities.add(_Activity(date: pr.mergedAt!, type: _ActivityType.pr, data: pr));
+        activities.add(
+          _Activity(date: pr.mergedAt!, type: _ActivityType.pr, data: pr),
+        );
       }
     }
 

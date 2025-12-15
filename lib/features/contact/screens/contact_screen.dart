@@ -41,7 +41,9 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
       return;
     }
 
-    await ref.read(contactControllerProvider.notifier).submitMessage(
+    await ref
+        .read(contactControllerProvider.notifier)
+        .submitMessage(
           patOwner: widget.patOwner,
           repositoryOwner: widget.repositoryOwner,
           name: _nameController.text,

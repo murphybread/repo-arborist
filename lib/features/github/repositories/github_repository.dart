@@ -198,7 +198,9 @@ class GitHubRepository {
       // Link 헤더가 없으면 커밋이 1개 이하
       final data = jsonDecode(response.body) as List<dynamic>;
       final count = data.isEmpty ? 0 : 1;
-      debugPrint('[GitHub API] $owner/$repo has $count commit(s) (no pagination)');
+      debugPrint(
+        '[GitHub API] $owner/$repo has $count commit(s) (no pagination)',
+      );
       return count;
     }
 
@@ -328,13 +330,16 @@ class GitHubRepository {
     if (effectiveUsername == null && effectiveToken != null) {
       try {
         final userUrl = Uri.parse('$_baseUrl/user');
-        final userResponse = await http.get(
-          userUrl,
-          headers: _getHeaders(token: effectiveToken),
-        ).timeout(_timeout);
+        final userResponse = await http
+            .get(
+              userUrl,
+              headers: _getHeaders(token: effectiveToken),
+            )
+            .timeout(_timeout);
 
         if (userResponse.statusCode == 200) {
-          final userData = json.decode(userResponse.body) as Map<String, dynamic>;
+          final userData =
+              json.decode(userResponse.body) as Map<String, dynamic>;
           effectiveUsername = userData['login'] as String?;
           debugPrint('[GitHub API] 현재 사용자 username: $effectiveUsername');
         }
@@ -512,11 +517,15 @@ class GitHubRepository {
           .toList();
     } on TimeoutException catch (_) {
       // 타임아웃 발생 시 빈 리스트 반환
-      debugPrint('[GitHub API] Timeout for $owner/$repo PRs, returning empty list');
+      debugPrint(
+        '[GitHub API] Timeout for $owner/$repo PRs, returning empty list',
+      );
       return [];
     } on Exception catch (e) {
       // 기타 예외 발생 시 빈 리스트 반환
-      debugPrint('[GitHub API] Error fetching PRs for $owner/$repo: $e, returning empty list');
+      debugPrint(
+        '[GitHub API] Error fetching PRs for $owner/$repo: $e, returning empty list',
+      );
       return [];
     }
   }
@@ -564,7 +573,9 @@ class GitHubRepository {
         .map((json) => ContributorModel.fromJson(json as Map<String, dynamic>))
         .toList();
 
-    debugPrint('[GitHub API] $owner/$repo has ${contributors.length} contributors');
+    debugPrint(
+      '[GitHub API] $owner/$repo has ${contributors.length} contributors',
+    );
     return contributors;
   }
 }
