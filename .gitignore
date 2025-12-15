@@ -99,3 +99,6 @@ image_backups.lnk
 
 
 .firebase/CONTEXT/
+
+.firestore/
+.firebase/
