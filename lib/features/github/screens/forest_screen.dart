@@ -13,6 +13,7 @@ import 'package:repo_arborist/gen/assets.gen.dart';
 
 import 'package:repo_arborist/features/github/widgets/forest_empty_state.dart';
 import 'package:repo_arborist/features/github/widgets/repo_count_badge.dart';
+import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
 
 /// Sort options for repository list.
 enum RepositorySortType {
@@ -323,31 +324,8 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 ),
                 const SizedBox(width: 8),
                 // Encyclopedia button
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EncyclopediaGridScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF8B7355).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: const Color(0xFF8B7355),
-                        width: 1,
-                      ),
-                    ),
-                    child: Image.asset(
-                      Assets.images.encyclopedia.plantBookIcon.path,
-                      width: 20,
-                      height: 20,
-                    ),
-                  ),
-                ),
+                EncyclopediaButton(),
+
                 const SizedBox(width: 8),
                 // Logout 버튼
                 Consumer(
