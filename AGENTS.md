@@ -1,3 +1,5 @@
+- If the phrase 'Activate Learning Mode' is present, please partially leave value names, keywords, and logic blank, provide only comments for important sections, and intentionally implement incorrect logic as needed.
+
 - Focus strictly on the modified sections rather than outputting the entire file unless necessary. Omit unchanged imports, standard boilerplate, and irrelevant logic blocks by replacing them with concise placeholders like ... (unchanged imports) ... or ... (existing logic)... to keep the response clean, while including just enough surrounding lines around the modified code to provide context so the exact location of the change is unambiguous.
 - After you've modified the file, please let me know which file and which line you modified.
 - Normally, use Bash. CMD is the second priority. Only use PowerShell when explicitly requested, because PowerShell often causes encoding errors.

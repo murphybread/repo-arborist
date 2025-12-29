@@ -102,7 +102,7 @@ fvm flutter run
 
 ## 🏗️ 프로젝트 구조
 
-```
+```bash
 lib/
 ├── core/                    # Core utilities
 │   ├── controllers/         # Global state (theme)
