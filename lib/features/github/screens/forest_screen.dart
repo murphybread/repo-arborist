@@ -11,6 +11,7 @@ import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/features/github/screens/repository_detail_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
 
+import 'package:repo_arborist/features/github/widgets/forest_empty_state.dart';
 import 'package:repo_arborist/features/github/widgets/repo_count_badge.dart';
 
 /// Sort options for repository list.
@@ -186,39 +187,7 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
     String? username,
   ) {
     if (repos.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.forest_outlined,
-                size: 64,
-                color: Color(0xFF94A3B8),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'No repositories found',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Create some repositories to grow your forest!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFF94A3B8),
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return ForestEmptyState();
     }
 
     return Column(
