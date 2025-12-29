@@ -35,8 +35,7 @@ class GitHubPATState {
 }
 
 /// GitHub PAT controller provider
-final githubPATProvider =
-    NotifierProvider<GitHubPATController, GitHubPATState>(
+final githubPATProvider = NotifierProvider<GitHubPATController, GitHubPATState>(
   GitHubPATController.new,
 );
 

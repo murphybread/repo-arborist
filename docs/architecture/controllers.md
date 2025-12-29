@@ -136,11 +136,3 @@ class MyScreen extends ConsumerWidget {
 ## 왜 AsyncNotifierProvider를 사용하나?
 
 - ✅ 새로고침, 재시도 등 메서드 추가 가능
-- ✅ FutureProvider보다 유연함
-
-## 주의사항
-
-❌ **사용하지 말 것:**
-
-- `StateNotifierProvider` (Riverpod 2.0 구식 패턴)
-- 단순 비동기 데이터를 위한 `FutureProvider` (AsyncNotifierProvider 권장)

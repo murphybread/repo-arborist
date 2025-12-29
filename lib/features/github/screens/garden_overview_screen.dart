@@ -337,7 +337,9 @@ class _GardenView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF64748B).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFF64748B,
+                              ).withValues(alpha: 0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
