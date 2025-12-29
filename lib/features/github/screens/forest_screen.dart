@@ -11,6 +11,8 @@ import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/features/github/screens/repository_detail_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
 
+import 'package:repo_arborist/features/github/widgets/repo_count_badge.dart';
+
 /// Sort options for repository list.
 enum RepositorySortType {
   /// Sort by most recent commit date.
@@ -491,29 +493,7 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0x2014B8A6),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0x5014B8A6),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    '${repos.length} repos',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: const Color(0xFF14B8A6),
-                    ),
-                  ),
-                ),
+                RepoCountBadge(count: repos.length),
               ],
             ),
           ),
