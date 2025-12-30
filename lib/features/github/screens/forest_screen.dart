@@ -18,6 +18,8 @@ import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
 import 'package:repo_arborist/features/github/widgets/forest_sort_button.dart';
 import 'package:repo_arborist/features/github/models/repository_sort_type_model.dart';
 
+import 'package:repo_arborist/features/github/widgets/forest_error_state.dart';
+
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
   /// ForestScreen 생성자
@@ -69,39 +71,8 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 ),
               ),
             ),
-            error: (error, stack) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Error loading repositories',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      error.toString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Color(0xFF94A3B8),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            error: (error, stack) => ForestErrorState(
+              error: error,
           ),
         ),
       ),
