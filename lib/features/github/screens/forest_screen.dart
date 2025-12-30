@@ -15,44 +15,8 @@ import 'package:repo_arborist/features/github/widgets/forest_empty_state.dart';
 import 'package:repo_arborist/features/github/widgets/repo_count_badge.dart';
 import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
 
-/// Sort options for repository list.
-enum RepositorySortType {
-  /// Sort by most recent commit date.
-  recentCommits,
-
-  /// Sort by most recent PR merge date.
-  recentPRs,
-
-  /// Sort by total activity size (commits + PRs score).
-  activitySize,
-}
-
-/// Extension to provide display labels for repository sort types.
-extension RepositorySortTypeExtension on RepositorySortType {
-  /// Display label for UI.
-  String get label {
-    switch (this) {
-      case RepositorySortType.recentCommits:
-        return 'Recent Commits';
-      case RepositorySortType.recentPRs:
-        return 'Recent PRs';
-      case RepositorySortType.activitySize:
-        return 'Activity Size';
-    }
-  }
-
-  /// Icon for UI.
-  IconData get icon {
-    switch (this) {
-      case RepositorySortType.recentCommits:
-        return Icons.commit;
-      case RepositorySortType.recentPRs:
-        return Icons.merge;
-      case RepositorySortType.activitySize:
-        return Icons.trending_up;
-    }
-  }
-}
+import 'package:repo_arborist/features/github/widgets/forest_sort_button.dart';
+import 'package:repo_arborist/features/github/models/repository_sort_type_model.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
@@ -260,66 +224,12 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 ),
                 const SizedBox(width: 8),
                 // Sort button
-                PopupMenuButton<RepositorySortType>(
-                  icon: const Icon(
-                    Icons.sort,
-                    color: Color(0xFF14B8A6),
-                    size: 20,
-                  ),
-                  tooltip: 'Sort repositories',
-                  color: const Color(0xFF1E293B),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(
-                      color: Color(0x1AFFFFFF),
-                    ),
-                  ),
-                  offset: const Offset(0, 40),
-                  onSelected: (RepositorySortType value) {
+                ForestSortButton(
+                  currentSortType: _sortType,
+                  onSortChanged: (value) {
                     setState(() {
                       _sortType = value;
                     });
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return RepositorySortType.values.map((sortType) {
-                      final isSelected = _sortType == sortType;
-                      return PopupMenuItem<RepositorySortType>(
-                        value: sortType,
-                        child: Row(
-                          children: [
-                            Icon(
-                              sortType.icon,
-                              size: 16,
-                              color: isSelected
-                                  ? const Color(0xFF14B8A6)
-                                  : const Color(0xFF94A3B8),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              sortType.label,
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                                color: isSelected
-                                    ? const Color(0xFF14B8A6)
-                                    : const Color(0xFFFFFFFF),
-                              ),
-                            ),
-                            if (isSelected) ...[
-                              const Spacer(),
-                              const Icon(
-                                Icons.check,
-                                size: 16,
-                                color: Color(0xFF14B8A6),
-                              ),
-                            ],
-                          ],
-                        ),
-                      );
-                    }).toList();
                   },
                 ),
                 const SizedBox(width: 8),
