@@ -22,6 +22,7 @@ import 'package:repo_arborist/features/github/widgets/forest_error_state.dart';
 import 'package:repo_arborist/features/github/widgets/forest_user_info_section.dart';
 
 import 'package:repo_arborist/features/github/widgets/forest_logout_button.dart';
+import 'package:repo_arborist/features/github/widgets/forest_garden_button.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
@@ -180,48 +181,8 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 ForestLogoutButton(),
                 const SizedBox(width: 8),
                 // Go to Garden 버튼
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF14B8A6),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF14B8A6).withValues(alpha: 0.3),
-                          offset: const Offset(0, 2),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.grid_view_rounded,
-                          color: Colors.white,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Go to Garden',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                ForestGardenButton(),
+
                 const SizedBox(width: 8),
                 RepoCountBadge(count: repos.length),
               ],
