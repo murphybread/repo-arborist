@@ -20,6 +20,7 @@ import 'package:repo_arborist/features/github/models/repository_sort_type_model.
 
 import 'package:repo_arborist/features/github/widgets/forest_error_state.dart';
 import 'package:repo_arborist/features/github/widgets/forest_user_info_section.dart';
+
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
   /// ForestScreen 생성자
@@ -73,6 +74,7 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
             ),
             error: (error, stack) => ForestErrorState(
               error: error,
+            ),
           ),
         ),
       ),
@@ -153,8 +155,10 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
             ),
             child: Row(
               children: [
-                Expanded(child: ForestUserInfoSection(username: username ?? 'Unknown')),
-                
+                Expanded(
+                  child: ForestUserInfoSection(username: username ?? 'Unknown'),
+                ),
+
                 const SizedBox(width: 8),
                 // Sort button
                 ForestSortButton(
@@ -384,8 +388,6 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
     );
   }
 }
-
-
 
 /// Repository Card 위젯
 class _RepositoryCard extends StatelessWidget {
