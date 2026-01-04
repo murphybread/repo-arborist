@@ -27,6 +27,7 @@ import 'package:repo_arborist/features/github/widgets/forest_garden_button.dart'
 import 'package:repo_arborist/features/contact/widgets/contact_button.dart';
 
 import 'package:repo_arborist/features/github/widgets/repository_card.dart';
+import 'package:repo_arborist/features/github/widgets/forest_header.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
@@ -138,62 +139,16 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
     return Column(
       children: [
         // Header - 더 명확한 스타일
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F172A),
-            border: Border(
-              bottom: BorderSide(
-                color: const Color(0xFF14B8A6),
-                width: 2,
-              ),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                offset: const Offset(0, 2),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 16,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ForestUserInfoSection(username: username ?? 'Unknown'),
-                ),
-
-                const SizedBox(width: 8),
-                // Sort button
-                ForestSortButton(
-                  currentSortType: _sortType,
-                  onSortChanged: (value) {
-                    setState(() {
-                      _sortType = value;
-                    });
-                  },
-                ),
-                const SizedBox(width: 8),
-                // Encyclopedia button
-                EncyclopediaButton(),
-
-                const SizedBox(width: 8),
-                // Logout 버튼
-                ForestLogoutButton(),
-                const SizedBox(width: 8),
-                // Go to Garden 버튼
-                ForestGardenButton(),
-
-                const SizedBox(width: 8),
-                RepoCountBadge(count: repos.length),
-              ],
-            ),
-          ),
+        ForestHeader(
+          username: username ?? 'Unknown',
+          repoCount: repos.length,
+          currentSortType: _sortType,
+          onSortChanged: (value) {
+            setState(() {
+              _sortType = value;
+            });
+          },
         ),
-
         // Contact button below header
         Consumer(
           builder: (context, ref, child) {
