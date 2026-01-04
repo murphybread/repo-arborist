@@ -54,6 +54,8 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
   @override
   Widget build(BuildContext context) {
     final forestState = ref.watch(forestProvider);
+    final patState = ref.watch(githubPATProvider);
+    final patOwner = patState.username ?? 'unknown';
 
     return Scaffold(
       body: Container(
@@ -71,7 +73,12 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
           child: forestState.when(
             data: (repos) {
               final sortedRepos = _sortRepositories(repos);
-              return _buildForestView(context, sortedRepos, widget.username);
+              return _buildForestView(
+                context,
+                sortedRepos,
+                widget.username,
+                patOwner,
+              );
             },
             loading: () => const Center(
               child: CircularProgressIndicator(
@@ -131,6 +138,7 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
     BuildContext context,
     List<RepositoryStatsModel> repos,
     String? username,
+    String patOwner,
   ) {
     if (repos.isEmpty) {
       return ForestEmptyState();
@@ -150,16 +158,9 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
           },
         ),
         // Contact button below header
-        Consumer(
-          builder: (context, ref, child) {
-            final patState = ref.watch(githubPATProvider);
-            final patOwner = patState.username ?? 'unknown';
-
-            return ContactButton(
-              patOwner: patOwner,
-              repositoryOwner: username ?? 'unknown',
-            );
-          },
+        ContactButton(
+          patOwner: patOwner,
+          repositoryOwner: username ?? 'unknown',
         ),
 
         // Repository List (Single Column)
