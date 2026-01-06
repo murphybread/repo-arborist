@@ -5,7 +5,6 @@ import 'package:repo_arborist/features/contact/screens/contact_screen.dart';
 import 'package:repo_arborist/features/encyclopedia/screens/encyclopedia_grid_screen.dart';
 import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
 import 'package:repo_arborist/features/github/controllers/github_auth_controller.dart';
-import 'package:repo_arborist/features/github/controllers/github_pat_controller.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/features/github/screens/repository_detail_screen.dart';
@@ -54,8 +53,6 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
   @override
   Widget build(BuildContext context) {
     final forestState = ref.watch(forestProvider);
-    final patState = ref.watch(githubPATProvider);
-    final patOwner = patState.username ?? 'unknown';
 
     return Scaffold(
       body: Container(
@@ -77,7 +74,6 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 context,
                 sortedRepos,
                 widget.username,
-                patOwner,
               );
             },
             loading: () => const Center(
@@ -138,7 +134,6 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
     BuildContext context,
     List<RepositoryStatsModel> repos,
     String? username,
-    String patOwner,
   ) {
     if (repos.isEmpty) {
       return ForestEmptyState();
@@ -159,7 +154,6 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
         ),
         // Contact button below header
         ContactButton(
-          patOwner: patOwner,
           repositoryOwner: username ?? 'unknown',
         ),
 

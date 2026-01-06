@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repo_arborist/features/github/controllers/github_auth_controller.dart';
-import 'package:repo_arborist/features/github/controllers/github_pat_controller.dart';
+import 'package:repo_arborist/shared/auth/github_pat_controller.dart';
 import 'package:repo_arborist/features/github/widgets/forest_loading_widget.dart';
 
 /// GitHub login screen with 3 tabs

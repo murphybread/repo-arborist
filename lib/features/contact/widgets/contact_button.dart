@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repo_arborist/features/contact/screens/contact_screen.dart';
+import 'package:repo_arborist/shared/auth/github_pat_controller.dart';
 
-class ContactButton extends StatelessWidget {
+class ContactButton extends ConsumerWidget {
   const ContactButton({
-    required this.patOwner, // 외부에서 받음
-    required this.repositoryOwner, // 외부에서 받음
+    required this.repositoryOwner,
     super.key,
   });
 
-  final String patOwner;
   final String repositoryOwner;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final patState = ref.watch(githubPATProvider);
+    final patOwner = patState.username ?? 'unknown';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GestureDetector(
