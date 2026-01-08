@@ -56,9 +56,7 @@ class ForestHeader extends StatelessWidget {
             // Sort button
             ForestSortButton(
               currentSortType: currentSortType,
-              onSortChanged: (value) {
-                onSortChanged(value);
-              },
+              onSortChanged: onSortChanged,
             ),
             const SizedBox(width: 8),
             // Encyclopedia button

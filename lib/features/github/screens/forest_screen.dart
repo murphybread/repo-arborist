@@ -1,32 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:repo_arborist/features/contact/screens/contact_screen.dart';
-import 'package:repo_arborist/features/encyclopedia/screens/encyclopedia_grid_screen.dart';
-import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
-import 'package:repo_arborist/features/github/controllers/github_auth_controller.dart';
-import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
-import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
-import 'package:repo_arborist/features/github/screens/repository_detail_screen.dart';
-import 'package:repo_arborist/gen/assets.gen.dart';
-
-import 'package:repo_arborist/features/github/widgets/forest_empty_state.dart';
-import 'package:repo_arborist/features/github/widgets/repo_count_badge.dart';
-import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
-
-import 'package:repo_arborist/features/github/widgets/forest_sort_button.dart';
-import 'package:repo_arborist/features/github/models/repository_sort_type_model.dart';
-
-import 'package:repo_arborist/features/github/widgets/forest_error_state.dart';
-import 'package:repo_arborist/features/github/widgets/forest_user_info_section.dart';
-
-import 'package:repo_arborist/features/github/widgets/forest_logout_button.dart';
-import 'package:repo_arborist/features/github/widgets/forest_garden_button.dart';
-
 import 'package:repo_arborist/features/contact/widgets/contact_button.dart';
-
-import 'package:repo_arborist/features/github/widgets/repository_card.dart';
+import 'package:repo_arborist/features/github/controllers/forest_controller.dart';
+import 'package:repo_arborist/features/github/models/repository_sort_type_model.dart';
+import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
+import 'package:repo_arborist/features/github/widgets/forest_empty_state.dart';
+import 'package:repo_arborist/features/github/widgets/forest_error_state.dart';
 import 'package:repo_arborist/features/github/widgets/forest_header.dart';
+import 'package:repo_arborist/features/github/widgets/repository_card.dart';
 
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
