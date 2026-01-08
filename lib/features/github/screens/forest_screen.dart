@@ -7,6 +7,7 @@ import 'package:repo_arborist/features/github/models/repository_stats_model.dart
 import 'package:repo_arborist/features/github/widgets/forest_empty_state.dart';
 import 'package:repo_arborist/features/github/widgets/forest_error_state.dart';
 import 'package:repo_arborist/features/github/widgets/forest_header.dart';
+import 'package:repo_arborist/features/github/widgets/forest_update_time_text.dart';
 import 'package:repo_arborist/features/github/widgets/repository_card.dart';
 
 /// GitHub Repository Forest 화면
@@ -133,9 +134,16 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
             });
           },
         ),
-        // Contact button below header
-        ContactButton(
-          repositoryOwner: username ?? 'unknown',
+        // Contact button and update time row
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Row(
+            children: [
+              ContactButton(repositoryOwner: username ?? 'unknown'),
+              const SizedBox(width: 12),
+              const ForestUpdateTimeText(),
+            ],
+          ),
         ),
 
         // Repository List (Single Column)
