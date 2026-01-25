@@ -6,6 +6,7 @@ import 'package:repo_arborist/features/github/models/repository_stats_model.dart
 import 'package:repo_arborist/features/github/screens/forest_screen.dart';
 import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
+import 'package:repo_arborist/shared/utils/time_utils.dart';
 
 /// 정원 오버뷰 화면 - 모든 레포지토리를 자연스럽게 배치
 class GardenOverviewScreen extends ConsumerWidget {
@@ -296,7 +297,7 @@ class _GardenView extends StatelessWidget {
                         }
 
                         return Text(
-                          'Updated ${_getTimeAgo(lastUpdate)}',
+                          'Updated ${getTimeAgo(lastUpdate)}',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontFamily: 'Inter',
@@ -750,26 +751,4 @@ String _getGardenTitle(
   final ownerName = fullName.split('/').first;
 
   return '$ownerName\'s Garden — Overview';
-}
-
-/// Get human-readable time difference
-String _getTimeAgo(DateTime dateTime) {
-  final now = DateTime.now();
-  final difference = now.difference(dateTime);
-
-  if (difference.inSeconds < 60) {
-    return 'just now';
-  } else if (difference.inMinutes < 60) {
-    final minutes = difference.inMinutes;
-    return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
-  } else if (difference.inHours < 24) {
-    final hours = difference.inHours;
-    return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
-  } else if (difference.inDays < 30) {
-    final days = difference.inDays;
-    return '$days ${days == 1 ? 'day' : 'days'} ago';
-  } else {
-    final months = (difference.inDays / 30).floor();
-    return '$months ${months == 1 ? 'month' : 'months'} ago';
-  }
 }
