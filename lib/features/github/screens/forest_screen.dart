@@ -10,6 +10,9 @@ import 'package:repo_arborist/features/github/widgets/forest_header.dart';
 import 'package:repo_arborist/features/github/widgets/forest_update_time_text.dart';
 import 'package:repo_arborist/features/github/widgets/repository_card.dart';
 
+// shaerd Widget
+import 'package:repo_arborist/shared/widgets/error_state_widget.dart';
+
 /// GitHub Repository Forest 화면
 class ForestScreen extends ConsumerStatefulWidget {
   /// ForestScreen 생성자
@@ -65,8 +68,11 @@ class _ForestScreenState extends ConsumerState<ForestScreen> {
                 ),
               ),
             ),
-            error: (error, stack) => ForestErrorState(
+            error: (error, stack) => ErrorStateWidget(
               error: error,
+              title: 'Error loading repositories',
+              titleColor: Colors.white, // 어두운 배경용
+              errorTextColor: const Color(0xFF94A3B8),
             ),
           ),
         ),

@@ -9,6 +9,7 @@ import 'package:repo_arborist/gen/assets.gen.dart';
 import 'package:repo_arborist/shared/utils/time_utils.dart';
 
 import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
+import 'package:repo_arborist/shared/widgets/error_state_widget.dart';
 
 /// 정원 오버뷰 화면 - 모든 레포지토리를 자연스럽게 배치
 class GardenOverviewScreen extends ConsumerWidget {
@@ -54,69 +55,20 @@ class GardenOverviewScreen extends ConsumerWidget {
         );
       },
       error: (error, stack) {
-        debugPrint('🔴 [GardenOverview] Error 발생: $error');
-        debugPrint('Stack trace: $stack');
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           body: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Color(0xFFEF4444),
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Failed to Load Garden',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 24,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Error: $error',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) => const GithubLoginScreen(),
-                          ),
-                          (route) => false,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF14B8A6),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Back to Login'),
-                    ),
-                  ],
-                ),
-              ),
+            child: ErrorStateWidget(
+              error: error,
+              title: 'Failed to Load Garden',
+              iconSize: 64,
+              onRetry: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const GithubLoginScreen()),
+                  (route) => false,
+                );
+              },
+              retryLabel: 'Back to Login',
             ),
           ),
         );
