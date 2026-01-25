@@ -4,7 +4,10 @@ import 'package:repo_arborist/features/github/models/commit_model.dart';
 import 'package:repo_arborist/features/github/models/pull_request_model.dart';
 import 'package:repo_arborist/features/github/models/repository_stats_model.dart';
 import 'package:repo_arborist/features/github/repositories/github_repository.dart';
+import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
+
+import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
 
 /// Sort options for repository activity display.
 enum ActivitySortType {
@@ -155,31 +158,7 @@ class _RepositoryDetailScreenState extends State<RepositoryDetailScreen> {
                       ),
                     ),
                     // Encyclopedia button
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const EncyclopediaGridScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF8B7355).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: const Color(0xFF8B7355),
-                          ),
-                        ),
-                        child: Image.asset(
-                          Assets.images.encyclopedia.plantBookIcon.path,
-                          width: 20,
-                          height: 20,
-                        ),
-                      ),
-                    ),
+                    const EncyclopediaButton(),
                     const SizedBox(width: 8),
                     // 정렬 버튼
                     PopupMenuButton<ActivitySortType>(

@@ -8,6 +8,8 @@ import 'package:repo_arborist/features/github/screens/github_login_screen.dart';
 import 'package:repo_arborist/gen/assets.gen.dart';
 import 'package:repo_arborist/shared/utils/time_utils.dart';
 
+import 'package:repo_arborist/features/github/widgets/encyclopedia_button.dart';
+
 /// 정원 오버뷰 화면 - 모든 레포지토리를 자연스럽게 배치
 class GardenOverviewScreen extends ConsumerWidget {
   /// GardenOverviewScreen 생성자
@@ -355,35 +357,8 @@ class _GardenView extends StatelessWidget {
                     );
                   },
                 ),
+                const EncyclopediaButton(),
                 const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EncyclopediaGridScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF8B7355),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF8B7355).withValues(alpha: 0.3),
-                          offset: const Offset(0, 2),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
-                    child: Image.asset(
-                      Assets.images.encyclopedia.plantBookIcon.path,
-                      width: 18,
-                      height: 18,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
